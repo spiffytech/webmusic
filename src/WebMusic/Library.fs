@@ -1,4 +1,4 @@
-﻿namespace FSharp.ProjectTemplate
+namespace WebMusic
 
 /// Documentation for my library
 ///

@@ -1,6 +1,6 @@
-﻿module FSharp.ProjectScaffold.Tests
+module WebMusic.Tests
 
-open FSharp.ProjectTemplate
+open WebMusic
 open NUnit.Framework
 
 [<Test>]

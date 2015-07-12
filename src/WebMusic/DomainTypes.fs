@@ -2,6 +2,8 @@ namespace WebMusic
 
 [<AutoOpen>]
 module DomainTypes =
+  let (@@) fn x = fn x
+
   // Sorted by preferred order, so we can transcode to the best supported file
   // format
   type FileType =
@@ -11,6 +13,8 @@ module DomainTypes =
     | MP3
     | WMA
 
+  type SupportedFormats = FileType list
+  
   type LocalFile = {
       filename: string
       fileType: FileType
@@ -31,11 +35,11 @@ module DomainTypes =
     album: string
   }
 
-  type Manifest = Manifest of string
+  type Manifest = Manifest of string  // JSON
 
   type RetrieveManifest = RemoteContentHost -> Manifest
   type ManifestToTracks = Manifest -> Track list
   type ConvertFiletype = LocalFile -> LocalFile
   type RetrieveFile = RemoteFile -> LocalFile
-  type BestSupportedCodec = FileType list -> FileType
-  type NeedsConversion = FileType list -> FileType -> bool
+  type BestSupportedCodec = SupportedFormats -> FileType
+  type NeedsConversion = SupportedFormats -> FileType -> bool

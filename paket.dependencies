@@ -7,5 +7,6 @@ nuget FAKE
 nuget SourceLink.Fake
 
 nuget Fscheck
+nuget Fscheck.NUnit
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx

@@ -41,5 +41,5 @@ module DomainTypes =
   type ManifestToTracks = Manifest -> Track list
   type ConvertFiletype = LocalFile -> LocalFile
   type RetrieveFile = RemoteFile -> LocalFile
-  type BestSupportedCodec = SupportedFormats -> FileType
   type NeedsConversion = SupportedFormats -> FileType -> bool
+  type BestSupportedCodec = SupportedFormats -> FileType

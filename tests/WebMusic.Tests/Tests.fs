@@ -65,3 +65,13 @@ let ``Tracks -> manifest -> tracks works`` () =
     tracks = tracks'
 
   Check.QuickThrowOnFailure prop
+
+[<Test>]
+let ``Manifest -> tracks -> manifest works`` () =
+  let prop tracks =
+    let json = tracksToManifest tracks
+    let tracks' = manifestToTracks json
+    let json' = tracksToManifest tracks
+    json = json'
+
+  Check.QuickThrowOnFailure prop

@@ -5,6 +5,7 @@ open WebMusic.Core
 open NUnit.Framework
 open FsCheck
 //open FsCheck.NUnit
+open Newtonsoft.Json
 
 [<Test>]
 let ``Returns best supported codec`` () =
@@ -37,3 +38,30 @@ let ``Filetype always needs conversion if it's not in the supported format list`
     |> (=) true
 
   Check.QuickThrowOnFailure @@ Prop.forAll gen prop
+
+[<Test>]
+let ``track to manifest produces valid JSON`` () =
+  let prop tracks =
+    let json = tracksToManifest tracks
+    let _ = JsonConvert.DeserializeObject<Track list> json
+    true
+
+  Check.QuickThrowOnFailure prop
+
+[<Test>]
+let ``Manifest gets converted into tracks`` () =
+  let prop tracks =
+    let json = tracksToManifest tracks
+    let _ = manifestToTracks json
+    true
+
+  Check.QuickThrowOnFailure prop
+
+[<Test>]
+let ``Tracks -> manifest -> tracks works`` () =
+  let prop tracks =
+    let json = tracksToManifest tracks
+    let tracks' = manifestToTracks json
+    tracks = tracks'
+
+  Check.QuickThrowOnFailure prop

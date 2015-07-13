@@ -93,6 +93,9 @@
     <Reference Include="FsCheck.NUnit.Addin">
       <HintPath>..\..\packages\FsCheck.Nunit\lib\net45\FsCheck.NUnit.Addin.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>../../packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="nunit.framework">

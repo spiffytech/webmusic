@@ -37,9 +37,13 @@ module DomainTypes =
 
   type Manifest = Manifest of string  // JSON
 
-  type RetrieveManifest = RemoteContentHost -> Manifest
-  type ManifestToTracks = Manifest -> Track list
-  type ConvertFiletype = LocalFile -> LocalFile
-  type RetrieveFile = RemoteFile -> LocalFile
+  // Core
   type NeedsConversion = SupportedFormats -> FileType -> bool
   type BestSupportedCodec = SupportedFormats -> FileType
+  type ManifestToTracks = Manifest -> Track list
+  type TracksToManifest = Track list -> Manifest
+
+  // Shell
+  type RetrieveManifest = RemoteContentHost -> Manifest
+  type ConvertFiletype = LocalFile -> LocalFile
+  type RetrieveFile = RemoteFile -> LocalFile

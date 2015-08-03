@@ -28,12 +28,30 @@ module DomainTypes =
     filename: string
   }
     
+  type Artist = {
+    name: string
+  }
+
+  type Album = {
+    name: string
+  }
+
   type Track = {
     file: LocalFile
     title: string
-    artist: string
-    album: string
+    artist: Artist
+    album: Album
   }
+
+  // Generic for tracks with/without database IDs
+  type AlbumTracks<'a, 'b> = {
+    album: 'a
+    tracks: 'b list
+  }
+
+  // Handle DB IDs by making the base datastructure (Album), plus AlbumId, and DBAlbum = (AlbumId * Album)
+
+  type User = User of int  // Their ID in the database
 
   type Manifest = Manifest of string  // JSON
 

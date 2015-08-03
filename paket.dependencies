@@ -11,4 +11,9 @@ nuget Fscheck.NUnit
 
 nuget newtonsoft.json
 
+nuget websharper
+nuget websharper.ui.next
+
+nuget elmah
+
 github fsharp/FAKE modules/Octokit/Octokit.fsx

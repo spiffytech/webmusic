@@ -23,7 +23,7 @@ module DomainTypes =
   type RemoteContentHost =
     | HTTP of string
 
-  type RemoteFile = {
+  type HostedFile = {
     src: RemoteContentHost
     filename: string
   }
@@ -37,7 +37,9 @@ module DomainTypes =
   }
 
   type Track = {
+    // What to do with this? Shouldn't be core part of Track
     file: LocalFile
+    //
     title: string
     artist: Artist
     album: Album
@@ -64,4 +66,4 @@ module DomainTypes =
   // Shell
   type RetrieveManifest = RemoteContentHost -> Manifest
   type ConvertFiletype = LocalFile -> LocalFile
-  type RetrieveFile = RemoteFile -> LocalFile
+  type RetrieveFile = HostedFile -> LocalFile

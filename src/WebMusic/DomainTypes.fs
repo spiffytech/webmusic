@@ -39,13 +39,12 @@ module DomainTypes =
   }
 
   type Track = {
-    // What to do with this? Shouldn't be core part of Track
-    httpref: HostedFile
-    //
     title: string
     artist: Artist
     album: Album
   }
+
+  type HostedTrack = (HostedFile * Track)
 
   // Generic for tracks with/without database IDs
   type AlbumTracks<'a, 'b> = {

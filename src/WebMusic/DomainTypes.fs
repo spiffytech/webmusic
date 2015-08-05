@@ -2,6 +2,8 @@ namespace WebMusic
 
 [<AutoOpen>]
 module DomainTypes =
+  open System
+
   let (@@) fn x = fn x
 
   // Sorted by preferred order, so we can transcode to the best supported file
@@ -21,7 +23,7 @@ module DomainTypes =
   }
 
   type RemoteContentHost =
-    | HTTP of string
+    | HTTP of Uri
 
   type HostedFile = {
     src: RemoteContentHost
@@ -38,7 +40,7 @@ module DomainTypes =
 
   type Track = {
     // What to do with this? Shouldn't be core part of Track
-    file: LocalFile
+    httpref: HostedFile
     //
     title: string
     artist: Artist

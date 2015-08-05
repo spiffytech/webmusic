@@ -6,6 +6,21 @@ open NUnit.Framework
 open FsCheck
 //open FsCheck.NUnit
 open Newtonsoft.Json
+open System
+
+type Generators =
+    static member Uri() =
+        let protocol = Gen.oneof [gen {return "http"}; gen {return "https"}]
+
+        Arb.generate<string>
+        //|> Gen.two
+        //|> Gen.map @@ fun (host, path) -> new Uri(new Uri(host), path)
+        |> Gen.map @@ fun (_) -> new Uri(new Uri("http://localhost"), "/blah.mp3")
+        |> Arb.fromGen
+
+[<SetUp>]
+let setUp () =
+    Arb.register<Generators>() |> ignore
 
 [<Test>]
 let ``Returns best supported codec`` () =

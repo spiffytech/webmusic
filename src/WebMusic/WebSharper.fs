@@ -8,6 +8,7 @@ module Rpc =
         ()
 
 module Server =
+    open Newtonsoft.Json
     open WebSharper
     open WebSharper.Sitelets
     open WebSharper.Html.Server
@@ -19,15 +20,21 @@ module Server =
     type Action =
     | Index
 
-    let testTrack =
-        let httpref = {HostedFile.src = HTTP (new Uri("http://localhosT:8000")); filename = "http://localhost:8000/05%20Camminata%20Maldestra%20(Original%20Mix)%20(Clumsy%20Walking).mp3"}
+    let mkTrack (dict:System.Collections.Generic.Dictionary<string,string>) =
+        let httpref = {HostedFile.src = HTTP (new Uri("http://localhost:8000")); filename = dict.["path"]}
         let track = {
-            title = "Sex in a Pan"
-            artist = {Artist.name = "Bela Fleck and the Flecktones"}
-            album = {Album.name = "2011-07-04 - Some Concert"}
+            title = dict.["title"]
+            artist = {Artist.name = dict.["artist"]}
+            album = {Album.name = dict.["album"]}
             //httpref = {HostedFile.src = HTTP (new Uri("https://archive.org")); filename = "download/bfft2011-07-24.csb.royboy.115786.t-flac16/bela2011-07-24t03_Sex_In_A_Pan.ogg"}
         }
         (httpref, track)
+
+    let testTracks =
+        let streamreader = new System.IO.StreamReader("/tmp/tracks.json")
+        let rows = JsonConvert.DeserializeObject<List<System.Collections.Generic.Dictionary<string,string>>>(streamreader.ReadToEnd())
+        rows
+        |> List.map mkTrack
 
     let httprefFromHostedFile hf =
         match hf.src with
@@ -41,7 +48,7 @@ module Server =
     let IndexContent (ctx : Context<Action>) =
         Content.Page(
             Title = "blah",
-            Body = [audioElementFromTrack testTrack]
+            Body = (testTracks |> List.map audioElementFromTrack)
         )
 
     [<Website>]

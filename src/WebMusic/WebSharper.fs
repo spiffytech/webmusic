@@ -11,7 +11,9 @@ module Server =
     open Newtonsoft.Json
     open WebSharper
     open WebSharper.Sitelets
-    open WebSharper.Html.Server
+    open WebSharper.UI.Next
+    open WebSharper.UI.Next.Html
+    open WebSharper.UI.Next.Server
     open System
     open System.Web
 
@@ -41,17 +43,31 @@ module Server =
         | HTTP src -> new Uri(src, hf.filename) |> string
 
     let activeTrackWidget (httpref, track) =
-        Div [
-            Div [Text @@ sprintf "%s (%s) / %s" track.title track.artist.name track.album.name]
-            Tags.Audio [Attr.Controls ""; Attr.Style "width: 100%;"] -< [
-                Tags.Source [Attr.Src (httpref |> httprefFromHostedFile); (*Attr.Type "audio/mp3"*)];
+        div [
+            div [text @@ sprintf "%s (%s) / %s" track.title track.artist.name track.album.name]
+            audioAttr [attr.controls ""; attr.style "width: 100%;"] [
+                sourceAttr [attr.src (httpref |> httprefFromHostedFile); (*Attr.Type "audio/mp3"*)] [];
             ]
         ]
 
     let IndexContent (ctx : Context<Action>) =
+        (*
         Content.Page(
             Title = "blah",
-            Body = (testTracks |> List.map activeTrackWidget)
+            //Body = Doc.AsElements @@ div (testTracks |> List.map activeTrackWidget)
+            Body = Doc.AsElements @@ div (testTracks.[0] |> activeTrackWidget)
+        )
+        *)
+        let blah = testTracks |> List.map activeTrackWidget
+        //let blah2 = [testTracks.[0] |> activeTrackWidget; testTracks.[1] |> activeTrackWidget; ]
+        let blah2 = [testTracks.[0] |> activeTrackWidget] |> Seq.ofList
+        Content.Doc(
+            //div (testTracks |> List.map activeTrackWidget)
+            div [testTracks.[0] |> activeTrackWidget]
+        )
+        Content.Doc(
+            //div (blah2 |> Seq.map @@ fun e -> e :> Doc)
+            div (blah |> Seq.map @@ fun e -> e :> Doc)
         )
 
     [<Website>]

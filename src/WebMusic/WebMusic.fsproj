@@ -57,6 +57,7 @@
     <Compile Include="Core.fs" />
     <Compile Include="WebSharper.fs" />
     <None Include="Script.fsx" />
+    <Content Include="Main.html" />
     <None Include="paket.references" />
     <None Include="paket.template" />
   </ItemGroup>

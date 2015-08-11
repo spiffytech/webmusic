@@ -1,0 +1,9 @@
+packages
+*/bin
+*/obj
+bin
+obj
+TestResults.xml
+Content,Scripts
+docs/output
+TestResult.xml

@@ -8,7 +8,6 @@ module Rpc =
     [<Rpc>]
     let tracks () =
         ()
-(*
 
 [<JavaScript>]
 module Client =
@@ -54,7 +53,7 @@ module Server =
         (httpref, track)
 
     let testTracks =
-        let streamreader = new System.IO.StreamReader("/tmp/tracks.json")
+        let streamreader = new System.IO.StreamReader("tracks.json")
         let rows = JsonConvert.DeserializeObject<List<System.Collections.Generic.Dictionary<string,string>>>(streamreader.ReadToEnd())
         rows
         |> List.map mkTrack
@@ -102,37 +101,3 @@ module Server =
         Sitelet.Sum [
             Sitelet.Content "/" Index IndexContent
         ]
-*)
-
-open WebSharper
-open WebSharper.UI.Next
-open WebSharper.UI.Next.Html
-[<JavaScript>]
-module Client =
-  open WebSharper.JavaScript
-  open WebSharper.UI.Next.Client
-  
-  let Widget() =
-    let rvInput = Var.Create ""
-    Doc.Concat [
-      Doc.Input [] rvInput
-      p [text "You typed: "; textView rvInput.View]
-    ]
-    
-  let Alert el ev =
-    JS.Alert "Clicked!"
-
-module Server =
-  open WebSharper.Sitelets
-  open WebSharper.UI.Next.Server
-
-  [<Website>]
-  let MyWebsite =
-    Application.SinglePage <| fun context ->
-      Content.Doc(
-        div [
-          h1 [text "Enter text below"]
-          client <@ Client.Widget() @>
-          buttonAttr [on.click <@ Client.Alert @>] [text "Click me!"]
-        ]
-      )

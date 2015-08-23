@@ -28,6 +28,22 @@ module Client =
             ]
         ]
 
+    let rvCurrentTrack = Var.Create None
+    let vCurrentTrack =
+        rvCurrentTrack.View
+        |> View.Map @~ function
+          | None -> div []
+          | Some (track, httpref) -> activeTrackWidget track httpref
+
+    let trackListingWidget track httpref =
+        divAttr [Attr.Handler "click" @~ fun _ _ -> rvCurrentTrack.Value <- Some (track, httpref)] [text @~ sprintf "%s (%s) / %s" track.title track.artist.name track.album.name]
+
+    let playerWidget () =
+        div [
+            div [text "Current track"]
+            Doc.EmbedView vCurrentTrack
+        ]
+
     let library tracks =
         //JS.Alert("blah")
         //div [text @~ sprintf "%A" tracks]
@@ -47,7 +63,7 @@ module Client =
 
                 filtered
                 |> Seq.map @~ fun (track, httpref) ->
-                    activeTrackWidget track httpref
+                    trackListingWidget track httpref
                     |> fun x -> x :> Doc
                 |> fun divs ->
                     div divs
@@ -121,7 +137,7 @@ module Server =
             //let t = [0..3] |> Seq.ofList
             //let t = tracks
             div [
-
+                client <@ Client.playerWidget () @>
                 client <@ Client.library t @>
             ]
         )

@@ -14,16 +14,32 @@ module Client =
     open WebSharper.UI.Next
     open WebSharper.UI.Next.Html
     open WebSharper.UI.Next.Client
-    //open WebSharper.JavaScript
+    open WebSharper.JavaScript
 
-    let blah = div [text "stuff1"]
+    let (@~) fn x = fn x
 
-    let library collection =
-        let rvCollection = Var.Create collection
+    open WebMusic
+
+    let activeTrackWidget track httpref =
+        div [
+            div [text @~ sprintf "%s (%s) / %s" track.title track.artist.name track.album.name]
+            audioAttr [attr.controls ""; attr.style "width: 100%;"] [
+                sourceAttr [attr.src httpref; (*Attr.Type "audio/mp3"*)] [];
+            ]
+        ]
+
+    let library tracks =
+        //JS.Alert("blah")
+        //div [text @~ sprintf "%A" tracks]
+        let rvCollection = Var.Create tracks
         let vCollection =
             rvCollection.View
-            |> View.Map (fun collection ->
-                div [text collection])
+            |> View.Map @~ fun tracks ->
+                tracks
+                |> Seq.map @~ fun (track, httpref) ->
+                    activeTrackWidget track httpref
+                    |> fun x -> x :> Doc
+                |> fun divs -> div divs
         Doc.EmbedView vCollection
 
 module Server =
@@ -37,7 +53,6 @@ module Server =
     open System.Web
 
     open WebMusic
-    open Client
 
     type Action =
     | Index
@@ -62,14 +77,6 @@ module Server =
         match hf.src with
         | HTTP src -> new Uri(src, hf.filename) |> string
 
-    let activeTrackWidget (httpref, track) =
-        div [
-            div [text @@ sprintf "%s (%s) / %s" track.title track.artist.name track.album.name]
-            audioAttr [attr.controls ""; attr.style "width: 100%;"] [
-                sourceAttr [attr.src (httpref |> httprefFromHostedFile); (*Attr.Type "audio/mp3"*)] [];
-            ]
-        ]
-
     let IndexContent (_ (*ctx*) : Context<Action>) =
         (*
         Content.Page(
@@ -78,7 +85,10 @@ module Server =
             Body = Doc.AsElements @@ div (testTracks.[0] |> activeTrackWidget)
         )
         *)
-        let blah = testTracks |> List.map activeTrackWidget
+        let tracks =
+            testTracks
+            |> List.map @@ fun (hf, track) -> (track, httprefFromHostedFile hf)
+            |> Seq.take 3
         (*
         let blah2 = [testTracks.[0] |> activeTrackWidget; testTracks.[1] |> activeTrackWidget; ]
         let blah2 = [testTracks.[0] |> activeTrackWidget] |> Seq.ofList
@@ -89,10 +99,15 @@ module Server =
         *)
         Content.Doc(
             //div (blah2 |> Seq.map @@ fun e -> e :> Doc)
+            printfn "%A" tracks
+            let t =
+                List.ofSeq tracks
+                |> Seq.ofList
+            //let t = [0..3] |> Seq.ofList
+            //let t = tracks
             div [
-                client <@ Client.blah @>
-                client <@ Client.library "blah" @>
-                div (blah |> Seq.take 3 |> Seq.map @@ fun e -> e :> Doc)
+
+                client <@ Client.library t @>
             ]
         )
 
@@ -101,3 +116,40 @@ module Server =
         Sitelet.Sum [
             Sitelet.Content "/" Index IndexContent
         ]
+
+(*
+open WebSharper
+open WebSharper.UI.Next
+open WebSharper.UI.Next.Html
+open WebSharper.Web
+[<JavaScript>]
+module Client =
+  open WebSharper.JavaScript
+  open WebSharper.UI.Next.Client
+  
+  let Widget() =
+    let rvInput = Var.Create ""
+    Doc.Concat [
+      Doc.Input [] rvInput
+      p [text "You typed: "; textView rvInput.View]
+    ]
+    
+  let Alert el ev =
+    JS.Alert "Clicked!"
+
+module Server =
+  open WebSharper.Sitelets
+  open WebSharper.UI.Next.Server
+
+  [<Website>]
+  let MyWebsite =
+    Application.SinglePage <| fun context ->
+      Content.Doc(
+        div [
+          WebSharper.UI.Next.Doc.TextNode "<h3>blah!</h3>"
+          h1 [text "Enter text below"]
+          client <@ Client.Widget() @>
+          buttonAttr [on.click <@ Client.Alert @>] [text "Click me!"]
+        ]
+      )
+      *)

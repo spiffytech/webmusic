@@ -3,11 +3,50 @@ namespace WebMusic.Web
 open WebSharper
 
 module Rpc =
+    open System
+
     open WebSharper
+    open Newtonsoft.Json
+
+    open WebMusic
 
     [<Rpc>]
     let tracks () =
         ()
+
+    let httprefFromHostedFile hf =
+        match hf.src with
+        | HTTP src -> new Uri(src, hf.filename) |> string
+
+    [<Rpc>]
+    let getLibrary () =
+        async {
+            let mkTrack (dict:System.Collections.Generic.Dictionary<string,string>) =
+                let httpref = {HostedFile.src = HTTP (new Uri("http://localhost:8000")); filename = dict.["path"]}
+                let track = {
+                    title = dict.["title"]
+                    artist = {Artist.name = dict.["artist"]}
+                    album = {Album.name = dict.["album"]}
+                }
+                (httpref, track)
+
+            let testTracks =
+                let streamreader = new System.IO.StreamReader("tracks.json")
+                let rows = JsonConvert.DeserializeObject<List<System.Collections.Generic.Dictionary<string,string>>>(streamreader.ReadToEnd())
+                rows
+                |> List.map mkTrack
+
+            let withRefs =
+                testTracks
+                |> List.map @@ fun (hf, track) -> (track, httprefFromHostedFile hf)
+                |> Seq.take 2000
+                |> List.ofSeq
+
+            //printfn "%i" (Array.length withRefs)
+
+            return withRefs
+        }
+
 
 [<JavaScript>]
 module Client =
@@ -44,12 +83,21 @@ module Client =
             Doc.EmbedView vCurrentTrack
         ]
 
-    let library tracks =
+    let rvCollection = Var.Create Seq.empty
+
+    let fetchLibrary () =
+        async {
+            let! tracks = Rpc.getLibrary ()
+            rvCollection.Value <- tracks
+        }
+        |> Async.Start
+        div []
+
+    let libraryWidget () =
         //JS.Alert("blah")
         //div [text @~ sprintf "%A" tracks]
         let rvFilter = Var.Create ""
 
-        let rvCollection = Var.Create tracks
         let vCollection =
             (rvCollection.View, rvFilter.View)
             ||> View.Map2 @~ fun tracks filterStr ->
@@ -74,7 +122,6 @@ module Client =
         ]
 
 module Server =
-    open Newtonsoft.Json
     open WebSharper
     open WebSharper.Sitelets
     open WebSharper.UI.Next
@@ -88,57 +135,12 @@ module Server =
     type Action =
     | Index
 
-    let mkTrack (dict:System.Collections.Generic.Dictionary<string,string>) =
-        let httpref = {HostedFile.src = HTTP (new Uri("http://localhost:8000")); filename = dict.["path"]}
-        let track = {
-            title = dict.["title"]
-            artist = {Artist.name = dict.["artist"]}
-            album = {Album.name = dict.["album"]}
-            //httpref = {HostedFile.src = HTTP (new Uri("https://archive.org")); filename = "download/bfft2011-07-24.csb.royboy.115786.t-flac16/bela2011-07-24t03_Sex_In_A_Pan.ogg"}
-        }
-        (httpref, track)
-
-    let testTracks =
-        let streamreader = new System.IO.StreamReader("tracks.json")
-        let rows = JsonConvert.DeserializeObject<List<System.Collections.Generic.Dictionary<string,string>>>(streamreader.ReadToEnd())
-        rows
-        |> List.map mkTrack
-
-    let httprefFromHostedFile hf =
-        match hf.src with
-        | HTTP src -> new Uri(src, hf.filename) |> string
-
     let IndexContent (_ (*ctx*) : Context<Action>) =
-        (*
-        Content.Page(
-            Title = "blah",
-            //Body = Doc.AsElements @@ div (testTracks |> List.map activeTrackWidget)
-            Body = Doc.AsElements @@ div (testTracks.[0] |> activeTrackWidget)
-        )
-        *)
-        let tracks =
-            testTracks
-            |> List.map @@ fun (hf, track) -> (track, httprefFromHostedFile hf)
-            |> Seq.take 3
-        (*
-        let blah2 = [testTracks.[0] |> activeTrackWidget; testTracks.[1] |> activeTrackWidget; ]
-        let blah2 = [testTracks.[0] |> activeTrackWidget] |> Seq.ofList
         Content.Doc(
-            //div (testTracks |> List.map activeTrackWidget)
-            div [testTracks.[0] |> activeTrackWidget]
-        )
-        *)
-        Content.Doc(
-            //div (blah2 |> Seq.map @@ fun e -> e :> Doc)
-            printfn "%A" tracks
-            let t =
-                List.ofSeq tracks
-                |> Seq.ofList
-            //let t = [0..3] |> Seq.ofList
-            //let t = tracks
             div [
                 client <@ Client.playerWidget () @>
-                client <@ Client.library t @>
+                client <@ Client.libraryWidget () @>
+                client <@ Client.fetchLibrary () @>
             ]
         )
 

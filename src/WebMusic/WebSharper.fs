@@ -31,16 +31,31 @@ module Client =
     let library tracks =
         //JS.Alert("blah")
         //div [text @~ sprintf "%A" tracks]
+        let rvFilter = Var.Create ""
+
         let rvCollection = Var.Create tracks
         let vCollection =
-            rvCollection.View
-            |> View.Map @~ fun tracks ->
-                tracks
+            (rvCollection.View, rvFilter.View)
+            ||> View.Map2 @~ fun tracks filterStr ->
+                let filtered =
+                    match filterStr with
+                    | "" -> tracks
+                    | str ->
+                        tracks
+                        |> Seq.filter @~ fun (track, _) ->
+                            track.title.Contains(str) || track.album.name.Contains(str) || track.artist.name.Contains(str)
+
+                filtered
                 |> Seq.map @~ fun (track, httpref) ->
                     activeTrackWidget track httpref
                     |> fun x -> x :> Doc
-                |> fun divs -> div divs
-        Doc.EmbedView vCollection
+                |> fun divs ->
+                    div divs
+
+        div [
+            Doc.Input [] rvFilter
+            Doc.EmbedView vCollection
+        ]
 
 module Server =
     open Newtonsoft.Json

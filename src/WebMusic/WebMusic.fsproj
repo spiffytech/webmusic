@@ -77,6 +77,8 @@
     </Otherwise>
   </Choose>
   <PropertyGroup>
+      <OtherFlags>--quotations-debug</OtherFlags>
+      <WebSharperSourceMap>True</WebSharperSourceMap>
       <WebProjectOutputDir>../../</WebProjectOutputDir>
   </PropertyGroup>
   <Import Project="$(FSharpTargetsPath)" Condition="Exists('$(FSharpTargetsPath)')" />

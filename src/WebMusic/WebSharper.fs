@@ -71,7 +71,7 @@ module Client =
                 | str ->
                     tracks
                     |> List.filter @~ fun (track, _) ->
-                        track.title.Contains(str) || track.album.name.Contains(str) || track.artist.name.Contains(str)
+                        track.title.ToLower().Contains(str) || track.album.name.ToLower().Contains(str) || track.artist.name.ToLower().Contains(str)
 
             rvPlaylist.Value <- filtered
             filtered

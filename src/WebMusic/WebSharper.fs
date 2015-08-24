@@ -42,8 +42,6 @@ module Rpc =
                 |> Seq.take 2000
                 |> List.ofSeq
 
-            //printfn "%i" (Array.length withRefs)
-
             return withRefs
         }
 
@@ -59,15 +57,47 @@ module Client =
 
     open WebMusic
 
+    let rvCollection = Var.Create []
+    let rvCurrentTrack = Var.Create None
+    let rvFilter = Var.Create ""
+    let rvPlaylist = Var.Create []
+
+    let vPlaylist =
+        (rvCollection.View, rvFilter.View)
+        ||> View.Map2 @~ fun tracks filterStr ->
+            let filtered =
+                match filterStr with
+                | "" -> tracks
+                | str ->
+                    tracks
+                    |> List.filter @~ fun (track, _) ->
+                        track.title.Contains(str) || track.album.name.Contains(str) || track.artist.name.Contains(str)
+
+            rvPlaylist.Value <- filtered
+            filtered
+
+    let playNextTrack trackWRef =
+        // TODO: This assumes a track is only in the playlist once. FIX THIS.
+        rvPlaylist.Value
+        |> List.tryFindIndex @~ (=) trackWRef
+        |> function
+            | None ->  // Happens when the playlist is erased while the track is playing
+                match rvPlaylist.Value with
+                | x::_ -> rvCurrentTrack.Value <- Some x
+                | [] -> rvCurrentTrack.Value <- None
+            | Some i ->
+                match (List.length rvPlaylist.Value) with
+                | l when l <= i -> rvCurrentTrack.Value <- None
+                | _ -> rvCurrentTrack.Value <- Some @~ List.nth rvPlaylist.Value (i+1)
+
     let activeTrackWidget track httpref =
         div [
             div [text @~ sprintf "%s (%s) / %s" track.title track.artist.name track.album.name]
-            audioAttr [attr.controls ""; attr.style "width: 100%;"] [
+            audioAttr [attr.controls ""; attr.style "width: 100%;"; attr.autoplay "true"; Attr.Handler "ended" @~ fun _ _ -> playNextTrack (track,httpref)] [
                 sourceAttr [attr.src httpref; (*Attr.Type "audio/mp3"*)] [];
             ]
         ]
 
-    let rvCurrentTrack = Var.Create None
     let vCurrentTrack =
         rvCurrentTrack.View
         |> View.Map @~ function
@@ -83,8 +113,6 @@ module Client =
             Doc.EmbedView vCurrentTrack
         ]
 
-    let rvCollection = Var.Create Seq.empty
-
     let fetchLibrary () =
         async {
             let! tracks = Rpc.getLibrary ()
@@ -93,23 +121,14 @@ module Client =
         |> Async.Start
         div []
 
+
     let libraryWidget () =
         //JS.Alert("blah")
         //div [text @~ sprintf "%A" tracks]
-        let rvFilter = Var.Create ""
-
         let vCollection =
-            (rvCollection.View, rvFilter.View)
-            ||> View.Map2 @~ fun tracks filterStr ->
-                let filtered =
-                    match filterStr with
-                    | "" -> tracks
-                    | str ->
-                        tracks
-                        |> Seq.filter @~ fun (track, _) ->
-                            track.title.Contains(str) || track.album.name.Contains(str) || track.artist.name.Contains(str)
-
-                filtered
+            vPlaylist
+            |> View.Map @~ fun tracks ->
+                tracks
                 |> Seq.map @~ fun (track, httpref) ->
                     trackListingWidget track httpref
                     |> fun x -> x :> Doc

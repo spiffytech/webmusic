@@ -1,5 +1,71 @@
 namespace WebMusic.Web
 
+module CLI =
+    type Status =
+    | Success of string
+    | Failure of (string * int)
+
+    let runCmd (cmd:string) =
+        let proc = new System.Diagnostics.Process()
+
+        // Escape quotes in the user command
+        let saniCmd = cmd.Replace("\"", "\\\"")
+
+        // Set up and run the command
+        proc.StartInfo.FileName <- "/bin/bash"
+        proc.StartInfo.Arguments <- "-c \"" + saniCmd + "\""
+        proc.StartInfo.UseShellExecute <- false
+        proc.StartInfo.RedirectStandardOutput <- true
+        proc.StartInfo.RedirectStandardError <- true
+        proc.Start() |> ignore
+
+        // Capture stdout
+        let sbOut = new System.Text.StringBuilder()
+        while not proc.HasExited do
+            sbOut.Append(proc.StandardOutput.ReadToEnd()) |> ignore
+        sbOut.Append(proc.StandardOutput.ReadToEnd()) |> ignore  // Do it again in case the process exits so quickly we never enter the loop
+        let output = sbOut.ToString().Trim()
+
+        // Capture stderr
+        let sbErr = new System.Text.StringBuilder()
+        while not proc.HasExited do
+            sbErr.Append(proc.StandardError.ReadToEnd()) |> ignore
+        sbErr.Append(proc.StandardError.ReadToEnd()) |> ignore  // Do it again in case the process exits so quickly we never enter the loop
+
+        let output' = output + sbErr.ToString().Trim()
+
+        match proc.ExitCode with
+        | 0 -> Success output
+        | _ -> Failure (output', proc.ExitCode)
+
+module TxCode =
+    open CLI
+    open RestSharp
+    open RestSharp.Extensions
+    //open Flurl.Http
+    open WebMusic
+
+    let retrieveFile (url:System.Uri) =
+        let client = new RestClient(url)
+        let request = new RestRequest(url)
+        let resp = client.DownloadData(request)
+        printfn "where"
+        //printfn "%O %A" resp resp
+        System.IO.File.WriteAllBytes("/tmp/blahfile.blah", resp)
+        System.IO.File.WriteAllBytes("blahfile.blah2", System.Text.Encoding.ASCII.GetBytes "blah")
+        //resp.SaveAs("/tmp/blahfile.blah")
+        //printfn "there"
+        //url.ToString().DownloadFileAsync("/tmp/", "blahfile.blah")
+        printfn "there"
+        //url.ToString().GetStringAsync()
+        //|> Async.AwaitTask
+        //|> Async.RunSynchronously
+        //|> printfn "%s"
+
+        //printfn "%s" @@ url.ToString()
+        //url.ToString().GetStringAsync().Wait()
+        printfn "nowhere"
+
 open WebSharper
 
 module Rpc =
@@ -44,7 +110,6 @@ module Rpc =
 
             return withRefs
         }
-
 
 [<JavaScript>]
 module Client =
@@ -153,6 +218,7 @@ module Server =
 
     type Action =
     | Index
+    | Transcode
 
     let IndexContent (_ (*ctx*) : Context<Action>) =
         Content.Doc(
@@ -163,10 +229,15 @@ module Server =
             ]
         )
 
+    let TranscodeContent (ctx : Context<Action>) =
+        TxCode.retrieveFile(new Uri("http://requestb.in/1aiw1yw1"))
+        Content.RedirectTemporaryToUrl "http://google.com"
+
     [<Website>]
     let MyWebsite =
         Sitelet.Sum [
             Sitelet.Content "/" Index IndexContent
+            Sitelet.Content "/transcode" Transcode TranscodeContent
         ]
 
 (*

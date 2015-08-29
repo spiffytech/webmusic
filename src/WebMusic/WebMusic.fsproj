@@ -51,6 +51,7 @@
     <Reference Include="../../packages/WebSharper/lib/net40/*.dll" />
     <Reference Include="../../packages/WebSharper/tools/net40/*.dll" />
     <Reference Include="../../packages/WebSharper.UI.Next/lib/net40/*.dll" />
+    <Reference Include="../../packages/RestSharp/lib/net45/RestSharp.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainTypes.fs" />

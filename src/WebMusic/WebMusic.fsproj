@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>cbcc5366-42c7-4f4f-8a1e-c027dedfb6ae</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>WebMusic</RootNamespace>
     <AssemblyName>WebMusic</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -53,11 +53,13 @@
     <Reference Include="../../packages/WebSharper/tools/net40/*.dll" />
     <Reference Include="../../packages/WebSharper.UI.Next/lib/net40/*.dll" />
     <Reference Include="../../packages/RestSharp/lib/net45/RestSharp.dll" />
+    <Reference Include="../../packages/Suave/lib/net40/Suave.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainTypes.fs" />
     <Compile Include="Core.fs" />
     <Compile Include="WebSharper.fs" />
+    <Compile Include="Main.fs" />
     <None Include="Script.fsx" />
     <Content Include="Main.html" />
     <None Include="paket.references" />

@@ -16,6 +16,8 @@ nuget websharper.ui.next
 
 nuget elmah
 
+nuget suave
+
 nuget restsharp
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx

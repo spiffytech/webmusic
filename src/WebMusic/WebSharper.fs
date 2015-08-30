@@ -39,32 +39,30 @@ module CLI =
         | _ -> Failure (output', proc.ExitCode)
 
 module TxCode =
+    open System.IO
     open CLI
     open RestSharp
     open RestSharp.Extensions
-    //open Flurl.Http
     open WebMusic
+
+    let outputdir = "transcoded"
 
     let retrieveFile (url:System.Uri) =
         let client = new RestClient(url)
         let request = new RestRequest(url)
-        let resp = client.DownloadData(request)
-        printfn "where"
-        //printfn "%O %A" resp resp
-        System.IO.File.WriteAllBytes("/tmp/blahfile.blah", resp)
-        System.IO.File.WriteAllBytes("blahfile.blah2", System.Text.Encoding.ASCII.GetBytes "blah")
-        //resp.SaveAs("/tmp/blahfile.blah")
-        //printfn "there"
-        //url.ToString().DownloadFileAsync("/tmp/", "blahfile.blah")
-        printfn "there"
-        //url.ToString().GetStringAsync()
-        //|> Async.AwaitTask
-        //|> Async.RunSynchronously
-        //|> printfn "%s"
 
-        //printfn "%s" @@ url.ToString()
-        //url.ToString().GetStringAsync().Wait()
-        printfn "nowhere"
+        let tmp = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName())
+        let resp = client.DownloadData(request).SaveAs(tmp)
+        tmp
+
+    let transcode formatStr old =
+        let newFile = Path.Combine(outputdir, Path.GetRandomFileName())
+        CLI.runCmd @@ sprintf "sox %s %s.%s" old newFile formatStr
+        |> function
+          | CLI.Failure (err, _) -> failwith err
+          | CLI.Success _ -> ()
+
+        newFile
 
 open WebSharper
 
@@ -230,8 +228,19 @@ module Server =
         )
 
     let TranscodeContent (ctx : Context<Action>) =
-        TxCode.retrieveFile(new Uri("http://requestb.in/1aiw1yw1"))
-        Content.RedirectTemporaryToUrl "http://google.com"
+        let formatStr =
+            ctx.Request.Get.["format"]
+            |> function
+              | None -> failwith "format must be specified"
+              | Some f -> f
+
+        ctx.Request.Get.["url"]
+        |> function
+          | None -> failwith "url must be specified"
+          | Some s -> new Uri(s)
+        |> TxCode.retrieveFile
+        |> TxCode.transcode formatStr
+        |> fun f -> Content.RedirectTemporaryToUrl @@ "/" + f
 
     [<Website>]
     let MyWebsite =

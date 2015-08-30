@@ -48,6 +48,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>../../packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="../../packages/elmah.corelibrary/lib/Elmah.dll" />
     <Reference Include="../../packages/WebSharper/lib/net40/*.dll" />
     <Reference Include="../../packages/WebSharper/tools/net40/*.dll" />
     <Reference Include="../../packages/WebSharper.UI.Next/lib/net40/*.dll" />

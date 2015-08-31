@@ -1,3 +1,4 @@
 open WebMusic
 
-WebMusic.Web.Server.serve ()
+printfn "%s" @@ Web.Client2.gen ()
+WebMusic.Web.Server2.serve ()

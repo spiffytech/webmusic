@@ -69,12 +69,10 @@ open WebSharper
 module Rpc =
     open System
 
-    open WebSharper
     open Newtonsoft.Json
 
     open WebMusic
 
-    [<Rpc>]
     let tracks () =
         ()
 
@@ -82,7 +80,6 @@ module Rpc =
         match hf.src with
         | HTTP src -> new Uri(src, hf.filename) |> string
 
-    [<Rpc>]
     let getLibrary () =
         async {
             let mkTrack (dict:System.Collections.Generic.Dictionary<string,string>) =
@@ -210,25 +207,8 @@ module Server =
     open WebSharper.UI.Next.Html
     open WebSharper.UI.Next.Server
 
-    open Suave
-    open Suave.Http.Successful
-    open Suave.Web
-    open Suave.Sockets
     open System
     open System.Web
-    open System.Net
-
-    let serve () =
-        //startWebServer {defaultConfig with bindings = [{HttpBinding.scheme=Protocol.HTTP, ip="0.0.0.0", port=9000}]} (OK "Hello, World!")
-        startWebServer {defaultConfig with bindings =
-            [
-                {defaultConfig.bindings.[0] with socketBinding =
-                    {
-                        SocketBinding.ip=(IPAddress.Parse "0.0.0.0")
-                        port=uint16 9000
-                    }
-                }
-            ]} (OK "Hello, World!")
 
     open WebMusic
 

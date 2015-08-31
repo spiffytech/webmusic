@@ -17,6 +17,9 @@ nuget websharper.ui.next
 nuget elmah
 
 nuget suave
+nuget funscript
+nuget FunScript.TypeScript.Binding.lib
+nuget FunScript.TypeScript.Binding.jquery
 
 nuget restsharp
 

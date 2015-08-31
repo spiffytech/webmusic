@@ -54,11 +54,17 @@
     <Reference Include="../../packages/WebSharper.UI.Next/lib/net40/*.dll" />
     <Reference Include="../../packages/RestSharp/lib/net45/RestSharp.dll" />
     <Reference Include="../../packages/Suave/lib/net40/Suave.dll" />
+    <Reference Include="../../packages/FunScript/lib/net40/FunScript.dll" />
+    <Reference Include="../../packages/FunScript/lib/net40/FunScript.Interop.dll" />
+    <Reference Include="../../packages/FunScript.TypeScript.Binding.lib/lib/net40/FunScript.TypeScript.Binding.lib.dll" />
+    <Reference Include="../../packages/FunScript.TypeScript.Binding.jquery/lib/net40/FunScript.TypeScript.Binding.jquery.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainTypes.fs" />
     <Compile Include="Core.fs" />
     <Compile Include="WebSharper.fs" />
+    <Compile Include="FunScript.fs" />
+    <Compile Include="Suave.fs" />
     <Compile Include="Main.fs" />
     <None Include="Script.fsx" />
     <Content Include="Main.html" />
@@ -94,5 +100,5 @@
   </Target>
   -->
   <Import Project="..\..\.paket\paket.targets" />
-  <Import Project="../../packages/WebSharper/build/WebSharper.targets" />
+  <!--  <Import Project="../../packages/WebSharper/build/WebSharper.targets" />-->
 </Project>

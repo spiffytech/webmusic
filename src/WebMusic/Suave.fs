@@ -1,5 +1,15 @@
 namespace WebMusic.Web
 
+module Templates =
+    open WebMusic
+    open Nustache.Core
+    open System.IO
+    let private tpldir = "templates"
+
+    let render template data =
+        let tpl = Path.Combine (tpldir, template)
+        Render.FileToString(tpl, data)
+
 module Server2 =
     open Suave
     open Suave.Http
@@ -8,14 +18,18 @@ module Server2 =
     open Suave.Http.Files
     open Suave.Web
     open Suave.Sockets
+
+    open WebMusic
+
     open System.Net
 
     let serve () =
         //startWebServer {defaultConfig with bindings = [{HttpBinding.scheme=Protocol.HTTP, ip="0.0.0.0", port=9000}]} (OK "Hello, World!")
         let app =
+            let testdata = [("page_script", Client2.gen())] |> Map.ofList
             choose
                 [ GET >>= choose
-                    [ path "/" >>= OK "Index!";
+                    [ path "/" >>= OK @@ Templates.render "index.mustache" testdata;
                     pathScan "/static/%s" (fun (filename) -> file (sprintf "./static/%s" filename)) ]
                 ]
 

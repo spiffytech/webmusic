@@ -58,6 +58,8 @@
     <Reference Include="../../packages/FunScript/lib/net40/FunScript.Interop.dll" />
     <Reference Include="../../packages/FunScript.TypeScript.Binding.lib/lib/net40/FunScript.TypeScript.Binding.lib.dll" />
     <Reference Include="../../packages/FunScript.TypeScript.Binding.jquery/lib/net40/FunScript.TypeScript.Binding.jquery.dll" />
+    <Reference Include="../../packages/Nustache/lib/net20/Nustache.Core.dll" />
+    <Reference Include="../../FunScript.HTML.dll" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainTypes.fs" />

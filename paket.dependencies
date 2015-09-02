@@ -20,6 +20,7 @@ nuget suave
 nuget funscript
 nuget FunScript.TypeScript.Binding.lib
 nuget FunScript.TypeScript.Binding.jquery
+nuget Nustache
 
 nuget restsharp
 

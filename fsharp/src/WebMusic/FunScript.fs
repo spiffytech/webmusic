@@ -15,7 +15,7 @@ module Client2 =
         opts.el <- "#dynamic"
         opts.template <- "#template"
         opts.data <- ([("name", "spiffy")] |> dict)
-        Globals.Ractive.Create(opts) |> ignore
+        let ractive = Globals.Ractive.Create(opts)
         ()
 
     let gen () =

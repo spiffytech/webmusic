@@ -1,3 +1,6 @@
+typings
+node_modules
+
 *.fossil
 .fake
 Scripts
@@ -18,7 +21,6 @@ Scripts
 [Dd]ebug/
 [Rr]elease/
 x64/
-build/
 [Bb]in/
 [Oo]bj/
 

@@ -1,4 +1,21 @@
 import * as React from "react";
-import { render } from 'react-dom'
+import {PropTypes} from "react";
+import {Provider, connect} from "react-redux";
 
-export const dom = <h1>Hello, world!</h1>;
+function ShowState({hello}) {
+    return <p>hello, {hello}</p>
+}
+
+function App() {
+    const map_state_to_props = (state) => ({hello: "world"});
+    const Blah = connect(
+        map_state_to_props
+    )(ShowState)
+    return <div><Blah /></div>;
+}
+
+export function mkdom(store) {
+    return <Provider store = {store}>
+        <App />
+    </Provider>
+}

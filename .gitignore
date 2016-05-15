@@ -1,5 +1,7 @@
 typings
 node_modules
+build/tsc.js*
+build/bundle.js*
 
 *.fossil
 .fake

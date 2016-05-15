@@ -1,13 +1,22 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "module": "commonjs",
-    "sourceMap": true,
-    "target": "es5"
-  },
-  "files": [
-    "app.ts",
-    "typings/tsd.d.ts"
-  ]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "jsx": "react",
+        "module": "commonjs",
+        "sourceMap": true,
+        "target": "es5"
+    },
+    "files": [
+        "typings/tsd.d.ts",
+        "app.ts",
+        "jsx/index.tsx"
+    ],
+    "filesGlob": [
+        "typings/tsd.d.ts",
+        "app.ts",
+        "jsx/*ts*"
+    ],
+    "atom": {
+        "rewriteTsconfig": true
+    }
 }
-

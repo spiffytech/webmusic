@@ -7,7 +7,7 @@ module.exports = {
   // Turn on sourcemaps
   devtool: 'source-map',
   resolve: {
-    extensions: ['', '.webpack.js', '.web.js', '.ts', '.js', '.html']
+    extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js', '.html']
   },
   // Add minification
   plugins: [
@@ -15,7 +15,7 @@ module.exports = {
   ],
   module: {
     loaders: [
-      { test: /\.ts$/, loader: 'ts' }
+      { test: /\.tsx?$/, loader: 'ts' }
     ]
   }
 }

@@ -1,8 +1,9 @@
 module.exports = {
-    "parser": "babel-eslint",
+    "parser": "typescript-eslint-parser",
     parserOptions: {
         ecmaVersion: 6
     },
+    plugins: ["react"],
     globals: {
         "requirejs": true,
         "define": true
@@ -35,5 +36,5 @@ module.exports = {
         "node": true,
         "mocha": true
     },
-    "extends": "eslint:recommended"
+    "extends": ["eslint:recommended", "plugin:react/recommended"]
 };

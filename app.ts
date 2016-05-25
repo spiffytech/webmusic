@@ -24,9 +24,17 @@ const store = createStore(combineReducers({
     }
 }));
 
+store.dispatch({
+    type: "update-library",
+    data: JSON.parse(localStorage.getItem("library")) || []
+});
+
 window.fetch("/tracks.json").
 then(response => response.json()).
-then(library => store.dispatch({type: "update-library", data: library}));
+then(library => {
+    localStorage.setItem("library", JSON.stringify(library));
+    store.dispatch({type: "update-library", data: library});
+});
 
 render(
     mkdom(store),

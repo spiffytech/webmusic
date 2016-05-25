@@ -2,16 +2,25 @@ import * as React from "react";
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 
-function ShowState({hello}) {
-    return <p>hello, {hello}</p>
+function LibraryTrack({track}) {
+    return <div key={track.path} style={{borderTop: "1px dashed black"}}>
+        <p style={{fontWeight: "bold", fontSize: "150%"}}>{track.title}</p>
+        <p>{track.artist}</p>
+        <p style={{fontStyle: "italic"}}>{track.album}</p>
+    </div>;
 }
 
+function Library({library}) {
+    return <div>
+        {library.map((track, index) => <LibraryTrack key={index} track={track} />)}
+    </div>;
+}
+const LibraryContainer = connect(
+    (state) => ({library: state.library})
+)(Library)
+
 function App() {
-    const map_state_to_props = (state) => ({hello: "world"});
-    const Blah = connect(
-        map_state_to_props
-    )(ShowState)
-    return <div><Blah /></div>;
+    return <div><LibraryContainer /></div>;
 }
 
 export function mkdom(store) {

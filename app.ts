@@ -11,15 +11,22 @@ import {Provider} from "react-redux";
 import {mkdom} from "./jsx/index.tsx";
 
 const store = createStore(combineReducers({
-    base: (state = {}, action) => {
-        console.log(action);
+    action_logger: (state = {}, action) => {
+        console.log("base", action);
         return state
+    },
+    library: (state = [], action) => {
+        if(action.type === "update-library") {
+            return action.data.filter(track => track.artist && track.album && track.title && track.path);
+        } else {
+            return state
+        }
     }
 }));
 
 window.fetch("/tracks.json").
 then(response => response.json()).
-then(t => console.log(t));
+then(library => store.dispatch({type: "update-library", data: library}));
 
 render(
     mkdom(store),

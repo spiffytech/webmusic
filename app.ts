@@ -17,7 +17,20 @@ const store = createStore(combineReducers({
     },
     library: (state = [], action) => {
         if(action.type === "update-library") {
-            return action.data.filter(track => track.artist && track.album && track.title && track.path);
+            return action.data.filter(track => track.artist && track.album && track.title && track.path).filter(track => track.path.endsWith("mp3"));
+        } else {
+            return state
+        }
+    },
+    current_track: (state = null, action) => {
+        if(action.type === "play_track") {
+            return action.track
+        } else if(action.type === "track_ended") {
+            const library = store.getState().library;
+            const i = library.indexOf(state);
+            if(i === -1) throw new Error("Error finding track in library");
+            if(i+1 > library.length) throw new Error("No next track to play");
+            return library[i+1];
         } else {
             return state
         }

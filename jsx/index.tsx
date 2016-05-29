@@ -1,4 +1,5 @@
 import * as React from "react";
+const fuzzy = require("fuzzy");
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 
@@ -49,13 +50,23 @@ const LibraryTrackContainer = connect(
     }
 )(LibraryTrack) as React.ComponentClass<{track: any}>;
 
-function Library({library}) {
+function Library({library, filter, dispatch}) {
+    const filtered = fuzzy.filter(
+        filter,
+        library,
+        {extract: track => `${track.title} - ${track.artist} - ${track.album}`}
+    ).map(result => result.original);
+
     return <div>
-        {library.map((track, index) => <LibraryTrackContainer key={index} track={track} />)}
+        <input onChange={e => dispatch({type: "library_filter", filter: e.target.value})} />
+        {filtered.map((track, index) => <LibraryTrackContainer key={index} track={track} />)}
     </div>;
 }
 const LibraryContainer = connect(
-    (state) => ({library: state.library})
+    (state) => ({library: state.library, filter: state.library_filter}),
+    {
+        dispatch: action => action,
+    }
 )(Library)
 
 function App() {

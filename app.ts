@@ -1,7 +1,3 @@
-// This is for using WebPack loaders. Only works with non-global require()
-// (i.e., called from inside a function)
-// <reference path="typings/require.d.ts" />
-
 import * as _ from "lodash";
 import * as React from "react";
 import {render} from "react-dom";
@@ -22,6 +18,13 @@ const store = createStore(combineReducers({
             return action.data.filter(track => track.artist && track.album && track.title && track.path).filter(track => track.path.endsWith("mp3"));
         } else {
             return state
+        }
+    },
+    library_filter: (state = "", action) => {
+        if(actions.isLibraryFilterChange(action)) {
+            return action.filter;
+        } else {
+            return state;
         }
     },
     playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action) : IPlaylistStore => {

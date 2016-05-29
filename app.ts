@@ -2,12 +2,14 @@
 // (i.e., called from inside a function)
 // <reference path="typings/require.d.ts" />
 
+import * as _ from "lodash";
 import * as React from "react";
 import {render} from "react-dom";
 import {createStore, combineReducers} from "redux";
 import {Provider} from "react-redux";
 
-//import * as dom from "./jsx/index.tsx";
+import * as actions from "./actions"
+
 import {mkdom} from "./jsx/index.tsx";
 
 const store = createStore(combineReducers({
@@ -16,21 +18,25 @@ const store = createStore(combineReducers({
         return state
     },
     library: (state = [], action) => {
-        if(action.type === "update-library") {
+        if(actions.isUpdateLibrary(action)) {
             return action.data.filter(track => track.artist && track.album && track.title && track.path).filter(track => track.path.endsWith("mp3"));
         } else {
             return state
         }
     },
-    current_track: (state = null, action) => {
-        if(action.type === "play_track") {
-            return action.track
-        } else if(action.type === "track_ended") {
-            const library = store.getState().library;
-            const i = library.indexOf(state);
+    playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action) : IPlaylistStore => {
+        if(actions.isPlayTrack(action)) {
+            console.log("Setting current track", action.track);
+            state.current_track = action.track;
+            return _.clone(state);
+        } else if(action.type === "track_ended" || action.type === "next_track") {
+            // TODO: Search playlist instead of library
+            const library  : ITrack[] = store.getState().library;
+            const i = library.indexOf(state.current_track);
             if(i === -1) throw new Error("Error finding track in library");
             if(i+1 > library.length) throw new Error("No next track to play");
-            return library[i+1];
+            state.current_track = library[i+1];
+            return _.clone(state);
         } else {
             return state
         }

@@ -32,6 +32,8 @@
   },
   "dependencies": {
     "eslint-plugin-react": "^5.1.1",
+    "flac.js": "^0.2.1",
+    "lodash": "^4.13.1",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-redux": "^4.4.5",

@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 const fuzzy = require("fuzzy");
+const latinize = require("latinize");
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 
@@ -53,9 +54,9 @@ const LibraryTrackContainer = connect(
 
 const fuzzy_filter = _.throttle((library, filter) =>
     fuzzy.filter(
-        filter,
+        latinize(filter),
         library,
-        {extract: track => `${track.title} - ${track.artist} - ${track.album}`}
+        {extract: track => latinize(`${track.title} - ${track.artist} - ${track.album}`)}
     ).map(result => result.original), 500);
 
 function Library({library, filter, dispatch}) {

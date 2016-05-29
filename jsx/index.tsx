@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import * as React from "react";
 const fuzzy = require("fuzzy");
 import {PropTypes} from "react";
@@ -50,12 +51,17 @@ const LibraryTrackContainer = connect(
     }
 )(LibraryTrack) as React.ComponentClass<{track: any}>;
 
-function Library({library, filter, dispatch}) {
-    const filtered = fuzzy.filter(
+const fuzzy_filter = _.throttle((library, filter) =>
+    fuzzy.filter(
         filter,
         library,
         {extract: track => `${track.title} - ${track.artist} - ${track.album}`}
-    ).map(result => result.original);
+    ).map(result => result.original), 500);
+
+function Library({library, filter, dispatch}) {
+    const start = new Date().getTime();
+    const filtered = fuzzy_filter(library, filter);
+    console.log((new Date()).getTime() - start);
 
     return <div>
         <input onChange={e => dispatch({type: "library_filter", filter: e.target.value})} />

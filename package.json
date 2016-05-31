@@ -31,6 +31,7 @@
     "webpack-dev-server": "^1.14.1"
   },
   "dependencies": {
+    "css-loader": "^0.23.1",
     "eslint-plugin-react": "^5.1.1",
     "flac.js": "^0.2.1",
     "fuzzy": "^0.1.1",
@@ -39,7 +40,9 @@
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-redux": "^4.4.5",
+    "react-treeview": "^0.4.5",
     "redux": "^3.5.2",
+    "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
     "typescript": "^1.8.10",
     "typescript-eslint-parser": "0.1.0-alpha-1"

@@ -8,6 +8,8 @@ import * as actions from "./actions"
 
 import {mkdom} from "./jsx/index.tsx";
 
+require("./node_modules/react-treeview/react-treeview.css")
+
 const store = createStore(combineReducers({
     action_logger: (state = {}, action) => {
         console.log("base", action);

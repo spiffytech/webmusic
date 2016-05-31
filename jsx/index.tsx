@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as React from "react";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
+const TreeView = require("react-treeview");
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 
@@ -60,13 +61,23 @@ const fuzzy_filter = _.throttle((library, filter) =>
     ).map(result => result.original), 500);
 
 function Library({library, filter, dispatch}) {
-    const start = new Date().getTime();
     const filtered = fuzzy_filter(library, filter);
-    console.log((new Date()).getTime() - start);
+    const grouped = _.values<ITrack[]>(_.groupBy<ITrack>(library, "artist")).
+        map(by_artist => _.values<ITrack[]>(_.groupBy<ITrack>(by_artist, "album")));
 
+    grouped.map(console.log.bind(console, "albums:"));
+    grouped.map(a => console.log(typeof a));
     return <div>
-        <input onChange={e => dispatch({type: "library_filter", filter: e.target.value})} />
-        {filtered.map((track, index) => <LibraryTrackContainer key={index} track={track} />)}
+        <input onChange={
+            (e : any) => dispatch({type: "library_filter", filter: e.target.value})
+        } />
+        <TreeView key="library-treeview">
+            {grouped.map((artist_albums, ii) =>
+                <TreeView key={ii} nodeLabel={artist_albums[0][0].artist} defaultCollapsed={true}>
+                    {artist_albums.map((artist_tracks, i) => <TreeView key={ii + "." + i} nodeLabel={artist_tracks[0].artist + "-" + artist_tracks[0].album} defaultCollapsed={true}></TreeView>)}
+                </TreeView>
+            )}
+        </TreeView>
     </div>;
 }
 const LibraryContainer = connect(

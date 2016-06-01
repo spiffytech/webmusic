@@ -11,7 +11,8 @@
         "app.ts",
         "defines.ts",
         "typings/index.d.ts",
-        "jsx/index.tsx"
+        "jsx/index.tsx",
+        "jsx/library.tsx"
     ],
     "filesGlob": [
         "*.ts",

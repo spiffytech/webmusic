@@ -39,10 +39,8 @@ const PlayerContainer = connect(
 )(Player);
 
 function LibraryTrack({track, onClick}) {
-    return <div key={track.path} style={{borderTop: "1px dashed black"}} onClick={() => onClick(track)}>
-        <p style={{fontWeight: "bold", fontSize: "150%"}}>{track.title}</p>
-        <p>{track.artist}</p>
-        <p style={{fontStyle: "italic"}}>{track.album}</p>
+    return <div key={track.title} onClick={() => onClick(track)}>
+        {track.title}
     </div>;
 }
 
@@ -51,7 +49,25 @@ const LibraryTrackContainer = connect(
     {
         onClick: (track) => ({type: "play_track", track})
     }
-)(LibraryTrack) as React.ComponentClass<{track: any}>;
+)(LibraryTrack) as React.ComponentClass<{track: ITrack}>;
+
+function LibraryAlbum({album, tracks}) {
+    return <TreeView key={album} nodeLabel={album} defaultCollapsed={true}>
+        {_.map(tracks, (track:ITrack, album_name) =>
+            <LibraryTrackContainer track={track} />
+        )}
+    </TreeView>
+}
+
+function LibraryArtist({artist, tracks}) {
+    const by_album = _.groupBy<ITrack, string>(tracks, "album");
+
+    return <TreeView key={artist} nodeLabel={artist} defaultCollapsed={true}>
+        {_.map(by_album, (tracks, album) =>
+            <LibraryAlbum album={album} tracks={tracks} />
+        )}
+    </TreeView>
+}
 
 const fuzzy_filter = _.throttle((library, filter) =>
     fuzzy.filter(
@@ -62,22 +78,15 @@ const fuzzy_filter = _.throttle((library, filter) =>
 
 function Library({library, filter, dispatch}) {
     const filtered = fuzzy_filter(library, filter);
-    const grouped = _.values<ITrack[]>(_.groupBy<ITrack>(library, "artist")).
-        map(by_artist => _.values<ITrack[]>(_.groupBy<ITrack>(by_artist, "album")));
+    const by_artist = _.groupBy<ITrack, string>(filtered, "artist");
 
-    grouped.map(console.log.bind(console, "albums:"));
-    grouped.map(a => console.log(typeof a));
     return <div>
         <input onChange={
             (e : any) => dispatch({type: "library_filter", filter: e.target.value})
         } />
-        <TreeView key="library-treeview">
-            {grouped.map((artist_albums, ii) =>
-                <TreeView key={ii} nodeLabel={artist_albums[0][0].artist} defaultCollapsed={true}>
-                    {artist_albums.map((artist_tracks, i) => <TreeView key={ii + "." + i} nodeLabel={artist_tracks[0].artist + "-" + artist_tracks[0].album} defaultCollapsed={true}></TreeView>)}
-                </TreeView>
-            )}
-        </TreeView>
+        {_.map(by_artist, (tracks, artist) =>
+            <LibraryArtist artist={artist} tracks={tracks} />
+        )}
     </div>;
 }
 const LibraryContainer = connect(

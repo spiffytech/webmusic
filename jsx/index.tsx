@@ -64,7 +64,7 @@ function LibraryArtist({artist, tracks}) {
 
     return <TreeView key={artist} nodeLabel={artist} defaultCollapsed={true}>
         {_.map(by_album, (tracks, album) =>
-            <LibraryAlbum album={album} tracks={tracks} />
+            <LibraryAlbum key={album} album={album} tracks={tracks} />
         )}
     </TreeView>
 }
@@ -74,7 +74,7 @@ const fuzzy_filter = _.throttle((library, filter) =>
         latinize(filter),
         library,
         {extract: track => latinize(`${track.title} - ${track.artist} - ${track.album}`)}
-    ).map(result => result.original), 500);
+    ).map(result => result.original), 0);
 
 function Library({library, filter, dispatch}) {
     const filtered = fuzzy_filter(library, filter);
@@ -85,7 +85,7 @@ function Library({library, filter, dispatch}) {
             (e : any) => dispatch({type: "library_filter", filter: e.target.value})
         } />
         {_.map(by_artist, (tracks, artist) =>
-            <LibraryArtist artist={artist} tracks={tracks} />
+            <LibraryArtist key={artist} artist={artist} tracks={tracks} />
         )}
     </div>;
 }
@@ -98,8 +98,15 @@ const LibraryContainer = connect(
 
 function App() {
     return <div>
-        <PlayerContainer />
-        <LibraryContainer />
+        <div className="row">
+            <PlayerContainer />
+        </div>
+
+        <div className="row">
+            <div className="small-12 medium-4 columns">
+                <LibraryContainer key="library" />
+            </div>
+        </div>
     </div>;
 }
 

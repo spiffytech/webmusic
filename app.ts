@@ -10,6 +10,13 @@ import {mkdom} from "./jsx/index.tsx";
 
 require("./node_modules/react-treeview/react-treeview.css")
 
+import './styles/foundation.scss'
+// load jquery and foundation in the window scope
+import 'script!jquery'
+import 'script!what-input'
+import 'script!foundation-sites'
+
+
 const store = createStore(combineReducers({
     action_logger: (state = {}, action) => {
         console.log("base", action);

@@ -4,6 +4,7 @@ import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 
 import {LibraryContainer} from "./library";
+import {Playlist} from "./playlist";
 
 function Player({track, track_ended, dispatch}) {
     const audio_source = track ? "http://localhost:8000/" + track.path : null
@@ -46,6 +47,9 @@ function App() {
         <div className="row">
             <div className="small-12 medium-4 columns">
                 <LibraryContainer key="library" />
+            </div>
+            <div className="small-12 medium-8 columns">
+                <Playlist key="playlist" />
             </div>
         </div>
     </div>;

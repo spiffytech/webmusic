@@ -5,9 +5,36 @@ const fuzzy = require("fuzzy");
 const latinize = require("latinize");
 const TreeView = require("react-treeview");
 
+function ItemLabelView(
+    {label, tracks, on_text_click = null, dispatch}:
+    {label: string, tracks: ITrack[], dispatch: any, on_text_click: any}
+) {
+    return <span>
+        <span onClick={on_text_click}>{label}</span>
+        <span
+            style={{backgroundColor: "black", color: "white", marginLeft: "1em"}}
+            onClick={() => dispatch({type: "add_to_playlist", tracks: tracks})}
+        >
+            +
+        </span>
+    </span>;
+}
+const ItemLabel = connect(
+    null,
+    {dispatch: action => action}
+)(ItemLabelView) as React.ComponentClass<{
+    label: string, tracks: ITrack[], on_text_click?: any
+}>;
+
 function LibraryTrack({track, onClick}) {
-    return <div key={track.title} onClick={() => onClick(track)}>
-        {track.title}
+    const label =
+        <ItemLabel
+            label={track.title}
+            tracks={[track]}
+            on_text_click={() => onClick(track)}
+        />
+    return <div key={track.title}>
+        {label}
     </div>;
 }
 
@@ -19,19 +46,21 @@ const LibraryTrackContainer = connect(
 )(LibraryTrack) as React.ComponentClass<{track: ITrack}>;
 
 function LibraryAlbum({album, tracks}) {
-    return <TreeView key={album} nodeLabel={album} defaultCollapsed={true}>
+    const label = <ItemLabel label={album} tracks={tracks} />
+    return <TreeView key={album} nodeLabel={label} defaultCollapsed={true}>
         {_.map(tracks, (track:ITrack, album_name) =>
-            <LibraryTrackContainer track={track} />
+            <LibraryTrackContainer key={`${album}.${track.title}`} track={track} />
         )}
     </TreeView>
 }
 
 function LibraryArtist({artist, tracks}) {
     const by_album = _.groupBy<ITrack, string>(tracks, "album");
+    const label = <ItemLabel label={artist} tracks={tracks} />
 
-    return <TreeView key={artist} nodeLabel={artist} defaultCollapsed={true}>
+    return <TreeView key={artist} nodeLabel={label} defaultCollapsed={true}>
         {_.map(by_album, (tracks, album) =>
-            <LibraryAlbum key={album} album={album} tracks={tracks} />
+            <LibraryAlbum key={`${artist}.${album}`} album={album} tracks={tracks} />
         )}
     </TreeView>
 }

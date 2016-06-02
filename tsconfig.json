@@ -12,7 +12,8 @@
         "defines.ts",
         "typings/index.d.ts",
         "jsx/index.tsx",
-        "jsx/library.tsx"
+        "jsx/library.tsx",
+        "jsx/playlist.tsx"
     ],
     "filesGlob": [
         "*.ts",

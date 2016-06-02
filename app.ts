@@ -42,12 +42,14 @@ const store = createStore(combineReducers({
             state.current_track = action.track;
             return _.clone(state);
         } else if(action.type === "track_ended" || action.type === "next_track") {
-            // TODO: Search playlist instead of library
-            const library  : ITrack[] = store.getState().library;
-            const i = library.indexOf(state.current_track);
+            const playlist = state.playlist;
+            const i = playlist.indexOf(state.current_track);
             if(i === -1) throw new Error("Error finding track in library");
-            if(i+1 > library.length) throw new Error("No next track to play");
-            state.current_track = library[i+1];
+            if(i+1 > playlist.length) throw new Error("No next track to play");
+            state.current_track = playlist[i+1];
+            return _.clone(state);
+        } else if(actions.isAddToPlaylist(action)) {
+            state.playlist = [...state.playlist, ...action.tracks];
             return _.clone(state);
         } else {
             return state

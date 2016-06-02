@@ -15,6 +15,10 @@ interface  ILibraryFilter extends IAction {
     filter: string
 }
 
+interface  IAddToPlaylist extends IAction {
+    tracks: ITrack[]
+}
+
 export function isUpdateLibrary(action: IAction): action is IUpdateLibrary {
     return action.type === "update-library"
 }
@@ -23,7 +27,10 @@ export function isPlayTrack(action: IAction): action is IPlayTrack {
     return action.type === "play_track"
 }
 
-
 export function isLibraryFilterChange(action: IAction): action is ILibraryFilter {
     return action.type === "library_filter"
+}
+
+export function isAddToPlaylist(action: IAction): action is IAddToPlaylist {
+    return action.type === "add_to_playlist"
 }

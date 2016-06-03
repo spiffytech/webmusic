@@ -14,14 +14,16 @@ export const Track =
         {dispatch: _.identity}
     )(TrackView) as React.ComponentClass<{track: ITrack}>;
 
-function PlaylistView({tracks}: {tracks: ITrack[]}) {
+function PlaylistView({tracks, dispatch}: {tracks: ITrack[], dispatch: any}) {
     console.log("tracks", tracks);
     return <div>
+        <button onClick={() => dispatch({type: "clear_playlist"})}>Clear</button>
         {tracks.map((track, i) => <Track key={i} track={track} />)}
     </div>;
 }
 
 export const Playlist =
     connect(
-        state => ({tracks: state.playlist.playlist})
+        state => ({tracks: state.playlist.playlist}),
+        {dispatch: _.identity}
     )(PlaylistView);

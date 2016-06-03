@@ -51,6 +51,9 @@ const store = createStore(combineReducers({
         } else if(actions.isAddToPlaylist(action)) {
             state.playlist = [...state.playlist, ...action.tracks];
             return _.clone(state);
+        } else if(actions.isClearPlaylist(action)) {
+            state.playlist = [];
+            return _.clone(state);
         } else {
             return state
         }

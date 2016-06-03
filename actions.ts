@@ -19,6 +19,9 @@ interface  IAddToPlaylist extends IAction {
     tracks: ITrack[]
 }
 
+interface  IClearPlaylist extends IAction {
+}
+
 export function isUpdateLibrary(action: IAction): action is IUpdateLibrary {
     return action.type === "update-library"
 }
@@ -33,4 +36,8 @@ export function isLibraryFilterChange(action: IAction): action is ILibraryFilter
 
 export function isAddToPlaylist(action: IAction): action is IAddToPlaylist {
     return action.type === "add_to_playlist"
+}
+
+export function isClearPlaylist(action: IAction): action is IClearPlaylist {
+    return action.type === "clear_playlist"
 }

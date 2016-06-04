@@ -1,7 +1,8 @@
 import * as Hapi from "hapi";
 import * as fs from 'fs';
 import * as assert from "assert";
-const Transcoder = require("stream-transcoder");
+import * as stream from "stream";
+const ffmpeg = require("fluent-ffmpeg");
 
 const server = new Hapi.Server();
 server.connection({ port: 3001 });
@@ -17,16 +18,12 @@ server.route({
 
         const f = fs.createReadStream(url);
 
-        const s2 = Transcoder("/home/spiffytech/Music/Yonder Mountain String Band/Old Hands/02 Hill Country Girl.mp3").
-            audioCodec("mp3").
+        const out = ffmpeg(f).
+            audioCodec("libmp3lame").
             format("mp3").
-            stream()
-        s2.on("metadata", console.log);
-        s2.on("progress", console.log);
-        s2.on("finish", console.log);
-        s2.on("error", console.error);
+            stream();
 
-        reply(s2);
+        reply(out);
     }
 });
 

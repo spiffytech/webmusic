@@ -34,6 +34,7 @@
     "css-loader": "^0.23.1",
     "eslint-plugin-react": "^5.1.1",
     "extract-text-webpack-plugin": "^1.0.1",
+    "fluent-ffmpeg": "^2.1.0",
     "foundation-sites": "^6.2.3",
     "fuzzy": "^0.1.1",
     "hapi": "^13.4.1",

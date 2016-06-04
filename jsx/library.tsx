@@ -3,7 +3,8 @@ import * as React from "react";
 import {connect} from "react-redux";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
-const TreeView = require("react-treeview");
+//const TreeView = require("react-treeview");
+const TreeView = require("../../cloned/react-treeview/build/react-treeview");
 
 function ItemLabelView(
     {label, tracks, on_text_click = null, dispatch}:
@@ -47,7 +48,7 @@ const LibraryTrackContainer = connect(
 
 function LibraryAlbum({album, tracks}) {
     const label = <ItemLabel label={album} tracks={tracks} />
-    return <TreeView key={album} nodeLabel={label} defaultCollapsed={true}>
+    return <TreeView key={album} lazy={true} nodeLabel={label} defaultCollapsed={true}>
         {_.map(tracks, (track:ITrack, album_name) =>
             <LibraryTrackContainer key={`${album}.${track.title}`} track={track} />
         )}
@@ -58,7 +59,7 @@ function LibraryArtist({artist, tracks}) {
     const by_album = _.groupBy<ITrack, string>(tracks, "album");
     const label = <ItemLabel label={artist} tracks={tracks} />
 
-    return <TreeView key={artist} nodeLabel={label} defaultCollapsed={true}>
+    return <TreeView key={artist} lazy={true} nodeLabel={label} defaultCollapsed={true}>
         {_.map(by_album, (tracks, album) =>
             <LibraryAlbum key={`${artist}.${album}`} album={album} tracks={tracks} />
         )}

@@ -1,8 +1,7 @@
 import * as Hapi from "hapi";
-import * as fs from 'fs';
 import * as assert from "assert";
-import * as stream from "stream";
 const ffmpeg = require("fluent-ffmpeg");
+import * as request from "request";
 
 const server = new Hapi.Server();
 server.connection({ port: 3001 });
@@ -10,15 +9,15 @@ server.connection({ port: 3001 });
 server.route({
     method: 'GET',
     path: '/transcode',
-    handler: function (request, reply) {
-        const url = request.query["url"];
-        const output_format = request.query["output_format"];
+    handler: async function (req, reply) {
+        const url:string = req.query["url"];
+        const output_format = req.query["output_format"];
         assert(url);
         assert(output_format);
 
-        const f = fs.createReadStream(url);
+        const stream = await request(url);
 
-        const out = ffmpeg(f).
+        const out = ffmpeg(stream).
             audioCodec("libmp3lame").
             format("mp3").
             stream();

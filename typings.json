@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "lodash": "registry:npm/lodash#4.0.0+20160416211519"
+    "lodash": "registry:npm/lodash#4.0.0+20160416211519",
+    "request": "registry:npm/request#2.69.0+20160428223725"
   },
   "globalDependencies": {
     "es6-promise": "registry:dt/es6-promise#0.0.0+20160423074304",
@@ -10,6 +11,7 @@
     "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
     "react-redux": "registry:dt/react-redux#4.4.0+20160501125835",
     "redux": "registry:dt/redux#3.3.1+20160326112656",
+    "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
     "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160524142046"
   }
 }

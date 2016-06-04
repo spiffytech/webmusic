@@ -2,6 +2,8 @@ typings
 node_modules
 build/tsc.js*
 build/bundle.js*
+*screenshot*png
+server.js
 
 *.fossil
 .fake

@@ -40,6 +40,13 @@ const PlayerContainer = connect(
 
 function App() {
     return <div>
+        <audio
+            controls="controls"
+            style={{width: "100%"}}
+            autoPlay="true"
+            src="http://localhost:3001/transcode?output_format=mp3&url=%2Fhome%2Fspiffytech%2FMusic%2FYonder%20Mountain%20String%20Band%2FOld%20Hands%2F02%20Hill%20Country%20Girl.mp3"
+        >
+        </audio>
         <div className="row">
             <PlayerContainer />
         </div>

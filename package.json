@@ -34,9 +34,9 @@
     "css-loader": "^0.23.1",
     "eslint-plugin-react": "^5.1.1",
     "extract-text-webpack-plugin": "^1.0.1",
-    "flac.js": "^0.2.1",
     "foundation-sites": "^6.2.3",
     "fuzzy": "^0.1.1",
+    "hapi": "^13.4.1",
     "jquery": "^2.2.4",
     "latinize": "^0.2.0",
     "lodash": "^4.13.1",
@@ -49,8 +49,10 @@
     "redux": "^3.5.2",
     "sass-loader": "^3.2.0",
     "script-loader": "^0.7.0",
+    "stream-transcoder": "0.0.5",
     "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
+    "ts-node": "^0.7.3",
     "typescript": "^1.8.10",
     "typescript-eslint-parser": "0.1.0-alpha-1"
   }

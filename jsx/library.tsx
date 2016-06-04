@@ -65,12 +65,16 @@ function LibraryArtist({artist, tracks}) {
     </TreeView>
 }
 
-const fuzzy_filter = _.throttle((library, filter) =>
+const fuzzy_filter = (library, filter) =>
     fuzzy.filter(
         latinize(filter),
         library,
         {extract: track => latinize(`${track.title} - ${track.artist} - ${track.album}`)}
-    ).map(result => result.original), 0);
+    ).map(result => result.original);
+
+const filter_dispatch = _.debounce((filter_string, dispatch) =>
+    dispatch({type: "library_filter", filter: filter_string}),
+    250);
 
 function Library({library, filter, dispatch}) {
     const filtered = fuzzy_filter(library, filter);
@@ -78,7 +82,7 @@ function Library({library, filter, dispatch}) {
 
     return <div>
         <input onChange={
-            (e : any) => dispatch({type: "library_filter", filter: e.target.value})
+            (e : any) => filter_dispatch(e.target.value, dispatch)
         } />
         {_.map(by_artist, (tracks, artist) =>
             <LibraryArtist key={artist} artist={artist} tracks={tracks} />

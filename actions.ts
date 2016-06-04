@@ -22,6 +22,9 @@ interface  IAddToPlaylist extends IAction {
 interface  IClearPlaylist extends IAction {
 }
 
+interface  IShufflePlaylist extends IAction {
+}
+
 export function isUpdateLibrary(action: IAction): action is IUpdateLibrary {
     return action.type === "update-library"
 }
@@ -40,4 +43,8 @@ export function isAddToPlaylist(action: IAction): action is IAddToPlaylist {
 
 export function isClearPlaylist(action: IAction): action is IClearPlaylist {
     return action.type === "clear_playlist"
+}
+
+export function isShufflePlaylist(action: IAction): action is IShufflePlaylist {
+    return action.type === "shuffle_playlist"
 }

@@ -59,6 +59,9 @@ const store = createStore(combineReducers({
         } else if(actions.isClearPlaylist(action)) {
             state.playlist = [];
             return _.clone(state);
+        } else if(actions.isShufflePlaylist(action)) {
+            state.playlist = _.shuffle(state.playlist);
+            return _.clone(state);
         } else {
             return state
         }

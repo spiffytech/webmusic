@@ -17,6 +17,7 @@ export const Track =
 function PlaylistView({tracks, dispatch}: {tracks: ITrack[], dispatch: any}) {
     console.log("tracks", tracks);
     return <div>
+        <button onClick={() => dispatch({type: "shuffle_playlist"})}>Shuffle</button>
         <button onClick={() => dispatch({type: "clear_playlist"})}>Clear</button>
         {tracks.map((track, i) => <Track key={i} track={track} />)}
     </div>;

@@ -24,7 +24,12 @@ const store = createStore(combineReducers({
     },
     library: (state = [], action) => {
         if(actions.isUpdateLibrary(action)) {
-            return action.data.filter(track => track.artist && track.album && track.title && track.path).filter(track => track.path.endsWith("mp3"));
+            return action.data.filter(track =>
+                track.artist &&
+                track.album &&
+                track.title &&
+                track.path
+            );
         } else {
             return state
         }

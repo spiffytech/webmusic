@@ -6,7 +6,10 @@ import {Provider, connect} from "react-redux";
 import {LibraryContainer} from "./library";
 import {Playlist} from "./playlist";
 
-function Player({track, track_ended, dispatch}) {
+function Player(
+    {track, track_ended, dispatch}:
+    {track: ITrack, track_ended: any, dispatch: any}
+) {
     const audio_source = track ? "http://localhost:8000/" + track.path : null
     let header = undefined;
     if(track) {
@@ -14,16 +17,36 @@ function Player({track, track_ended, dispatch}) {
     } else {
         header = ""
     }
+
+    function trans_url(type) {
+        const transcode_server = "http://localhost:3001";
+        const url = encodeURIComponent(audio_source);
+        return `${transcode_server}/transcode?output_format=${type}&url=${url}`;
+    }
+    let sources = null;
+    if(audio_source) {
+        sources = [
+            <source src={audio_source} onError={e => console.error(e.nativeEvent)}/>,
+            <source src={trans_url("ogg")} type="audio/ogg" />,
+            <source src={trans_url("mp3")} type="audio/mpeg" />,
+            <source src={trans_url("mp4")} type="audio/mp4" />,
+            <source src={trans_url("wav")} type="audio/wav" />,
+        ];
+    }
+
+    const audio_key = track ? `${track.artist} - ${track.album} - ${track.title}` : null;
     return (
         <div>
             {header}
             <audio
+                key={audio_key}
                 controls="controls"
                 style={{width: "100%"}}
                 autoPlay="true"
-                src={audio_source}
                 onEnded={track_ended}
+                onError={e => console.error(e.nativeEvent)}
             >
+                {sources}
             </audio>
             <button onClick={() => dispatch({type: "prev_track"})}>Prev</button>
             <button onClick={() => dispatch({type: "next_track"})}>Next</button>
@@ -40,13 +63,6 @@ const PlayerContainer = connect(
 
 function App() {
     return <div>
-        <audio
-            controls="controls"
-            style={{width: "100%"}}
-            autoPlay="true"
-            src="http://localhost:3001/transcode?output_format=mp3&url=http%3A%2F%2Flocalhost%3A8000%2F%2Fhome%2Fspiffytech%2FMusic%2FYonder%20Mountain%20String%20Band%2FOld%20Hands%2F02%20Hill%20Country%20Girl.mp3"
-        >
-        </audio>
         <div className="row">
             <PlayerContainer />
         </div>

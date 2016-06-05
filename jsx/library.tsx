@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {connect} from "react-redux";
+import * as URI from "urijs";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
 //const TreeView = require("react-treeview");
@@ -9,7 +10,8 @@ const TreeView = require("../../cloned/react-treeview/build/react-treeview");
 export function reload_library(config) {
     console.log("Reloading library");
 
-    return window.fetch("/tracks.json").
+    const tracks_url = new URI("tracks.json").absoluteTo(config.music_host);
+    return window.fetch(tracks_url.toString()).
     then(response => response.json()).
     then(library => {
         localStorage.setItem("library", JSON.stringify(library));

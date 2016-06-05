@@ -16,6 +16,7 @@
     "redux-form": "registry:dt/redux-form#4.0.3+20160201090541",
     "redux-thunk": "registry:dt/redux-thunk#2.0.1+20160317120654",
     "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
+    "urijs": "registry:dt/urijs#1.15.1+20160526132152",
     "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160524142046"
   }
 }

@@ -35,7 +35,8 @@ class ConfigView extends React.Component<IMyProps, {}> {
             <form onSubmit={handleSubmit}>
                 <label>
                     Music host:
-                    <input type="url" {...music_host} />
+                    <input type="url" {...music_host} pattern=".*/$" />
+                    <p>Must be valid, full URL. Must have trailing slash.</p>
                 </label>
                 <button className="button" type="submit" disabled={submitting}>
                     {submitting ? <i/> : <i/>} Save configuration

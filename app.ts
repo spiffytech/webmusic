@@ -3,6 +3,7 @@ import * as React from "react";
 import {render} from "react-dom";
 import {createStore, combineReducers} from "redux";
 import {Provider} from "react-redux";
+import { Router, Route, Link, browserHistory } from "react-router";
 
 import * as actions from "./actions"
 

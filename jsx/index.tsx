@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as React from "react";
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
+import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
 
 import {LibraryContainer} from "./library";
 import {Playlist} from "./playlist";
@@ -80,6 +81,10 @@ function App() {
 
 export function mkdom(store) {
     return <Provider store = {store}>
-        <App />
+        <Router history={browserHistory}>
+            <Route path="/" component={App}>
+                <Route path="build" component={App}></Route>
+            </Route>
+        </Router>
     </Provider>
 }

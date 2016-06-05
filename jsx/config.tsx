@@ -4,7 +4,7 @@ import {PropTypes} from "react";
 import {reduxForm as redux_form} from "redux-form";
 
 interface IMyProps {
-    fields: {music_host: string}
+    fields: IConfig,
     handleSubmit: any,
     resetForm: any,
     submitting: any,
@@ -12,7 +12,7 @@ interface IMyProps {
 }
 
 function save(dispatch, config) {
-    dispatch({type: "config_saved", config});
+    dispatch({type: "update_config", config});
 }
 
 class ConfigView extends React.Component<IMyProps, {}> {
@@ -29,7 +29,7 @@ class ConfigView extends React.Component<IMyProps, {}> {
             <form onSubmit={handleSubmit(save.bind(null, dispatch))}>
                 <label>
                     Music host:
-                    <input type="text" {...music_host} />
+                    <input type="url" {...music_host} />
                 </label>
                 <button className="button" type="submit" disabled={submitting}>
                     {submitting ? <i/> : <i/>} Save configuration

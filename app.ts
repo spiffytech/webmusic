@@ -21,7 +21,16 @@ import 'script!foundation-sites'
 
 const store = createStore(combineReducers({
     form: form_reducer,
-    config: (state={}, action) => {
+    config: (state: IConfig = {music_host: null}, action) => {
+        if(action.type === "@@redux/INIT") {
+            return JSON.parse(localStorage.getItem("config")) || state;
+        } else if(actions.isUpdateConfig(action)) {
+            const config = action.config;
+            localStorage.setItem("config", JSON.stringify(config));
+
+            return config;
+        }
+
         return state;
     },
     action_logger: (state = {}, action) => {
@@ -36,16 +45,16 @@ const store = createStore(combineReducers({
                 track.title &&
                 track.path
             );
-        } else {
-            return state
         }
+
+        return state
     },
     library_filter: (state = "", action) => {
         if(actions.isLibraryFilterChange(action)) {
             return action.filter;
-        } else {
-            return state;
         }
+
+        return state;
     },
     playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action) : IPlaylistStore => {
         if(actions.isPlayTrack(action)) {
@@ -68,9 +77,9 @@ const store = createStore(combineReducers({
         } else if(actions.isShufflePlaylist(action)) {
             state.playlist = _.shuffle(state.playlist);
             return _.clone(state);
-        } else {
-            return state
         }
+
+        return state
     }
 }));
 

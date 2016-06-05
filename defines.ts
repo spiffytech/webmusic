@@ -9,3 +9,7 @@ interface IPlaylistStore {
     playlist: ITrack[],
     current_track: ITrack
 }
+
+interface IConfig {
+    music_host: string
+}

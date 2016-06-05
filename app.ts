@@ -3,6 +3,7 @@ import * as React from "react";
 import {render} from "react-dom";
 import {createStore, combineReducers} from "redux";
 import {Provider} from "react-redux";
+import {reducer as form_reducer} from "redux-form";
 import { Router, Route, Link, browserHistory } from "react-router";
 
 import * as actions from "./actions"
@@ -19,6 +20,10 @@ import 'script!foundation-sites'
 
 
 const store = createStore(combineReducers({
+    form: form_reducer,
+    config: (state={}, action) => {
+        return state;
+    },
     action_logger: (state = {}, action) => {
         console.log("base", action);
         return state

@@ -12,6 +12,7 @@
         "defines.ts",
         "server.ts",
         "typings/index.d.ts",
+        "jsx/config.tsx",
         "jsx/index.tsx",
         "jsx/library.tsx",
         "jsx/playlist.tsx"

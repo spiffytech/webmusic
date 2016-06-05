@@ -6,6 +6,7 @@ import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
 
 import {LibraryContainer} from "./library";
 import {Playlist} from "./playlist";
+import {Config} from "./config";
 
 function Player(
     {track, track_ended, dispatch}:
@@ -62,28 +63,36 @@ const PlayerContainer = connect(
     }
 )(Player);
 
-function App() {
+function App({children}) {
     return <div>
+        <Link to="/build">Home</Link>
+        <Link to="/build/config">Configuratorizor</Link>
+
         <div className="row">
             <PlayerContainer />
         </div>
 
-        <div className="row">
-            <div className="small-12 medium-4 columns">
-                <LibraryContainer key="library" />
-            </div>
-            <div className="small-12 medium-8 columns">
-                <Playlist key="playlist" />
-            </div>
-        </div>
+        {children}
     </div>;
+}
+
+function Jukebox() {
+    return <div className="row">
+        <div className="small-12 medium-4 columns">
+            <LibraryContainer key="library" />
+        </div>
+        <div className="small-12 medium-8 columns">
+            <Playlist key="playlist" />
+        </div>
+    </div>
 }
 
 export function mkdom(store) {
     return <Provider store = {store}>
         <Router history={browserHistory}>
-            <Route path="/" component={App}>
-                <Route path="build" component={App}></Route>
+            <Route path="/build" component={App}>
+                <IndexRoute component={Jukebox} />
+                <Route path="config" component={Config}></Route>
             </Route>
         </Router>
     </Provider>

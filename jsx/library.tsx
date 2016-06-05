@@ -6,6 +6,17 @@ const latinize = require("latinize");
 //const TreeView = require("react-treeview");
 const TreeView = require("../../cloned/react-treeview/build/react-treeview");
 
+export function reload_library(config) {
+    console.log("Reloading library");
+
+    return window.fetch("/tracks.json").
+    then(response => response.json()).
+    then(library => {
+        localStorage.setItem("library", JSON.stringify(library));
+        return library;
+    });
+}
+
 function ItemLabelView(
     {label, tracks, on_text_click = null, dispatch}:
     {label: string, tracks: ITrack[], dispatch: any, on_text_click: any}

@@ -3,6 +3,8 @@ import * as React from "react";
 import {PropTypes} from "react";
 import {reduxForm as redux_form} from "redux-form";
 
+import {reload_library} from "./library";
+
 interface IMyProps {
     fields: IConfig,
     handleSubmit: any,
@@ -14,6 +16,9 @@ interface IMyProps {
 function save(config, dispatch) {
     localStorage.setItem("config", JSON.stringify(config));
     dispatch({type: "update_config", config});
+
+    return reload_library(config).
+        then(library => dispatch({type: "update-library", data: library}));
 }
 
 class ConfigView extends React.Component<IMyProps, {}> {

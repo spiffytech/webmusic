@@ -8,6 +8,7 @@ import { Router, Route, Link, browserHistory } from "react-router";
 import thunk from "redux-thunk";
 
 import * as actions from "./actions"
+import {reload_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
@@ -84,15 +85,12 @@ store.dispatch({
     data: JSON.parse(localStorage.getItem("library")) || []
 });
 
-window.fetch("/tracks.json").
-then(response => response.json()).
-then(library => {
-    localStorage.setItem("library", JSON.stringify(library));
-    store.dispatch({type: "update-library", data: library});
-});
+const config = JSON.parse(localStorage.getItem("config"));
+reload_library(config).
+    then(library => store.dispatch({type: "update-library", data: library}));
 store.dispatch({
     type: "update_config",
-    config: JSON.parse(localStorage.getItem("config"))
+    config
 });
 
 render(

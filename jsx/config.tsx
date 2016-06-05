@@ -11,7 +11,8 @@ interface IMyProps {
     dispatch: any
 }
 
-function save(dispatch, config) {
+function save(config, dispatch) {
+    localStorage.setItem("config", JSON.stringify(config));
     dispatch({type: "update_config", config});
 }
 
@@ -26,7 +27,7 @@ class ConfigView extends React.Component<IMyProps, {}> {
         } = this.props;
 
         return <div className="row">
-            <form onSubmit={handleSubmit(save.bind(null, dispatch))}>
+            <form onSubmit={handleSubmit}>
                 <label>
                     Music host:
                     <input type="url" {...music_host} />
@@ -43,6 +44,7 @@ export const Config = redux_form(
     {
         form: "config",
         fields: ["music_host"],
+        onSubmit: save
     },
     state => ({initialValues: state.config}),
     {dispatch: _.identity}

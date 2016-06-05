@@ -1,10 +1,11 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {render} from "react-dom";
-import {createStore, combineReducers} from "redux";
+import {createStore, combineReducers, applyMiddleware} from "redux";
 import {Provider} from "react-redux";
 import {reducer as form_reducer} from "redux-form";
 import { Router, Route, Link, browserHistory } from "react-router";
+import thunk from "redux-thunk";
 
 import * as actions from "./actions"
 
@@ -22,13 +23,8 @@ import 'script!foundation-sites'
 const store = createStore(combineReducers({
     form: form_reducer,
     config: (state: IConfig = {music_host: null}, action) => {
-        if(action.type === "@@redux/INIT") {
-            return JSON.parse(localStorage.getItem("config")) || state;
-        } else if(actions.isUpdateConfig(action)) {
-            const config = action.config;
-            localStorage.setItem("config", JSON.stringify(config));
-
-            return config;
+        if(actions.isUpdateConfig(action)) {
+            return action.config;
         }
 
         return state;
@@ -37,7 +33,7 @@ const store = createStore(combineReducers({
         console.log("base", action);
         return state
     },
-    library: (state = [], action) => {
+    library: (state: ITrack[] = [], action) => {
         if(actions.isUpdateLibrary(action)) {
             return action.data.filter(track =>
                 track.artist &&
@@ -81,7 +77,7 @@ const store = createStore(combineReducers({
 
         return state
     }
-}));
+}), applyMiddleware(thunk));
 
 store.dispatch({
     type: "update-library",
@@ -93,6 +89,10 @@ then(response => response.json()).
 then(library => {
     localStorage.setItem("library", JSON.stringify(library));
     store.dispatch({type: "update-library", data: library});
+});
+store.dispatch({
+    type: "update_config",
+    config: JSON.parse(localStorage.getItem("config"))
 });
 
 render(

@@ -23,6 +23,11 @@ import 'script!foundation-sites'
 
 const store = createStore(combineReducers({
     form: form_reducer,
+    error_msg: (state=null, action) => {
+        // TODO: A way to dismiss the error
+        if(action.type == "error") return action.message;
+        return state;
+    },
     config: (state: IConfig = {music_host: null}, action) => {
         if(actions.isUpdateConfig(action)) {
             return action.config;
@@ -87,7 +92,8 @@ store.dispatch({
 
 const config = JSON.parse(localStorage.getItem("config"));
 reload_library(config).
-    then(library => store.dispatch({type: "update-library", data: library}));
+    then(library => store.dispatch({type: "update-library", data: library})).
+    catch(err => store.dispatch({type: "error", message: err.message}));
 store.dispatch({
     type: "update_config",
     config

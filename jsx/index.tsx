@@ -3,16 +3,17 @@ import * as React from "react";
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
+import * as URI from "urijs";
 
 import {LibraryContainer} from "./library";
 import {Playlist} from "./playlist";
 import {Config} from "./config";
 
 function Player(
-    {track, track_ended, dispatch}:
-    {track: ITrack, track_ended: any, dispatch: any}
+    {track, track_ended, music_host, dispatch}:
+    {track: ITrack, track_ended: any, music_host: string, dispatch: any}
 ) {
-    const audio_source = track ? "http://localhost:8000/" + track.path : null
+    const audio_source = track ? new URI(track.path).absoluteTo(music_host).toString() : null
     let header = undefined;
     if(track) {
         header = <p>{track.title} / {track.artist} - {track.album}</p>;
@@ -56,17 +57,21 @@ function Player(
     );
 }
 const PlayerContainer = connect(
-    (state) => ({track: state.playlist.current_track}),
+    (state) => ({
+        track: state.playlist.current_track,
+        music_host: state.config.music_host
+    }),
     {
         dispatch: action => action,
         track_ended: () => ({type: "track_ended"})
     }
 )(Player);
 
-function App({children}) {
+function AppView({error_msg, children}) {
     return <div>
         <Link to="/build">Home</Link>
         <Link to="/build/config">Configuratorizor</Link>
+        <p>{error_msg}</p>
 
         <div className="row">
             <PlayerContainer />
@@ -75,6 +80,8 @@ function App({children}) {
         {children}
     </div>;
 }
+
+const App = connect(state => ({error_msg: state.error_msg}))(AppView);
 
 function Jukebox() {
     return <div className="row">

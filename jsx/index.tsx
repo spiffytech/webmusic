@@ -97,7 +97,7 @@ function Jukebox() {
 export function mkdom(store) {
     return <Provider store = {store}>
         <Router history={browserHistory}>
-            <Route path="/build" component={App}>
+            <Route path="/" component={App}>
                 <IndexRoute component={Jukebox} />
                 <Route path="config" component={Config}></Route>
             </Route>

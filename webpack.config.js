@@ -1,11 +1,16 @@
-var webpack = require('webpack');  
-var path = require('path')
-var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var webpack = require("webpack");  
+var path = require("path")
+var ExtractTextPlugin = require("extract-text-webpack-plugin")
+var ManifestPlugin = require("webpack-manifest-plugin");
+var ChunkManifestPlugin = require("chunk-manifest-webpack-plugin");
+var HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {  
   entry: './app.ts',
   output: {
-    filename: 'build/bundle.js'
+    path: path.join(__dirname, 'build'),
+    filename: '[name].[chunkhash].js',
+    chunkFilename: '[name].[chunkhash].js'
   },
   // Turn on sourcemaps
   devtool: 'source-map',
@@ -15,7 +20,18 @@ module.exports = {
   // Add minification
   plugins: [
     //new webpack.optimize.UglifyJsPlugin()
-    new ExtractTextPlugin("bundle.css")
+    new ExtractTextPlugin("bundle.css"),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: "vendor",
+      minChunks: Infinity,
+    }),
+    new ManifestPlugin(),
+    new ChunkManifestPlugin({
+      filename: "chunk-manifest.json",
+      manifestVariable: "webpackManifest"
+    }),
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new HtmlWebpackPlugin({title: "WebMusic", template: "index.ejs"})
   ],
   module: {
     loaders: [
@@ -31,6 +47,11 @@ module.exports = {
   },
   sassLoader: {
     includePaths: [path.resolve(__dirname, "node_modules")]
+  },
+  devServer: {
+    historyApiFallback: {
+      index: 'index.html'
+    }
   }
 }
 

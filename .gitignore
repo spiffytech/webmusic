@@ -4,6 +4,7 @@ build/tsc.js*
 build/bundle.js*
 *screenshot*png
 server.js
+build/*
 
 *.fossil
 .fake

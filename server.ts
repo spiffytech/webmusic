@@ -17,10 +17,8 @@ const server = new Hapi.Server({
         }
     }
 });
-server.connection({ port: 3001 });
+server.connection({ port: process.env.PORT || 3001 });
 server.register(Inert, () => {});
-
-import * as fs from 'fs';
 
 server.route({
     method: 'GET',
@@ -88,9 +86,11 @@ server.route({
     }
 });
 
-server.start((err) => {
-    if (err) {
-        throw err;
-    }
-    console.log('Server running at:', server.info.uri);
-});
+export function serve() {
+    server.initialize().
+    then(() => server.start()).
+    then(() => console.log('Server running at:', server.info.uri)).
+    catch(err => { console.error(err); throw err; });
+}
+
+serve()

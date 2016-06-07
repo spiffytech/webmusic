@@ -2,7 +2,6 @@
   "name": "webmusic",
   "version": "1.0.0",
   "description": "",
-  "main": "gulpfile.js",
   "scripts": {
     "dev-server": "node_modules/.bin/webpack-dev-server --inline",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -28,22 +27,30 @@
     "mocha": "^2.4.5",
     "mocha-silent-reporter": "^1.0.0",
     "webpack": "^1.13.0",
-    "webpack-dev-server": "^1.14.1"
-  },
-  "dependencies": {
     "chunk-manifest-webpack-plugin": "^0.1.0",
     "css-loader": "^0.23.1",
     "eslint-plugin-react": "^5.1.1",
     "extract-text-webpack-plugin": "^1.0.1",
-    "fluent-ffmpeg": "^2.1.0",
-    "foundation-sites": "^6.2.3",
-    "fuzzy": "^0.1.1",
-    "hapi": "^13.4.1",
-    "jquery": "^2.2.4",
-    "latinize": "^0.2.0",
-    "lodash": "^4.13.1",
     "node-sass": "^3.7.0",
     "postcss-loader": "^0.9.1",
+    "sass-loader": "^3.2.0",
+    "script-loader": "^0.7.0",
+    "style-loader": "^0.13.1",
+    "typescript-eslint-parser": "0.1.0-alpha-1",
+    "webpack-manifest-plugin": "^1.0.1",
+    "ts-loader": "^0.8.2",
+    "ts-node": "^0.7.3",
+    "typescript": "^1.8.10",
+    "foundation-sites": "^6.2.3",
+    "jquery": "^2.2.4",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.0",
+    "fuzzy": "^0.1.1",
+    "hapi": "^13.4.1",
+    "latinize": "^0.2.0",
+    "lodash": "^4.13.1",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-redux": "^4.4.5",
@@ -54,15 +61,7 @@
     "redux-thunk": "^2.1.0",
     "request": "^2.72.0",
     "request-promise": "^3.0.0",
-    "sass-loader": "^3.2.0",
-    "script-loader": "^0.7.0",
     "stream-transcoder": "0.0.5",
-    "style-loader": "^0.13.1",
-    "ts-loader": "^0.8.2",
-    "ts-node": "^0.7.3",
-    "typescript": "^1.8.10",
-    "typescript-eslint-parser": "0.1.0-alpha-1",
-    "urijs": "^1.18.1",
-    "webpack-manifest-plugin": "^1.0.1"
+    "urijs": "^1.18.1"
   }
 }

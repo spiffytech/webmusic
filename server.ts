@@ -17,7 +17,7 @@ const server = new Hapi.Server({
         }
     }
 });
-server.connection({ port: process.env.PORT || 3001 });
+server.connection({ host: process.env.HOST || "0.0.0.0", port: process.env.PORT || 3001 });
 server.register(Inert, () => {});
 
 server.route({

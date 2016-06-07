@@ -22,9 +22,8 @@ function Player(
     }
 
     function trans_url(type) {
-        const transcode_server = "http://localhost:3001";
         const url = encodeURIComponent(audio_source);
-        return `${transcode_server}/transcode?output_format=${type}&url=${url}`;
+        return `/transcode?output_format=${type}&url=${url}`;
     }
     let sources = null;
     if(audio_source) {

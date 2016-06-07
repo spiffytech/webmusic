@@ -69,8 +69,8 @@ const PlayerContainer = connect(
 
 function AppView({error_msg, children}) {
     return <div>
-        <Link to="/build">Home</Link>
-        <Link to="/build/config">Configuratorizor</Link>
+        <Link to="/">Home</Link>
+        <Link to="/config">Configuratorizor</Link>
         <p>{error_msg}</p>
 
         <div className="row">

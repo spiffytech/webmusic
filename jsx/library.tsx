@@ -9,6 +9,9 @@ const TreeView = require("../../cloned/react-treeview/build/react-treeview");
 
 export function reload_library(config) {
     console.log("Reloading library");
+    if(!config.music_host) {
+        return Promise.reject("No music host, cannot load library");
+    }
 
     const tracks_url = new URI("tracks.json").absoluteTo(config.music_host);
     return window.fetch(tracks_url.toString()).

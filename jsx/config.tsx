@@ -19,7 +19,7 @@ function save(config, dispatch) {
 
     return reload_library(config).
         then(library => dispatch({type: "update-library", data: library})).
-        catch(err => dispatch({type: "error", message: err.message}));
+        catch(err => dispatch({type: "error_msg", message: err.message}));
 }
 
 class ConfigView extends React.Component<IMyProps, {}> {

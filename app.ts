@@ -25,11 +25,11 @@ const store = createStore(combineReducers({
     form: form_reducer,
     error_msg: (state=null, action) => {
         // TODO: A way to dismiss the error
-        if(action.type == "error") return action.message;
+        if(action.type == "error_msg") return action.message || "Unknown error";
         return state;
     },
     config: (state: IConfig = {music_host: null}, action) => {
-        if(actions.isUpdateConfig(action)) {
+        if(actions.isUpdateConfig(action) && action.config) {
             return action.config;
         }
 
@@ -90,14 +90,15 @@ store.dispatch({
     data: JSON.parse(localStorage.getItem("library")) || []
 });
 
-const config = JSON.parse(localStorage.getItem("config"));
-reload_library(config).
-    then(library => store.dispatch({type: "update-library", data: library})).
-    catch(err => store.dispatch({type: "error", message: err.message}));
 store.dispatch({
     type: "update_config",
-    config
+    config: JSON.parse(localStorage.getItem("config"))
 });
+
+console.log(store.getState().config);
+reload_library(store.getState().config).
+    then(library => store.dispatch({type: "update-library", data: library})).
+    catch(err => store.dispatch({type: "error_msg", message: err.message || err}));
 
 render(
     mkdom(store),

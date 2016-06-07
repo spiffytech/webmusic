@@ -1,11 +1,24 @@
-import * as _ from "lodash";
-import * as Hapi from "hapi";
 import * as assert from "assert";
+import * as _ from "lodash";
+import * as path from "path";
+
+import * as Hapi from "hapi";
+const Inert = require("inert");
+
 const ffmpeg = require("fluent-ffmpeg");
 import * as request from "request";
 
-const server = new Hapi.Server();
+const server = new Hapi.Server({
+    connections: {
+        routes: {
+            files: {
+                relativeTo: path.join(__dirname, 'build')
+            }
+        }
+    }
+});
 server.connection({ port: 3001 });
+server.register(Inert, () => {});
 
 import * as fs from 'fs';
 
@@ -58,6 +71,19 @@ server.route({
             // TODO: Correctly report 404 etc.
             _reply(ex.message).code(500);
             console.log("Errored out");
+        }
+    }
+});
+
+// Static files (WebPack / SPA)
+server.route({
+    method: 'GET',
+    path: '/{param*}',
+    handler: {
+        directory: {
+            path: '.',
+            redirectToSlash: true,
+            index: true
         }
     }
 });

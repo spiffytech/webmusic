@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/spiffytech/webmusic#readme",
   "devDependencies": {
-    "babel-eslint": "^5.0.0",
+    "babel-eslint": "^6.0.0",
     "babel-plugin-syntax-async-functions": "^6.5.0",
     "babel-plugin-transform-regenerator": "^6.6.0",
     "babel-polyfill": "^6.6.1",
@@ -39,7 +39,7 @@
     "typescript-eslint-parser": "0.1.0-alpha-1",
     "webpack-manifest-plugin": "^1.0.1",
     "ts-loader": "^0.8.2",
-    "ts-node": "^0.7.3",
+    "ts-node": "^0.8.0",
     "typescript": "^1.8.10",
     "foundation-sites": "^6.2.3",
     "jquery": "^2.2.4",

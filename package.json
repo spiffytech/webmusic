@@ -1,10 +1,11 @@
 {
   "name": "webmusic",
-  "version": "1.0.0",
+  "version": "0.0.0-alpha.1",
   "description": "",
   "scripts": {
     "dev-server": "node_modules/.bin/webpack-dev-server --inline",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "webpack"
   },
   "repository": {
     "type": "git",

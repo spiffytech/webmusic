@@ -4,8 +4,7 @@ import {connect} from "react-redux";
 import * as URI from "urijs";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
-//const TreeView = require("react-treeview");
-const TreeView = require("../../cloned/react-treeview/build/react-treeview");
+const TreeView = require("react-treeview-lazy");
 
 export function reload_library(config) {
     console.log("Reloading library");

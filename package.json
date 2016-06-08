@@ -8,7 +8,7 @@
   "scripts": {
     "dev-server": "node_modules/.bin/webpack-dev-server --inline",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "webpack && tsc"
+    "prepublish": "typings install && webpack && tsc"
   },
   "repository": {
     "type": "git",

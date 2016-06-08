@@ -1,10 +1,6 @@
-FROM debian:jessie-backports
-RUN apt-get update && apt-get install -y nodejs npm wget
-RUN sed -i 's/jessie main/jessie main contrib non-free/g' /etc/apt/sources.list
-RUN apt-get update && apt-get install -y ffmpeg libfaac0
+FROM risingstack/alpine:3.3-v6.2.0-3.6.0
 
-RUN npm install -g n
-RUN n stable
+RUN apk update && apk add ffmpeg python-dev make g++
 
 RUN mkdir /source
 WORKDIR /source

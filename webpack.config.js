@@ -50,8 +50,9 @@ module.exports = {
   },
   devServer: {
     historyApiFallback: {
-      index: 'index.html'
-    }
+      index: "index.html"
+    },
+    host: "0.0.0.0"
   }
 }
 

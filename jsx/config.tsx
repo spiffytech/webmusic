@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as React from "react";
 import {PropTypes} from "react";
 import {reduxForm as redux_form} from "redux-form";
+import {Button} from "react-bootstrap";
 
 import {reload_library} from "./library";
 
@@ -39,9 +40,9 @@ class ConfigView extends React.Component<IMyProps, {}> {
                     <input type="url" {...music_host} pattern=".*/$" />
                     <p>Must be valid, full URL. Must have trailing slash.</p>
                 </label>
-                <button className="button" type="submit" disabled={submitting}>
+                <Button type="submit" disabled={submitting}>
                     {submitting ? <i/> : <i/>} Save configuration
-                </button>
+                </Button>
             </form>
         </div>;
     }

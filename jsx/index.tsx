@@ -5,7 +5,7 @@ import {Provider, connect} from "react-redux";
 import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
 import * as URI from "urijs";
 
-import {Grid, Row, Col} from "react-bootstrap";
+import {Grid, Row, Col, Button, Glyphicon} from "react-bootstrap";
 
 
 import {LibraryContainer} from "./library";
@@ -53,8 +53,13 @@ function Player(
             >
                 {sources}
             </audio>
-            <button onClick={() => dispatch({type: "prev_track"})}>Prev</button>
-            <button onClick={() => dispatch({type: "next_track"})}>Next</button>
+            <Button onClick={() => dispatch({type: "prev_track"})}>
+                <Glyphicon glyph="glyphicon glyphicon-step-backward" />
+            </Button>
+
+            <Button onClick={() => dispatch({type: "next_track"})}>
+                <Glyphicon glyph="glyphicon glyphicon-step-forward" />
+            </Button>
         </div>
     );
 }

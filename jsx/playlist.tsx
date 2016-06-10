@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {connect} from "react-redux";
+import {Glyphicon, Button} from "react-bootstrap";
 
 function TrackView({track, dispatch}: {track: ITrack, dispatch: any}) {
     return <p onClick={() => dispatch({type: "play_track", track: track})}>
@@ -17,8 +18,15 @@ export const Track =
 function PlaylistView({tracks, dispatch}: {tracks: ITrack[], dispatch: any}) {
     console.log("tracks", tracks);
     return <div>
-        <button onClick={() => dispatch({type: "shuffle_playlist"})}>Shuffle</button>
-        <button onClick={() => dispatch({type: "clear_playlist"})}>Clear</button>
+        <Button onClick={() => dispatch({type: "shuffle_playlist"})}>
+            <Glyphicon glyph="glyphicon glyphicon-random" />
+            <span style={{marginLeft: "0.5em"}}>Shuffle</span>
+        </Button>
+
+        <Button onClick={() => dispatch({type: "clear_playlist"})}>
+            <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+            <span style={{marginLeft: "0.5em"}}>Clear</span>
+        </Button>
         {tracks.map((track, i) => <Track key={i} track={track} />)}
     </div>;
 }

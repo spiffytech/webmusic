@@ -79,7 +79,7 @@ server.route({
     path: '/{param*}',
     handler: {
         directory: {
-            path: '.',
+            path: path.join(process.env.PWD, "build"),
             redirectToSlash: true,
             index: true
         }

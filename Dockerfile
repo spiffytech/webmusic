@@ -2,20 +2,14 @@ FROM risingstack/alpine:3.3-v6.2.0-3.6.0
 
 RUN apk update && apk add ffmpeg python-dev make g++
 
-RUN mkdir /source
-RUN mkdir /build
+RUN mkdir /app
 
-COPY . /build
-WORKDIR /build
+COPY . /app
+WORKDIR /app
 ENV NODE_ENV=dev
 RUN npm install
 RUN npm run prepublish
-RUN ls
-RUN cp -R package.json build out/* /source
+RUN npm prune --production
 
-WORKDIR /source
-RUN rm -rf /build
 ENV NODE_ENV=production
-RUN npm install --production
-
-CMD ["node", "server.js"]
+CMD ["node", "out/server.js"]

@@ -12,7 +12,7 @@ import {reload_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
-require("./node_modules/react-treeview/react-treeview.css")
+require("./node_modules/react-treeview-lazy/react-treeview.css")
 
 const store = createStore(combineReducers({
     form: form_reducer,

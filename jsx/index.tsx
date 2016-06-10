@@ -73,7 +73,7 @@ function AppView({error_msg, children}) {
     return <div>
         <Link to="/">Home</Link>
         <Link to="/config">Configuratorizor</Link>
-        <Link to="/library" className="show-for-small-only">Library</Link>
+        <Link to="/library" className="visible-xs visible-sm">Library</Link>
         <p>{error_msg}</p>
 
         <Grid>
@@ -91,7 +91,9 @@ const App = connect(state => ({error_msg: state.error_msg}))(AppView);
 function Jukebox() {
     return <Row>
         <Col sm={12} md={4}>
+            <div className="hidden-xs hidden-sm">
                 <LibraryContainer key="library" />
+            </div>
         </Col>
         <Col sm={12} md={8}>
             <Playlist key="playlist" />

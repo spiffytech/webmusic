@@ -12,4 +12,4 @@ RUN npm run prepublish
 RUN npm prune --production
 
 ENV NODE_ENV=production
-CMD ["node", "out/server.js"]
+CMD ["sh", "-c", "node out/server.js"]

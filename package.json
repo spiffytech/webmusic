@@ -25,6 +25,7 @@
     "css-loader": "^0.23.1",
     "eslint": "^2.2.0",
     "eslint-plugin-react": "^5.1.1",
+    "file-loader": "^0.8.5",
     "html-webpack-plugin": "^2.19.0",
     "mocha": "^2.4.5",
     "mocha-silent-reporter": "^1.0.0",

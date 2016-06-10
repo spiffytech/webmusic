@@ -12,6 +12,8 @@ import {reload_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
+require("./bootstrap-3.3.6/css/bootstrap.min.css");
+require("./bootstrap-3.3.6/css/bootstrap-theme.min.css");
 require("./node_modules/react-treeview-lazy/react-treeview.css")
 
 const store = createStore(combineReducers({

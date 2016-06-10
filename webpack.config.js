@@ -39,7 +39,11 @@ module.exports = {
   module: {
     loaders: [
       { test: /\.tsx?$/, loader: 'ts' },
-      { test: /\.css$/, loader: "style-loader!css-loader" }
+      { test: /\.css$/, loader: "style-loader!css-loader" },
+      {
+       test: /\.(eot|svg|ttf|woff|woff2)$/,
+       loader: 'file?name=public/fonts/[name].[ext]'
+      }
     ]
   },
   devServer: {

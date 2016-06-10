@@ -4,11 +4,9 @@ import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
 import * as URI from "urijs";
-const F = require("react-foundation");
 
-import 'script!jquery';
-const foundation = require("foundation-sites/js/foundation.core").foundation;
-import 'foundation-sites/js/foundation.util.mediaQuery';
+import {Grid, Row, Col} from "react-bootstrap";
+
 
 import {LibraryContainer} from "./library";
 import {Playlist} from "./playlist";
@@ -78,42 +76,27 @@ function AppView({error_msg, children}) {
         <Link to="/library" className="show-for-small-only">Library</Link>
         <p>{error_msg}</p>
 
-        <p className="panel">
-          <strong className="show-for-small-only">This text is shown only on a small screen.</strong>
-          <strong className="show-for-medium-up">This text is shown on medium screens and up.</strong>
-          <strong className="show-for-medium-only">This text is shown only on a medium screen.</strong>
-          <strong className="show-for-large-up">This text is shown on large screens and up.</strong>
-          <strong className="show-for-large-only">This text is shown only on a large screen.</strong>
-          <strong className="show-for-xlarge-up">This text is shown on xlarge screens and up.</strong>
-          <strong className="show-for-xlarge-only">This text is shown only on an xlarge screen.</strong>
-          <strong className="show-for-xxlarge-up">This text is shown on xxlarge screens and up.</strong>
-        </p>
+        <Grid>
+            <Row>
+                <PlayerContainer />
+            </Row>
 
-        <F.Row>
-            <PlayerContainer />
-        </F.Row>
-
-        {children}
+            {children}
+        </Grid>
     </div>;
 }
 
 const App = connect(state => ({error_msg: state.error_msg}))(AppView);
-console.log("?", Foundation.MediaQuery.atLeast('medium'));
-console.log("?", Foundation.MediaQuery.current);
 
 function Jukebox() {
-    return <F.Row>
-        <F.Column small={12} medium={4}>
-            {
-                Foundation.MediaQuery.atLeast('medium') ?
-                <LibraryContainer key="library" /> :
-                null
-            }
-        </F.Column>
-        <F.Column small={12} medium={8}>
+    return <Row>
+        <Col sm={12} md={4}>
+                <LibraryContainer key="library" />
+        </Col>
+        <Col sm={12} md={8}>
             <Playlist key="playlist" />
-        </F.Column>
-    </F.Row>
+        </Col>
+    </Row>
 }
 
 export function mkdom(store) {

@@ -8,7 +8,7 @@ RUN mkdir /build
 COPY . /build
 WORKDIR /build
 ENV NODE_ENV=dev
-RUN npm install; true
+RUN npm install
 RUN npm run prepublish
 RUN ls
 RUN cp -R package.json build out/* /source

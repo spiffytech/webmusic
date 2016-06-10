@@ -14,14 +14,6 @@ import {mkdom} from "./jsx/index.tsx";
 
 require("./node_modules/react-treeview/react-treeview.css")
 
-import './styles/foundation.scss'
-// load jquery and foundation in the window scope
-import 'script!jquery'
-import 'script!what-input'
-import 'script!foundation-sites'
-
-(<any>window).jQuery(document).foundation();
-
 const store = createStore(combineReducers({
     form: form_reducer,
     error_msg: (state=null, action) => {

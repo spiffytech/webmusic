@@ -14,6 +14,7 @@ RUN ls
 RUN cp -R package.json build out/* /source
 
 WORKDIR /source
+RUN rm -rf /build
 ENV NODE_ENV=production
 RUN npm install --production
 

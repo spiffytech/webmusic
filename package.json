@@ -52,6 +52,7 @@
     "webpack-manifest-plugin": "^1.0.1"
   },
   "dependencies": {
+    "exports-loader": "^0.6.3",
     "fluent-ffmpeg": "^2.1.0",
     "fuzzy": "^0.1.1",
     "hapi": "^13.4.1",
@@ -60,6 +61,7 @@
     "lodash": "^4.13.1",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
+    "react-foundation": "^0.6.8",
     "react-redux": "^4.4.5",
     "react-router": "^2.4.1",
     "react-treeview": "^0.4.5",

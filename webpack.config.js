@@ -31,7 +31,12 @@ module.exports = {
       manifestVariable: "webpackManifest"
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
-    new HtmlWebpackPlugin({title: "WebMusic", template: "index.ejs"})
+    new HtmlWebpackPlugin({title: "WebMusic", template: "index.ejs"}),
+    new webpack.ProvidePlugin({
+        $: 'jquery',
+        jQuery: 'jquery',
+        'window.jQuery': 'jquery'
+    })
   ],
   module: {
     loaders: [
@@ -42,7 +47,11 @@ module.exports = {
         test: /\.scss$/,
         exclude: [/node_modules/], // sassLoader will include node_modules explicitly
         loader: ExtractTextPlugin.extract("style", "css!postcss!sass?outputStyle=expanded")
-      }
+      },
+        {
+            test: /(foundation\.core)/,
+            loader: 'exports?foundation=jQuery.fn.foundation'
+        },
     ]
   },
   sassLoader: {
@@ -52,7 +61,8 @@ module.exports = {
     historyApiFallback: {
       index: "index.html"
     },
-    host: "0.0.0.0"
+    host: "0.0.0.0",
+    compress: true
   }
 }
 

@@ -20,6 +20,7 @@ import 'script!jquery'
 import 'script!what-input'
 import 'script!foundation-sites'
 
+(<any>window).jQuery(document).foundation();
 
 const store = createStore(combineReducers({
     form: form_reducer,

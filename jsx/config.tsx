@@ -3,6 +3,7 @@ import * as React from "react";
 import {PropTypes} from "react";
 import {reduxForm as redux_form} from "redux-form";
 import {Button} from "react-bootstrap";
+import {types as atypes} from "../actions";
 
 import {reload_library} from "./library";
 
@@ -16,11 +17,11 @@ interface IMyProps {
 
 function save(config, dispatch) {
     localStorage.setItem("config", JSON.stringify(config));
-    dispatch({type: "update_config", config});
+    dispatch({type: atypes.UPDATE_CONFIG, config});
 
     return reload_library(config).
-        then(library => dispatch({type: "update-library", data: library})).
-        catch(err => dispatch({type: "error_msg", message: err.message}));
+        then(library => dispatch({type: atypes.UPDATE_LIBRARY, data: library})).
+        catch(err => dispatch({type: atypes.ERROR_MESSAGE, message: err.message}));
 }
 
 class ConfigView extends React.Component<IMyProps, {}> {

@@ -8,6 +8,7 @@ import { Router, Route, Link, browserHistory } from "react-router";
 import thunk from "redux-thunk";
 
 import * as actions from "./actions"
+import {is_action, types as atypes} from "./actions"
 import {reload_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
@@ -18,67 +19,83 @@ require("./node_modules/react-treeview-lazy/react-treeview.css")
 
 const store = createStore(combineReducers({
     form: form_reducer,
-    error_msg: (state=null, action) => {
+    error_msg: (state=null, action: actions.IAction): string => {
         // TODO: A way to dismiss the error
-        if(action.type == "error_msg") {
+        if(is_action<actions.IErrorMessage>(action, atypes.ERROR_MESSAGE)) {
             return action.message || "Unknown error";
         }
 
         return null;
     },
-    config: (state: IConfig = {music_host: null}, action) => {
-        if(actions.isUpdateConfig(action) && action.config) {
+    config: (state: IConfig = {music_host: null}, action: actions.IAction): IConfig => {
+        if(
+            is_action<actions.IUpdateConfig>(action, atypes.UPDATE_CONFIG) &&
+            action.config
+        ) {
             return action.config;
         }
 
         return state;
     },
-    action_logger: (state = {}, action) => {
+    action_logger: (state = null, action: actions.IAction) => {
         console.log("base", action);
         return state
     },
-    library: (state: ITrack[] = [], action) => {
-        if(actions.isUpdateLibrary(action)) {
-            return action.data.filter(track =>
-                track.artist &&
-                track.album &&
-                track.title &&
-                track.path
-            );
+    library: (state: ITrack[] = [], action: actions.IAction): ITrack[] => {
+        if(is_action<actions.IUpdateLibrary>(action, atypes.UPDATE_LIBRARY)) {
+            const fn = (track:ITrack): boolean =>
+                Boolean(track.artist) &&
+                Boolean(track.album) &&
+                Boolean(track.title) &&
+                Boolean(track.path)
+            ;
+            return action.data.filter(fn);
         }
 
         return state
     },
-    library_filter: (state = "", action) => {
-        if(actions.isLibraryFilterChange(action)) {
+    library_filter: (state = "", action: actions.IAction) => {
+        if(is_action<actions.ILibraryFilter>(action, atypes.LIBRARY_FILTER)) {
             return action.filter;
         }
 
         return state;
     },
-    playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action) : IPlaylistStore => {
-        if(actions.isPlayTrack(action)) {
+    playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action: actions.IAction) : IPlaylistStore => {
+        if(is_action<actions.IPlayTrack>(action, atypes.PLAY_TRACK)) {
             console.log("Setting current track", action.track);
             state.current_track = action.track;
             return _.clone(state);
-        } else if(action.type === "track_ended" || action.type === "next_track") {
+        } else if(
+            is_action<actions.ITrackEnded>(action, atypes.TRACK_ENDED) ||
+            is_action<actions.INextTrack>(action, atypes.NEXT_TRACK)
+        ) {
             const playlist = state.playlist;
             const i = playlist.indexOf(state.current_track);
             if(i === -1) throw new Error("Error finding track in library");
             if(i+1 > playlist.length) throw new Error("No next track to play");
             state.current_track = playlist[i+1];
             return _.clone(state);
-        } else if(actions.isAddToPlaylist(action)) {
+        } else if(
+            is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)
+        ) {
             state.playlist = [...state.playlist, ...action.tracks];
             return _.clone(state);
-        } else if(actions.isClearPlaylist(action)) {
+        } else if(
+            is_action<actions.IClearPlaylist>(action, atypes.CLEAR_PLAYLIST)
+        ) {
             state.playlist = [];
             return _.clone(state);
-        } else if(actions.isShufflePlaylist(action)) {
+        } else if(
+            is_action<actions.IShufflePlaylist>(action, atypes.SHUFFLE_PLAYLIST)
+        ) {
             state.playlist = _.shuffle(state.playlist);
             return _.clone(state);
-        } else if(actions.isAction<actions.IRemoveFromPlaylist>(action, "remove_track")) {
-            state.playlist = state.playlist.filter(t => t !== action.track);
+        } else if(
+            is_action<actions.IRemoveFromPlaylist>(action, atypes.REMOVE_FROM_PLAYLIST)
+        ) {
+            const t_ = action.track;
+            state.playlist = state.playlist.filter(t => t !== t_);
             return _.clone(state);
         }
 
@@ -87,19 +104,19 @@ const store = createStore(combineReducers({
 }), applyMiddleware(thunk));
 
 store.dispatch({
-    type: "update-library",
+    type: atypes.UPDATE_LIBRARY,
     data: JSON.parse(localStorage.getItem("library")) || []
 });
 
 store.dispatch({
-    type: "update_config",
+    type: atypes.UPDATE_CONFIG,
     config: JSON.parse(localStorage.getItem("config"))
 });
 
 console.log(store.getState().config);
 reload_library(store.getState().config).
-    then(library => store.dispatch({type: "update-library", data: library})).
-    catch(err => store.dispatch({type: "error_msg", message: err.message || err}));
+    then(library => store.dispatch({type: atypes.UPDATE_LIBRARY, data: library})).
+    catch(err => store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err}));
 
 render(
     mkdom(store),

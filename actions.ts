@@ -1,66 +1,64 @@
+export const types = {
+    UPDATE_LIBRARY: "update-library",
+    PLAY_TRACK: "play_track",
+    TRACK_ENDED: "track_ended",
+    // TODO: handle
+    PREV_TRACK: "prev_track",
+    NEXT_TRACK: "next_track",
+    LIBRARY_FILTER: "library_filter",
+    ADD_TO_PLAYLIST: "add_to_playlist",
+    REMOVE_FROM_PLAYLIST: "remove_track",
+    CLEAR_PLAYLIST: "clear_playlist",
+    SHUFFLE_PLAYLIST: "shuffle_playlist",
+    UPDATE_CONFIG: "update_config",
+    ERROR_MESSAGE: "error_msg"
+} ;
+
 // TODO: Figure out how to import Redux's IAction interface from the tsd here
-interface IAction {
+export interface IAction {
     type: string | number
 }
 
-interface IUpdateLibrary extends IAction {
+export interface IUpdateLibrary extends IAction {
     data: ITrack[]
 }
 
-interface  IPlayTrack extends IAction {
+export interface IPlayTrack extends IAction {
     track: ITrack
 }
 
-interface  ILibraryFilter extends IAction {
+export interface ITrackEnded extends IAction {
+}
+
+export interface INextTrack extends IAction {
+}
+
+export interface ILibraryFilter extends IAction {
     filter: string
 }
 
-interface  IAddToPlaylist extends IAction {
+export interface IAddToPlaylist extends IAction {
     tracks: ITrack[]
 }
 
-interface  IClearPlaylist extends IAction {
+export interface IClearPlaylist extends IAction {
 }
 
-interface  IShufflePlaylist extends IAction {
+export interface IShufflePlaylist extends IAction {
 }
 
 export interface IRemoveFromPlaylist extends IAction {
     track: ITrack
 }
 
-interface  IUpdateConfig extends IAction {
+export interface IUpdateConfig extends IAction {
     config: IConfig
 }
 
-export function isAction<actionType extends IAction>(action: IAction, type: string): action is actionType {
+export interface IErrorMessage extends IAction {
+    message?: any
+}
+
+export function is_action<actionType extends IAction>(action: IAction, type: string): action is actionType {
     return action.type === type;
-}
-
-export function isUpdateLibrary(action: IAction): action is IUpdateLibrary {
-    return action.type === "update-library"
-}
-
-export function isPlayTrack(action: IAction): action is IPlayTrack {
-    return action.type === "play_track"
-}
-
-export function isLibraryFilterChange(action: IAction): action is ILibraryFilter {
-    return action.type === "library_filter"
-}
-
-export function isAddToPlaylist(action: IAction): action is IAddToPlaylist {
-    return action.type === "add_to_playlist"
-}
-
-export function isClearPlaylist(action: IAction): action is IClearPlaylist {
-    return action.type === "clear_playlist"
-}
-
-export function isShufflePlaylist(action: IAction): action is IShufflePlaylist {
-    return action.type === "shuffle_playlist"
-}
-
-export function isUpdateConfig(action: IAction): action is IUpdateConfig {
-    return action.type === "update_config"
 }

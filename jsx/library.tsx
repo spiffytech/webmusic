@@ -6,6 +6,7 @@ const fuzzy = require("fuzzy");
 const latinize = require("latinize");
 const TreeView = require("react-treeview-lazy");
 import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
+import {types as atypes} from "../actions";
 
 export function reload_library(config) {
     console.log("Reloading library");
@@ -27,12 +28,12 @@ function ItemLabelView(
     {label: string, tracks: ITrack[], dispatch: any, on_text_click: any}
 ) {
     return <span>
+        <span onClick={on_text_click}>{label}</span>
         <Button
-            onClick={() => dispatch({type: "add_to_playlist", tracks: tracks})}
+            onClick={() => dispatch({type: atypes.ADD_TO_PLAYLIST, tracks: tracks})}
         >
             <Glyphicon glyph="glyphicon glyphicon-plus" />
         </Button>
-        <span onClick={on_text_click}>{label}</span>
     </span>;
 }
 const ItemLabel = connect(
@@ -57,7 +58,7 @@ function LibraryTrack({track, onClick}) {
 const LibraryTrackContainer = connect(
     null,
     {
-        onClick: (track) => ({type: "play_track", track})
+        onClick: (track) => ({type: atypes.PLAY_TRACK, track})
     }
 )(LibraryTrack) as React.ComponentClass<{track: ITrack}>;
 
@@ -89,7 +90,7 @@ const fuzzy_filter = (library, filter) =>
     ).map(result => result.original);
 
 const filter_dispatch = _.debounce((filter_string, dispatch) =>
-    dispatch({type: "library_filter", filter: filter_string}),
+    dispatch({type: atypes.LIBRARY_FILTER, filter: filter_string}),
     250);
 
 function Library({library, filter, dispatch}) {

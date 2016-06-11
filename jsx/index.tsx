@@ -4,6 +4,7 @@ import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
 import * as URI from "urijs";
+import {types as atypes} from "../actions";
 
 import {Grid, Row, Col, Button, Glyphicon} from "react-bootstrap";
 
@@ -53,11 +54,11 @@ function Player(
             >
                 {sources}
             </audio>
-            <Button key="previous" onClick={() => dispatch({type: "prev_track"})}>
+            <Button key="previous" onClick={() => dispatch({type: atypes.PREV_TRACK})}>
                 <Glyphicon glyph="glyphicon glyphicon-step-backward" />
             </Button>
 
-            <Button key="next" onClick={() => dispatch({type: "next_track"})}>
+            <Button key="next" onClick={() => dispatch({type: atypes.NEXT_TRACK})}>
                 <Glyphicon glyph="glyphicon glyphicon-step-forward" />
             </Button>
         </div>
@@ -70,7 +71,7 @@ const PlayerContainer = connect(
     }),
     {
         dispatch: action => action,
-        track_ended: () => ({type: "track_ended"})
+        track_ended: () => ({type: atypes.TRACK_ENDED})
     }
 )(Player);
 

@@ -5,6 +5,7 @@ build/bundle.js*
 *screenshot*png
 server.js
 build/*
+out/*
 
 *.fossil
 .fake

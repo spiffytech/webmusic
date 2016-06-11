@@ -77,6 +77,9 @@ const store = createStore(combineReducers({
         } else if(actions.isShufflePlaylist(action)) {
             state.playlist = _.shuffle(state.playlist);
             return _.clone(state);
+        } else if(actions.isAction<actions.IRemoveFromPlaylist>(action, "remove_track")) {
+            state.playlist = state.playlist.filter(t => t !== action.track);
+            return _.clone(state);
         }
 
         return state

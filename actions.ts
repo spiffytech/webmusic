@@ -25,8 +25,16 @@ interface  IClearPlaylist extends IAction {
 interface  IShufflePlaylist extends IAction {
 }
 
+export interface IRemoveFromPlaylist extends IAction {
+    track: ITrack
+}
+
 interface  IUpdateConfig extends IAction {
     config: IConfig
+}
+
+export function isAction<actionType extends IAction>(action: IAction, type: string): action is actionType {
+    return action.type === type;
 }
 
 export function isUpdateLibrary(action: IAction): action is IUpdateLibrary {

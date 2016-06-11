@@ -5,6 +5,7 @@ import * as URI from "urijs";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
 const TreeView = require("react-treeview-lazy");
+import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
 
 export function reload_library(config) {
     console.log("Reloading library");
@@ -26,13 +27,12 @@ function ItemLabelView(
     {label: string, tracks: ITrack[], dispatch: any, on_text_click: any}
 ) {
     return <span>
-        <span onClick={on_text_click}>{label}</span>
-        <span
-            style={{backgroundColor: "black", color: "white", marginLeft: "1em"}}
+        <Button
             onClick={() => dispatch({type: "add_to_playlist", tracks: tracks})}
         >
-            +
-        </span>
+            <Glyphicon glyph="glyphicon glyphicon-plus" />
+        </Button>
+        <span onClick={on_text_click}>{label}</span>
     </span>;
 }
 const ItemLabel = connect(

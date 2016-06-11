@@ -8,10 +8,16 @@ function TrackView(
     {track: ITrack, is_current: boolean, dispatch: any}
 ) {
     const style = is_current ? {fontWeight: "bold"} : {};
-    return <Row style={style} onClick={() => dispatch({type: "play_track", track: track})}>
-        <Col xs={12} sm={12} md={5}>{track.title}</Col>
-        <Col xs={5} sm={5} md={3}>{track.artist}</Col>
-        <Col xs={7} sm={7} md={4}>{track.album}</Col>
+    const handleClick = () => dispatch({type: "play_track", track: track});
+    return <Row style={style}>
+        <Col xs={12} sm={12} md={4} onClick={handleClick}>{track.title}</Col>
+        <Col xs={5} sm={5} md={3} onClick={handleClick}>{track.artist}</Col>
+        <Col xs={7} sm={6} md={4} onClick={handleClick}>{track.album}</Col>
+        <Col xs={7} sm={1} md={1}>
+            <Button onClick={() => dispatch({type: "remove_track", track})}>
+                <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+            </Button>
+        </Col>
     </Row>;
 }
 

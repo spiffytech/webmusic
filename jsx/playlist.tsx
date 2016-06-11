@@ -3,8 +3,12 @@ import * as React from "react";
 import {connect} from "react-redux";
 import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
 
-function TrackView({track, dispatch}: {track: ITrack, dispatch: any}) {
-    return <Row onClick={() => dispatch({type: "play_track", track: track})}>
+function TrackView(
+    {track, is_current, dispatch}:
+    {track: ITrack, is_current: boolean, dispatch: any}
+) {
+    const style = is_current ? {fontWeight: "bold"} : {};
+    return <Row style={style} onClick={() => dispatch({type: "play_track", track: track})}>
         <Col xs={12} sm={12} md={5}>{track.title}</Col>
         <Col xs={5} sm={5} md={3}>{track.artist}</Col>
         <Col xs={7} sm={7} md={4}>{track.album}</Col>
@@ -14,10 +18,12 @@ function TrackView({track, dispatch}: {track: ITrack, dispatch: any}) {
 export const Track = connect(
     null,
     {dispatch: _.identity}
-)(TrackView) as React.ComponentClass<{track: ITrack}>;
+)(TrackView) as (React.ComponentClass<{track: ITrack, is_current: boolean}>);
 
-function PlaylistView({tracks, dispatch}: {tracks: ITrack[], dispatch: any}) {
-    console.log("tracks", tracks);
+function PlaylistView(
+    {tracks, current_track, dispatch}:
+    {tracks: ITrack[], current_track: ITrack, dispatch: any}
+) {
     return <div>
         <Button onClick={() => dispatch({type: "shuffle_playlist"})}>
             <Glyphicon glyph="glyphicon glyphicon-random" />
@@ -29,13 +35,20 @@ function PlaylistView({tracks, dispatch}: {tracks: ITrack[], dispatch: any}) {
             <span style={{marginLeft: "0.5em"}}>Clear</span>
         </Button>
         <Grid fluid={true}>
-            {tracks.map((track, i) => <Track key={i} track={track} />)}
+            {tracks.map((track, i) => <Track
+                key={i}
+                track={track}
+                is_current={_.isEqual(track, current_track)}
+            />)}
         </Grid>
     </div>;
 }
 
 export const Playlist =
     connect(
-        state => ({tracks: state.playlist.playlist}),
+        state => ({
+            tracks: state.playlist.playlist,
+            current_track: state.playlist.current_track
+        }),
         {dispatch: _.identity}
     )(PlaylistView);

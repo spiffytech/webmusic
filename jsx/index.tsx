@@ -76,14 +76,18 @@ const PlayerContainer = connect(
 
 function AppView({error_msg, children}) {
     return <div>
-        <Link to="/">Home</Link>
-        <Link to="/config">Configuratorizor</Link>
-        <Link to="/library" className="visible-xs visible-sm">Library</Link>
-        <p>{error_msg}</p>
-
-        <Grid>
+        <Grid fluid={true}>
             <Row>
-                <PlayerContainer />
+                <Col xs={2}><Link to="/">Home</Link></Col>
+                <Col xs={2}><Link to="/config">Configuratorizor</Link></Col>
+                <Col xs={2}><Link to="/library" className="visible-xs visible-sm">Library</Link></Col>
+                <Col xs={2}>{error_msg}</Col>
+            </Row>
+
+            <Row>
+                <Col xs={12}>
+                    <PlayerContainer />
+                </Col>
             </Row>
 
             {children}

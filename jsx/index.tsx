@@ -31,11 +31,11 @@ function Player(
     let sources = null;
     if(audio_source) {
         sources = [
-            <source src={audio_source} onError={e => console.error(e.nativeEvent)}/>,
-            <source src={trans_url("ogg")} type="audio/ogg" />,
-            <source src={trans_url("mp3")} type="audio/mpeg" />,
-            <source src={trans_url("mp4")} type="audio/mp4" />,
-            <source src={trans_url("wav")} type="audio/wav" />,
+            <source key="default" src={audio_source} onError={e => console.error(e.nativeEvent)}/>,
+            <source key="ogg" src={trans_url("ogg")} type="audio/ogg" />,
+            <source key="mp3" src={trans_url("mp3")} type="audio/mpeg" />,
+            <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
+            <source key="wav" src={trans_url("wav")} type="audio/wav" />,
         ];
     }
 
@@ -53,11 +53,11 @@ function Player(
             >
                 {sources}
             </audio>
-            <Button onClick={() => dispatch({type: "prev_track"})}>
+            <Button key="previous" onClick={() => dispatch({type: "prev_track"})}>
                 <Glyphicon glyph="glyphicon glyphicon-step-backward" />
             </Button>
 
-            <Button onClick={() => dispatch({type: "next_track"})}>
+            <Button key="next" onClick={() => dispatch({type: "next_track"})}>
                 <Glyphicon glyph="glyphicon glyphicon-step-forward" />
             </Button>
         </div>

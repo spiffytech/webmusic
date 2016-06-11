@@ -20,8 +20,11 @@ const store = createStore(combineReducers({
     form: form_reducer,
     error_msg: (state=null, action) => {
         // TODO: A way to dismiss the error
-        if(action.type == "error_msg") return action.message || "Unknown error";
-        return state;
+        if(action.type == "error_msg") {
+            return action.message || "Unknown error";
+        }
+
+        return null;
     },
     config: (state: IConfig = {music_host: null}, action) => {
         if(actions.isUpdateConfig(action) && action.config) {

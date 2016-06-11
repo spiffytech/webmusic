@@ -62,6 +62,14 @@ const store = createStore(combineReducers({
         return state;
     },
     playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action: actions.IAction) : IPlaylistStore => {
+        function find_next_track(tracks: ITrack[]): ITrack {
+            const i = tracks.indexOf(state.current_track);
+            if(i === -1) throw new Error("Error finding track in library");
+            // TODO: Update message for "previous tracks" case
+            if(i+1 > tracks.length) throw new Error("No next track to play");
+            return tracks[i+1];
+        }
+
         if(is_action<actions.IPlayTrack>(action, atypes.PLAY_TRACK)) {
             console.log("Setting current track", action.track);
             state.current_track = action.track;
@@ -70,11 +78,14 @@ const store = createStore(combineReducers({
             is_action<actions.ITrackEnded>(action, atypes.TRACK_ENDED) ||
             is_action<actions.INextTrack>(action, atypes.NEXT_TRACK)
         ) {
-            const playlist = state.playlist;
-            const i = playlist.indexOf(state.current_track);
-            if(i === -1) throw new Error("Error finding track in library");
-            if(i+1 > playlist.length) throw new Error("No next track to play");
-            state.current_track = playlist[i+1];
+            const tracks = state.playlist;
+            state.current_track = find_next_track(tracks);
+            return _.clone(state);
+        } else if(
+            is_action<actions.IPrevTrack>(action, atypes.PREV_TRACK)
+        ) {
+            const tracks = <ITrack[]>_.reverse(_.clone(state.playlist));
+            state.current_track = find_next_track(tracks);
             return _.clone(state);
         } else if(
             is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)

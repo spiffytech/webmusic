@@ -30,6 +30,9 @@ export interface IPlayTrack extends IAction {
 export interface ITrackEnded extends IAction {
 }
 
+export interface IPrevTrack extends IAction {
+}
+
 export interface INextTrack extends IAction {
 }
 

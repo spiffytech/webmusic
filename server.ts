@@ -4,6 +4,7 @@ import * as path from "path";
 
 import * as Hapi from "hapi";
 const Inert = require("inert");
+const WebpackPlugin = require("hapi-webpack-plugin");
 
 const ffmpeg = require("fluent-ffmpeg");
 import * as request from "request";
@@ -17,8 +18,29 @@ const server = new Hapi.Server({
         }
     }
 });
-server.connection({ host: process.env.HOST || "0.0.0.0", port: process.env.PORT || 3001 });
-server.register(Inert, () => {});
+server.connection({
+    host: process.env.HOST ||
+    "0.0.0.0", port: process.env.PORT || 3001
+});
+
+server.register(Inert);
+
+server.register(
+    {
+        register: WebpackPlugin,
+        options: "./webpack.config.js"
+    }
+);
+
+server.on("response", function (request) {
+    let status_code = null;
+    if(request.response.statusCode === 200 || request.response.statusCode === 304) {
+        status_code = "---";
+    } else {
+        status_code = request.response.statusCode;
+    }
+    console.log(request.info.remoteAddress + " : " + status_code + " : " + request.method.toUpperCase() + " " + request.url.path);
+});
 
 server.route({
     method: 'GET',

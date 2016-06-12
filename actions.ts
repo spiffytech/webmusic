@@ -1,5 +1,5 @@
 export const types = {
-    UPDATE_LIBRARY: "update-library",
+    UPDATE_LIBRARY: "update_library",
     PLAY_TRACK: "play_track",
     TRACK_ENDED: "track_ended",
     // TODO: handle

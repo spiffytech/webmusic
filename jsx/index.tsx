@@ -6,7 +6,7 @@ import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
 import * as URI from "urijs";
 import {types as atypes} from "../actions";
 
-import {Grid, Row, Col, Button, Glyphicon} from "react-bootstrap";
+import {Grid, Row, Col, Button, Glyphicon, Alert} from "react-bootstrap";
 
 
 import {LibraryContainer} from "./library";
@@ -33,9 +33,9 @@ function Player(
     if(audio_source) {
         sources = [
             <source key="default" src={audio_source} onError={e => console.error(e.nativeEvent)}/>,
-            <source key="ogg" src={trans_url("ogg")} type="audio/ogg" />,
-            <source key="mp3" src={trans_url("mp3")} type="audio/mpeg" />,
-            <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
+            <source key="ogg" src={trans_url("ogg")} type="audio/ogg; codec=vorbis" />,
+            <source key="mp3" src={trans_url("mp3")} type="audio/mpeg; codec=mp3" />,
+            //<source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
             <source key="wav" src={trans_url("wav")} type="audio/wav" />,
         ];
     }
@@ -79,10 +79,17 @@ function AppView({error_msg, children}) {
     return <div>
         <Grid fluid={true}>
             <Row>
-                <Col xs={2}><Link to="/">Home</Link></Col>
-                <Col xs={2}><Link to="/config">Configuratorizor</Link></Col>
-                <Col xs={2}><Link to="/library" className="visible-xs visible-sm">Library</Link></Col>
-                <Col xs={2}>{error_msg}</Col>
+                <Col xs={3} md={1}><Link to="/">Home</Link></Col>
+                <Col xs={3} md={1}><Link to="/config">Configuratorizor</Link></Col>
+                <Col xs={3} md={1}><Link to="/library" className="visible-xs visible-sm">Library</Link></Col>
+            </Row>
+
+            <Row>
+                <Col xs={12}>
+                    <Alert bsStyle="warning">
+                        {error_msg}
+                    </Alert>
+                </Col>
             </Row>
 
             <Row>

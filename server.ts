@@ -23,15 +23,6 @@ server.connection({
     "0.0.0.0", port: process.env.PORT || 3001
 });
 
-server.register(Inert);
-
-server.register(
-    {
-        register: WebpackPlugin,
-        options: "./webpack.config.js"
-    }
-);
-
 server.on("response", function (request) {
     let status_code = null;
     if(request.response.statusCode === 200 || request.response.statusCode === 304) {
@@ -95,24 +86,34 @@ server.route({
     }
 });
 
-// Static files (WebPack / SPA)
-server.route({
-    method: 'GET',
-    path: '/{param*}',
-    handler: {
-        directory: {
-            path: path.join(process.env.PWD, "build"),
-            redirectToSlash: true,
-            index: true
-        }
-    }
-});
-
 export function serve() {
-    server.initialize().
-    then(() => server.start()).
-    then(() => console.log('Server running at:', server.info.uri)).
-    catch(err => { console.error(err); throw err; });
+    server.register(Inert, () => {
+        server.register(
+            {
+                register: WebpackPlugin,
+                options: "./webpack.config.js"
+            },
+            () => {
+                // Static files (WebPack / SPA)
+                server.route({
+                    method: 'GET',
+                    path: '/{param*}',
+                    handler: {
+                        directory: {
+                            path: path.join(process.env.PWD, "build"),
+                            redirectToSlash: true,
+                            index: true
+                        }
+                    }
+                });
+
+                server.initialize().
+                then(() => server.start()).
+                then(() => console.log('Server running at:', server.info.uri)).
+                catch(err => { console.error(err); throw err; });
+            }
+        );
+    });
 }
 
 serve()

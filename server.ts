@@ -88,31 +88,37 @@ server.route({
 
 export function serve() {
     server.register(Inert, () => {
-        server.register(
-            {
-                register: WebpackPlugin,
-                options: "./webpack.config.js"
-            },
-            () => {
-                // Static files (WebPack / SPA)
-                server.route({
-                    method: 'GET',
-                    path: '/{param*}',
-                    handler: {
-                        directory: {
-                            path: path.join(process.env.PWD, "build"),
-                            redirectToSlash: true,
-                            index: true
-                        }
+        const cb = () => {
+            // Static files (WebPack / SPA)
+            server.route({
+                method: 'GET',
+                path: '/{param*}',
+                handler: {
+                    directory: {
+                        path: path.join(process.env.PWD, "build"),
+                        redirectToSlash: true,
+                        index: true
                     }
-                });
+                }
+            });
 
-                server.initialize().
-                then(() => server.start()).
-                then(() => console.log('Server running at:', server.info.uri)).
-                catch(err => { console.error(err); throw err; });
-            }
-        );
+            server.initialize().
+            then(() => server.start()).
+            then(() => console.log('Server running at:', server.info.uri)).
+            catch(err => { console.error(err); throw err; });
+        };
+
+        if(process.env.NODE_ENV === "dev") {
+            server.register(
+                {
+                    register: WebpackPlugin,
+                    options: "./webpack.config.js"
+                },
+                cb
+            );
+        } else {
+            cb();
+        }
     });
 }
 

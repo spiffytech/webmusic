@@ -65,8 +65,7 @@ export function get_listings(rows = 10000000000): Promise<AlbumListing[]> {
         identifier: doc.identifier,
         subject: doc.subject,
         title: doc.title
-    }))).
-    then(echo(logger.debug.bind(logger)));
+    })));
 }
 
 function parse_metadata(metadata: string): Promise<RawMetadata[]> {

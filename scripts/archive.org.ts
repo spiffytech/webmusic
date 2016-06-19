@@ -18,12 +18,14 @@ process.on("unhandledRejection", function(reason, p){
 
 const counts: {[k: string]: number} = {};
 
+const throttled_fetcher = throat(10, archive.fetch_metadata);
+
 archive.get_listings(10000).
 then(listings =>
     Promise.all(
         listings.map(listing => listing.identifier).
         map(id =>
-            throat(10, archive.fetch_metadata)(id).
+            throttled_fetcher(id).
             then(listing => listing.map(track => track.format)).
             then(formats => _.flatten(formats)).
             then(formats => _.forEach(formats, format => {

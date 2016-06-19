@@ -2,6 +2,12 @@ import * as _ from "lodash";
 import * as archive from "../lib/archive.org";
 import {echo, logger} from "../lib/archive.org";
 
+/*
+const memwatch = require("memwatch");
+memwatch.on("leak", logger.warn.bind(logger));
+memwatch.on("stats", logger.info.bind(logger));
+*/
+
 type Throat<T,U> = (concurrency: number, fn?: (arg: U) => Promise<T>) => (arg: U) => Promise<T>;
 
 const throat: Throat<archive.ArchiveTrack[],string> = require("throat");
@@ -17,7 +23,7 @@ then(listings =>
     Promise.all(
         listings.map(listing => listing.identifier).
         map(id =>
-            throat(50, archive.fetch_metadata)(id).
+            throat(10, archive.fetch_metadata)(id).
             then(listing => listing.map(track => track.format)).
             then(formats => _.flatten(formats)).
             then(formats => _.forEach(formats, format => {

@@ -140,11 +140,24 @@ export function fetch_metadata(identifier: string): Promise<Track[]> {
     then(echo<RawMetadata[]>(files => {
         _.map(files, file => joi.assert(file, joi.object({
             $: joi.object({
-                name: joi.string(),
-                source: joi.string().valid("original", "derivative", "metadata")
+                name: joi.string().required(),
+                source: joi.string().valid("original", "derivative", "metadata").required()
             }).required(),
             format: joi.array().items(joi.string()).length(1).required(),
-            original: joi.array().items(joi.string()).when(joi.ref("format.0"), {is: joi.string().valid("Checksums", "Flac FingerPrint"), then: joi.array().items(joi.string()), otherwise: joi.array().items(joi.string()).length(1)})
+            original: joi.any().when(
+                joi.ref("$.source", {contextPrefix: "#"}),
+                {
+                    is: "derivative",
+                    then: joi.array().items(joi.string()).when(
+                        joi.ref("format.0"),
+                        {
+                            is: joi.string().valid("Checksums", "Flac FingerPrint"),
+                            then: joi.array().items(joi.string()).required(),
+                            otherwise: joi.array().items(joi.string()).length(1).required()
+                        }
+                    )
+                }
+            )
         }).unknown()));
     })).
     // xml2js puts everything into arrays, even single values

@@ -14,7 +14,7 @@ archive.get_listings(10).
 then(listings =>
     Promise.all(
         listings.map(listing => listing.identifier).
-        map(throat(2, archive.fetch_metadata))
+        map(throat(50, archive.fetch_metadata))
     )
 ).then(listings => _.flatten(listings)).
 then(tracks => tracks.map(track => track.format)).

@@ -18,7 +18,7 @@ process.on("unhandledRejection", function(reason, p){
 
 const counts: {[k: string]: number} = {};
 
-archive.get_listings(10).
+archive.get_listings(10000).
 then(listings =>
     Promise.all(
         listings.map(listing => listing.identifier).

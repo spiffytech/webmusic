@@ -21,6 +21,7 @@ then(listings =>
         )
     )
 ).
+then(formats => _.flatten(formats)).
 then(formats => _(formats).countBy().toPairs().sortBy(1).value()).
 then(logger.debug.bind(logger)).
 catch(logger.error.bind(logger));

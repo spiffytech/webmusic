@@ -65,7 +65,8 @@ export function get_listings(rows = 10000000000): Promise<AlbumListing[]> {
         identifier: doc.identifier,
         subject: doc.subject,
         title: doc.title
-    })));
+    }))).
+    then(echo(logger.debug.bind(logger)));
 }
 
 function parse_metadata(metadata: string): Promise<RawMetadata[]> {
@@ -116,6 +117,8 @@ function extract_fields(file): Track {
 
 export function fetch_metadata(identifier: string): Promise<Track[]> {
     const url = `https://archive.org/download/${identifier}/${identifier}_files.xml`;
+
+    logger.debug("Fetching", identifier);
 
     return rp(url).
     then(parse_metadata).

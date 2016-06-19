@@ -16,10 +16,11 @@ then(listings =>
         listings.map(listing => listing.identifier).
         map(id =>
             throat(50, archive.fetch_metadata)(id).
-            then(listing => listing.map(track => track.format))
+            then(listing => listing.map(track => track.format)).
+            then(formats => _.flatten(formats))
         )
     )
-).then(formats_by_listing => _.flatten(formats_by_listing)).
+).
 then(formats => _(formats).countBy().toPairs().sortBy(1).value()).
 then(logger.debug.bind(logger)).
 catch(logger.error.bind(logger));

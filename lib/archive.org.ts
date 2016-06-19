@@ -35,7 +35,7 @@ interface Track {
     length: number;
 }
 
-interface ArchiveTrack {
+export interface ArchiveTrack {
     $?: {name: string, source: string};
     creator?: string;
     album?: string;
@@ -115,7 +115,7 @@ function extract_fields(file): Track {
     };
 }
 
-export function fetch_metadata(identifier: string): Promise<Track[]> {
+export function fetch_metadata(identifier: string): Promise<ArchiveTrack[]> {
     const url = `https://archive.org/download/${identifier}/${identifier}_files.xml`;
 
     logger.debug("Fetching", identifier);
@@ -171,8 +171,8 @@ export function fetch_metadata(identifier: string): Promise<Track[]> {
     ));
 }
 
-function munge_tracks(files: ArchiveTrack[]) {
-    Promise.resolve(files).
+function munge_tracks(files: ArchiveTrack[]): Promise<ITrack[]> {
+    return Promise.resolve(files).
     then(files => files.filter(music_format_predicate)).
     then(files => {
         const originals = _.keyBy(

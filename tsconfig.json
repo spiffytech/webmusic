@@ -16,13 +16,17 @@
         "jsx/config.tsx",
         "jsx/index.tsx",
         "jsx/library.tsx",
-        "jsx/playlist.tsx"
+        "jsx/playlist.tsx",
+        "lib/archive.org.ts",
+        "scripts/archive.org.ts"
     ],
     "filesGlob": [
         "*.ts",
         "typings/index.d.ts",
         "app.ts",
-        "jsx/*ts*"
+        "jsx/*ts*",
+        "lib/*ts*",
+        "scripts/*ts*"
     ],
     "atom": {
         "rewriteTsconfig": true

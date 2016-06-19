@@ -4,8 +4,10 @@
     "request": "registry:npm/request#2.69.0+20160428223725"
   },
   "globalDependencies": {
+    "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
     "es6-promise": "registry:dt/es6-promise#0.0.0+20160423074304",
     "hapi": "registry:dt/hapi#13.0.0+20160602125023",
+    "joi": "registry:dt/joi#9.0.0+20160602140522",
     "node": "registry:dt/node#6.0.0+20160602155235",
     "react": "registry:dt/react#0.14.0+20160526134601",
     "react-bootstrap": "registry:dt/react-bootstrap#0.0.0+20160526141239",
@@ -18,6 +20,7 @@
     "redux-thunk": "registry:dt/redux-thunk#2.0.1+20160317120654",
     "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
     "urijs": "registry:dt/urijs#1.15.1+20160526132152",
-    "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160524142046"
+    "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160524142046",
+    "xml2js": "registry:dt/xml2js#0.0.0+20160317120654"
   }
 }

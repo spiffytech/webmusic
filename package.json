@@ -8,7 +8,7 @@
   "scripts": {
     "dev-server": "node_modules/.bin/webpack-dev-server --inline",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "typings install && webpack && tsc"
+    "prepublish": "typings install && NODE_ENV=production webpack -p && tsc"
   },
   "repository": {
     "type": "git",
@@ -37,6 +37,7 @@
     "typescript-eslint-parser": "0.1.0-alpha-1",
     "typings": "^1.0.4",
     "webpack": "^1.13.0",
+    "webpack-bundle-size-analyzer": "^2.0.2",
     "webpack-dev-server": "^1.14.1",
     "webpack-manifest-plugin": "^1.0.1"
   },

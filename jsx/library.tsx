@@ -73,7 +73,8 @@ function LibraryAlbum({album, tracks}) {
 
 function LibraryArtist({artist, tracks}) {
     const by_album = _.groupBy<ITrack, string>(tracks, "album");
-    const label = <ItemLabel label={artist} tracks={tracks} />
+
+    const label = <ItemLabel label={artist} tracks={tracks} />;
 
     return <TreeView key={artist} lazy={true} nodeLabel={label} defaultCollapsed={true}>
         {_.map(by_album, (tracks, album) =>
@@ -95,13 +96,18 @@ const filter_dispatch = _.debounce((filter_string, dispatch) =>
 
 function Library({library, filter, dispatch}) {
     const filtered = fuzzy_filter(library, filter);
-    const by_artist = _.groupBy<ITrack, string>(filtered, "artist");
+    const by_artist: [string, ITrack[]] = (_(filtered).
+        groupBy<ITrack, string>("artist").
+        toPairs<[string, ITrack[]]>().
+        sortBy(([artist, _tracks]: [string, ITrack[]]) => artist.toLowerCase()).
+        sortBy(([_artist, tracks]) => tracks.length > 8 ? -1 : 1).
+        value() as any);
 
     return <div>
         <input onChange={
-            (e : any) => filter_dispatch(e.target.value, dispatch)
+            (e: any) => filter_dispatch(e.target.value, dispatch)
         } />
-        {_.map(by_artist, (tracks, artist) =>
+        {_.map(by_artist, ([artist, tracks]: [string, ITrack[]]) =>
             <LibraryArtist key={artist} artist={artist} tracks={tracks} />
         )}
     </div>;

@@ -6,7 +6,7 @@
   },
   "globalDependencies": {
     "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
-    "es6-promise": "registry:dt/es6-promise#0.0.0+20160423074304",
+    "es6-promise": "registry:dt/es6-promise#0.0.0+20160614011821",
     "hapi": "registry:dt/hapi#13.0.0+20160602125023",
     "joi": "registry:dt/joi#9.0.0+20160602140522",
     "node": "registry:dt/node#6.0.0+20160602155235",

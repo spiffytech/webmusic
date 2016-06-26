@@ -108,7 +108,7 @@ export function serve() {
             catch(err => { console.error(err); throw err; });
         };
 
-        if(process.env.NODE_ENV === "dev") {
+        if(process.env.NODE_ENV === "development") {
             server.register(
                 {
                     register: WebpackPlugin,

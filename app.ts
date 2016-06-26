@@ -127,7 +127,10 @@ store.dispatch({
 console.log(store.getState().config);
 reload_library(store.getState().config).
     then(library => store.dispatch({type: atypes.UPDATE_LIBRARY, data: library})).
-    catch(err => store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err}));
+    catch(err => {
+        store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err});
+        throw err;
+    });
 
 render(
     mkdom(store),

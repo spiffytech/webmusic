@@ -38,8 +38,7 @@ module.exports = {
         $: 'jquery',
         jQuery: 'jquery',
         'window.jQuery': 'jquery'
-    }),
-    new webpack.optimize.UglifyJsPlugin()
+    })
   ],
   module: {
     loaders: [

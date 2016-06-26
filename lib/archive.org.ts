@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import * as assert from "assert";
 import * as bunyan from "bunyan";
 import * as joi from "joi";
 import * as rp from "request-promise";
@@ -98,11 +99,16 @@ function timestamp_to_seconds(ts: string): number {
 
 function extract_fields(file): Track {
     const formats = {
+        "WAVE": "wav",
         "Flac": "flac",
         "24bit Flac": "flac",
+        "Apple Lossless Audio": "alac",
         "Ogg Vorbis": "ogg",
-        "VBR MP3": "mp3"
+        "VBR MP3": "mp3",
+        "AIFF": "aiff"
     };
+
+    assert(formats[file.format], `unrecognized file format: ${file.format}`);
 
     return {
         artist: file.creator || "",

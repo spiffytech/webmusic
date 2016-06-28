@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import * as archive from "../lib/archive.org";
 import {echo, logger} from "../lib/archive.org";
+import * as Rx from "rx";
 
 type Throat<T,U> = (
     concurrency: number,
@@ -34,37 +35,37 @@ function activate_heapdumps() {
     });
 }
 
-function count_filetypes(n = 1000) {
+function fetch_track_listings(num_listings = 1000) {
     const counts: {[k: string]: number} = {};
     const throttled_fetcher = throat(50, archive.fetch_metadata);
 
-    archive.get_listings(n).
+    return archive.get_listings(num_listings).
     then(listings =>
-        settle(
-            listings.map((listing, i) => {
-                logger.debug(`Processing #${i}: ${listing.identifier}`);
-
-                return throttled_fetcher(listing.identifier).
-                then(listing => listing.map(track => track.format)).
-                then(formats => _.flatten(formats)).
-                then(formats => _.forEach(formats, format => {
-                    counts[format] =
-                        counts[format] === undefined ?
-                        1 :
-                        counts[format] + 1;
-                }));
-            })
+        listings.map((listing, i) =>
+            throttled_fetcher(listing.identifier).
+            then(value => _.tap(value, () => logger.debug(`Processed #${i}: ${listing.identifier}`)))
         )
     ).
-    then(unsettled =>
-        _.forEach(unsettled, u => {
-            if(!u.isFulfilled()) logger.warn("Unfulfilled fetch:", u.reason());
-        })
-    ).
-    then(() => _(counts).toPairs().sortBy(1).value()).
-    then(logger.debug.bind(logger)).
-    catch(logger.error.bind(logger));
+    then(requests =>
+        Rx.Observable.onErrorResumeNext(
+            ..._.map(requests, request => Rx.Observable.fromPromise(request))
+        )
+    );
 }
 
+function count_filetypes(n = 1000) {
+    fetch_track_listings(n).
+    then(observable =>
+        observable.
+        flatMap<archive.ArchiveTrack>(_.identity).
+        map(track => track.format).
+        reduce((acc, format) => {
+            acc[format] = (acc[format] || 0) + 1;
+            return acc;
+        }, {}).
+        map(stats => _(stats).toPairs().sortBy(1).value()).
+        subscribe(logger.debug.bind(logger))
+    );
+}
 
-count_filetypes(10);
+count_filetypes();

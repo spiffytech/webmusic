@@ -24,24 +24,20 @@ interface AlbumListing {
     title: string;
 }
 
-interface Track {
-    artist: string;
-    album: string;
-    title: string;
-    format: string;
-    track_num: number;
-    length: number;
-}
-
 export interface ArchiveTrack {
     $?: {name: string, source: string};
     creator?: string;
     album?: string;
     title?: string;
-    track?: number;
-    length?: number | string;
+    track?: string;
+    length?: string;
     format?: string;
     original?: string;
+}
+
+interface TrackFormat {
+    format: string;
+    filename: string;
 }
 
 export function echo<T>(fn: (arg: T) => any) {
@@ -76,15 +72,18 @@ function parse_metadata(metadata: string): Promise<RawMetadata[]> {
     then((res: any) => res.files.file);
 }
 
+const recognized_formats = {
+    "WAVE": "wav",
+    "Flac": "flac",
+    "24bit Flac": "flac",
+    "Apple Lossless Audio": "alac",
+    "Ogg Vorbis": "ogg",
+    "VBR MP3": "mp3",
+    "AIFF": "aiff"
+};
+
 function music_format_predicate(file) {
-    return [
-        "Flac",
-        "Ogg Vorbis",
-        "VBR MP3",
-        "AIFF",
-        "WAVE",
-        "Apple Lossless Audio"
-    ].indexOf(file.format) !== -1;
+    return recognized_formats[file.format] !== undefined;
 }
 
 function timestamp_to_seconds(ts: string): number {
@@ -97,26 +96,15 @@ function timestamp_to_seconds(ts: string): number {
     return parseFloat(ts);
 }
 
-function extract_fields(file): Track {
-    const formats = {
-        "WAVE": "wav",
-        "Flac": "flac",
-        "24bit Flac": "flac",
-        "Apple Lossless Audio": "alac",
-        "Ogg Vorbis": "ogg",
-        "VBR MP3": "mp3",
-        "AIFF": "aiff"
-    };
-
-    assert(formats[file.format], `unrecognized file format: ${file.format}`);
-
+function to_itrack(track: ArchiveTrack, formats: TrackFormat[]): ITrack {
     return {
-        artist: file.creator || "",
-        album: file.album || "",
-        title: file.title || "",
-        track_num: parseInt(file.track || -1),
-        length: timestamp_to_seconds(file.length || -1),
-        format: formats[file.format]
+        artist: track.creator || "",
+        album: track.album || "",
+        title: track.title || "",
+        path: _.head(formats).filename,
+        track_num: parseInt(track.track || "-1"),
+        length: timestamp_to_seconds(track.length || "-1"),
+        formats: formats
     };
 }
 
@@ -162,30 +150,62 @@ export function fetch_metadata(identifier: string): Promise<ArchiveTrack[]> {
     ));
 }
 
-function munge_tracks(files: ArchiveTrack[]): Promise<ITrack[]> {
-    return Promise.resolve(files).
-    then(files => files.filter(music_format_predicate)).
-    then(files => {
-        const originals = _.keyBy(
-            files.filter(f => f.$.source === "original"),
-            f => f["$"].name
-        );
+export function filter_invalid_formats(tracks: ArchiveTrack[]) {
+    return _.filter(tracks, music_format_predicate);
+}
 
-        const by_format = _(files).
-        map(file =>
-            file.$.source === "original" ?
-            _.set<ArchiveTrack>(file, "original", file.$.name) :
-            file
-        ).
-        groupBy(file => file.original).
-        mapValues((files: ArchiveTrack[]) =>
-            _.map(files, file =>
-                ({format: file.format, filename: file.$.name})
-            )
-        ).
+function find_all_versions(tracks: ArchiveTrack[], original: ArchiveTrack): ArchiveTrack[] {
+    const alt_formats = _(tracks).
+    filter(track => track.original === original.$.name).
+    value();
+
+    return [
+        original,
+        ...alt_formats
+    ];
+}
+
+export function munge_tracks(files: ArchiveTrack[]): ITrack[] {
+    const filtered = files.filter(music_format_predicate);
+    const originals = _.keyBy(
+        filtered.filter(f => f.$.source === "original"),
+        f => f["$"].name
+    );
+
+    // logger.debug("originals", originals);
+
+    const itracks = _(originals).
+        map(original => find_all_versions(files, original)).
+        /*
+        map(versions => _.reduce(
+            versions,
+            (acc: {[k: string]: any}, version) => ({
+                artist: acc.artist || version.artist,
+                album: acc.album || version.album,
+                title: acc.title || version.title,
+                track_num: acc.track_num || version.track_num,
+                length: acc.length || version.length
+            }),
+            {}
+        ));
+        */
+        map(versions => {
+            const with_metadata: ArchiveTrack =
+                _.mergeWith({}, ...versions, (a, b) => a || b);
+
+            const formats: TrackFormat[] = _.map(
+                versions,
+                version => ({
+                    format: recognized_formats[version.format],
+                    filename: version.$.name
+                })
+            );
+
+            const as_itrack = to_itrack(with_metadata, formats);
+
+            return as_itrack;
+        }).
         value();
 
-        logger.debug("by_format", by_format);
-        return _.values(_.mapValues(originals, extract_fields));
-    });
+    return itracks;
 }

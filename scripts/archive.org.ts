@@ -53,8 +53,20 @@ function fetch_track_listings(num_listings = 1000) {
     );
 }
 
-function count_filetypes(n = 1000) {
-    fetch_track_listings(n).
+function create_tracksjson(num_tracks = 1000) {
+    fetch_track_listings(num_tracks).
+    then(observable => {
+        // observable.subscribe(logger.debug.bind(logger));
+
+        observable.
+        map(archive.filter_invalid_formats).
+        map(archive.munge_tracks).
+        subscribe(logger.debug.bind(logger, "out"));
+    });
+}
+
+function count_filetypes(num_tracks = 1000) {
+    fetch_track_listings(num_tracks).
     then(observable =>
         observable.
         flatMap<archive.ArchiveTrack>(_.identity).
@@ -68,4 +80,5 @@ function count_filetypes(n = 1000) {
     );
 }
 
-count_filetypes();
+// count_filetypes();
+create_tracksjson(10);

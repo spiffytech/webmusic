@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as archive from "../lib/archive.org";
 import {echo, logger} from "../lib/archive.org";
 import * as Rx from "rx";
+const fsp = require("fs-promise");
 
 type Throat<T,U> = (
     concurrency: number,
@@ -61,7 +62,14 @@ function create_tracksjson(num_tracks = 1000) {
         observable.
         map(archive.filter_invalid_formats).
         map(archive.munge_tracks).
-        subscribe(logger.debug.bind(logger, "out"));
+        flatMap(_.identity).
+        toArray().
+        subscribe(
+            array =>
+                fsp.writeFile("/tmp/archive.json", JSON.stringify(array, null, 2)),
+            logger.error.bind(logger),
+            logger.debug.bind(logger, "complete")
+        );
     });
 }
 
@@ -81,4 +89,4 @@ function count_filetypes(num_tracks = 1000) {
 }
 
 // count_filetypes();
-create_tracksjson(10);
+create_tracksjson(100);

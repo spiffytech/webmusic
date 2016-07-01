@@ -6,7 +6,7 @@
     "webmusic": "out/launch.js"
   },
   "scripts": {
-    "dev-server": "node_modules/.bin/webpack-dev-server --inline",
+    "dev-server": "node_modules/.bin/ts-node server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "typings install && NODE_ENV=production webpack -p && tsc"
   },

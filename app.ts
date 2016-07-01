@@ -7,15 +7,15 @@ import {reducer as form_reducer} from "redux-form";
 import { Router, Route, Link, browserHistory } from "react-router";
 import thunk from "redux-thunk";
 
-import * as actions from "./actions"
-import {is_action, types as atypes} from "./actions"
+import * as actions from "./actions";
+import {is_action, types as atypes} from "./actions";
 import {reload_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
 require("./bootstrap-3.3.6/css/bootstrap.min.css");
 require("./bootstrap-3.3.6/css/bootstrap-theme.min.css");
-require("./node_modules/react-treeview-lazy/react-treeview.css")
+require("./node_modules/react-treeview-lazy/react-treeview.css");
 
 const store = createStore(combineReducers({
     form: form_reducer,
@@ -39,7 +39,7 @@ const store = createStore(combineReducers({
     },
     action_logger: (state = null, action: actions.IAction) => {
         console.log("base", action);
-        return state
+        return state;
     },
     library: (state: ITrack[] = [], action: actions.IAction): ITrack[] => {
         if(is_action<actions.IUpdateLibrary>(action, atypes.UPDATE_LIBRARY)) {
@@ -52,7 +52,7 @@ const store = createStore(combineReducers({
             return action.data.filter(fn);
         }
 
-        return state
+        return state;
     },
     library_filter: (state = "", action: actions.IAction) => {
         if(is_action<actions.ILibraryFilter>(action, atypes.LIBRARY_FILTER)) {
@@ -61,7 +61,7 @@ const store = createStore(combineReducers({
 
         return state;
     },
-    playlist: (state : IPlaylistStore = {playlist: [], current_track: null}, action: actions.IAction) : IPlaylistStore => {
+    playlist: (state: IPlaylistStore = {playlist: [], current_track: null}, action: actions.IAction): IPlaylistStore => {
         function find_next_track(tracks: ITrack[]): ITrack {
             const i = tracks.indexOf(state.current_track);
             if(i === -1) throw new Error("Error finding track in library");
@@ -110,7 +110,7 @@ const store = createStore(combineReducers({
             return _.clone(state);
         }
 
-        return state
+        return state;
     }
 }), applyMiddleware(thunk));
 

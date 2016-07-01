@@ -13,7 +13,7 @@ const server = new Hapi.Server({
     connections: {
         routes: {
             files: {
-                relativeTo: path.join(__dirname, 'build')
+                relativeTo: path.join(__dirname, "build")
             }
         }
     }
@@ -34,8 +34,8 @@ server.on("response", function (request) {
 });
 
 server.route({
-    method: 'GET',
-    path: '/transcode',
+    method: "GET",
+    path: "/transcode",
     handler: async function (req, reply) {
         const _reply = _.once(reply);
 
@@ -54,7 +54,7 @@ server.route({
                 mp3: "audio/mpeg",
                 ogg: "audio/vorbis",
                 wav: "audio/wav"
-            }
+            };
 
             assert(url);
             assert(output_format);
@@ -91,8 +91,8 @@ export function serve() {
         const cb = () => {
             // Static files (WebPack / SPA)
             server.route({
-                method: 'GET',
-                path: '/{param*}',
+                method: "GET",
+                path: "/{param*}",
                 handler: {
                     directory: {
                         path: path.join(process.env.PWD, "build"),
@@ -104,7 +104,7 @@ export function serve() {
 
             server.initialize().
             then(() => server.start()).
-            then(() => console.log('Server running at:', server.info.uri)).
+            then(() => console.log("Server running at:", server.info.uri)).
             catch(err => { console.error(err); throw err; });
         };
 
@@ -122,4 +122,4 @@ export function serve() {
     });
 }
 
-serve()
+serve();

@@ -17,12 +17,12 @@ function Player(
     {track, track_ended, music_host, dispatch}:
     {track: ITrack, track_ended: any, music_host: string, dispatch: any}
 ) {
-    const audio_source = track ? new URI(track.path).absoluteTo(music_host).toString() : null
+    const audio_source = track ? new URI(track.path).absoluteTo(music_host).toString() : null;
     let header = undefined;
     if(track) {
         header = <p>{track.title} / {track.artist} - {track.album}</p>;
     } else {
-        header = ""
+        header = "";
     }
 
     function trans_url(type) {
@@ -35,7 +35,7 @@ function Player(
             <source key="default" src={audio_source} onError={e => console.error(e.nativeEvent)}/>,
             <source key="ogg" src={trans_url("ogg")} type="audio/ogg; codec=vorbis" />,
             <source key="mp3" src={trans_url("mp3")} type="audio/mpeg; codec=mp3" />,
-            //<source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
+            // <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
             <source key="wav" src={trans_url("wav")} type="audio/wav" />,
         ];
     }
@@ -115,7 +115,7 @@ function Jukebox() {
         <Col sm={12} md={8}>
             <Playlist key="playlist" />
         </Col>
-    </Row>
+    </Row>;
 }
 
 export function mkdom(store) {
@@ -127,5 +127,5 @@ export function mkdom(store) {
                 <Route path="library" component={LibraryContainer}></Route>
             </Route>
         </Router>
-    </Provider>
+    </Provider>;
 }

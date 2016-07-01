@@ -49,7 +49,7 @@ function LibraryTrack({track, onClick}) {
             label={track.title}
             tracks={[track]}
             on_text_click={() => onClick(track)}
-        />
+        />;
     return <div key={track.title}>
         {label}
     </div>;
@@ -63,12 +63,12 @@ const LibraryTrackContainer = connect(
 )(LibraryTrack) as React.ComponentClass<{track: ITrack}>;
 
 function LibraryAlbum({album, tracks}) {
-    const label = <ItemLabel label={album} tracks={tracks} />
+    const label = <ItemLabel label={album} tracks={tracks} />;
     return <TreeView key={album} lazy={true} nodeLabel={label} defaultCollapsed={true}>
         {_.map(tracks, (track:ITrack, album_name) =>
             <LibraryTrackContainer key={`${album}.${track.title}`} track={track} />
         )}
-    </TreeView>
+    </TreeView>;
 }
 
 function LibraryArtist({artist, tracks}) {
@@ -80,7 +80,7 @@ function LibraryArtist({artist, tracks}) {
         {_.map(by_album, (tracks, album) =>
             <LibraryAlbum key={`${artist}.${album}`} album={album} tracks={tracks} />
         )}
-    </TreeView>
+    </TreeView>;
 }
 
 const fuzzy_filter = (library, filter) =>
@@ -117,4 +117,4 @@ export const LibraryContainer = connect(
     {
         dispatch: action => action,
     }
-)(Library)
+)(Library);

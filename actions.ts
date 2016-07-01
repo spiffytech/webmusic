@@ -16,15 +16,15 @@ export const types = {
 
 // TODO: Figure out how to import Redux's IAction interface from the tsd here
 export interface IAction {
-    type: string | number
+    type: string | number;
 }
 
 export interface IUpdateLibrary extends IAction {
-    data: ITrack[]
+    data: ITrack[];
 }
 
 export interface IPlayTrack extends IAction {
-    track: ITrack
+    track: ITrack;
 }
 
 export interface ITrackEnded extends IAction {
@@ -37,11 +37,11 @@ export interface INextTrack extends IAction {
 }
 
 export interface ILibraryFilter extends IAction {
-    filter: string
+    filter: string;
 }
 
 export interface IAddToPlaylist extends IAction {
-    tracks: ITrack[]
+    tracks: ITrack[];
 }
 
 export interface IClearPlaylist extends IAction {
@@ -51,15 +51,15 @@ export interface IShufflePlaylist extends IAction {
 }
 
 export interface IRemoveFromPlaylist extends IAction {
-    track: ITrack
+    track: ITrack;
 }
 
 export interface IUpdateConfig extends IAction {
-    config: IConfig
+    config: IConfig;
 }
 
 export interface IErrorMessage extends IAction {
-    message?: any
+    message?: any;
 }
 
 export function is_action<actionType extends IAction>(action: IAction, type: string): action is actionType {

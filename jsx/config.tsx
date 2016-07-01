@@ -8,11 +8,11 @@ import {types as atypes} from "../actions";
 import {reload_library} from "./library";
 
 interface IMyProps {
-    fields: IConfig,
-    handleSubmit: any,
-    resetForm: any,
-    submitting: any,
-    dispatch: any
+    fields: IConfig;
+    handleSubmit: any;
+    resetForm: any;
+    submitting: any;
+    dispatch: any;
 }
 
 function save(config, dispatch) {

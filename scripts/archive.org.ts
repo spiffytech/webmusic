@@ -44,7 +44,9 @@ function fetch_track_listings(num_listings = 1000) {
     then(listings =>
         listings.map((listing, i) =>
             throttled_fetcher(listing.identifier).
-            then(value => _.tap(value, () => logger.debug(`Processed #${i}: ${listing.identifier}`)))
+            then(value => _.tap(value, () =>
+                logger.debug(`Processed #${i}: ${listing.identifier}`))
+            )
         )
     ).
     then(requests =>
@@ -89,4 +91,4 @@ function count_filetypes(num_tracks = 1000) {
 }
 
 // count_filetypes();
-create_tracksjson(100);
+create_tracksjson(10);

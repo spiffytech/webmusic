@@ -33,6 +33,7 @@ export interface ArchiveTrack {
     length?: string;
     format?: string;
     original?: string;
+    url: string;
 }
 
 interface TrackFormat {
@@ -101,7 +102,7 @@ function to_itrack(track: ArchiveTrack, formats: TrackFormat[]): ITrack {
         artist: track.creator || "",
         album: track.album || "",
         title: track.title || "",
-        path: _.head(formats).filename,
+        path: track.url,
         track_num: parseInt(track.track || "-1"),
         length: timestamp_to_seconds(track.length || "-1"),
         formats: formats
@@ -133,9 +134,11 @@ function validate_raw_metadata(file: RawMetadata) {
 }
 
 export function fetch_metadata(identifier: string): Promise<ArchiveTrack[]> {
-    const url = `https://archive.org/download/${identifier}/${identifier}_files.xml`;
+    const base_url = `https://archive.org/download/${identifier}`;
+    const metadata_url = `${base_url}/${identifier}_files.xml`;
+    const url = `${base_url}}/${identifier}_files.xml`;
 
-    return rp(url).
+    return rp(metadata_url).
     then(parse_metadata).
     // Validate the schema of the incoming metadata, so we know our types are
     // accurate
@@ -144,10 +147,13 @@ export function fetch_metadata(identifier: string): Promise<ArchiveTrack[]> {
     )).
     // xml2js puts everything into arrays, even single values
     then((files: RawMetadata[]): ArchiveTrack[] =>
-        _.map(files, file => _.mapValues(file, (v, k) =>
+        _(files).
+        map(file => _.mapValues(file, (v, k) =>
             k === "$" ? v : v[0]
-        )
-    ));
+        )).
+        map((track: ArchiveTrack) => _.merge(track, {url: `${base_url}/${track.$.name}`})).
+        value()
+    );
 }
 
 export function filter_invalid_formats(tracks: ArchiveTrack[]) {
@@ -176,28 +182,15 @@ export function munge_tracks(files: ArchiveTrack[]): ITrack[] {
 
     const itracks = _(originals).
         map(original => find_all_versions(files, original)).
-        /*
-        map(versions => _.reduce(
-            versions,
-            (acc: {[k: string]: any}, version) => ({
-                artist: acc.artist || version.artist,
-                album: acc.album || version.album,
-                title: acc.title || version.title,
-                track_num: acc.track_num || version.track_num,
-                length: acc.length || version.length
-            }),
-            {}
-        ));
-        */
         map(versions => {
             const with_metadata: ArchiveTrack =
-                _.mergeWith({}, ...versions, (a, b) => a || b);
+                _.mergeWith<ArchiveTrack>({}, ...versions, (a, b) => a || b);
 
             const formats: TrackFormat[] = _.map(
                 versions,
                 version => ({
                     format: recognized_formats[version.format],
-                    filename: version.$.name
+                    filename: version.url
                 })
             );
 

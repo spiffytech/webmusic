@@ -1,13 +1,11 @@
 import * as _ from "lodash";
+import * as assert from "assert";
 import * as bunyan from "bunyan";
 import * as joi from "joi";
 import * as rp from "request-promise";
-const Queue = require("promise-queue");
 import {parseString as xml2str} from "xml2js";
 
 export const logger = bunyan.createLogger({name: "archive logger", level: "debug"});
-
-const queue = new Queue(10, Infinity);
 
 interface RawMetadata {
     "$": {
@@ -26,24 +24,21 @@ interface AlbumListing {
     title: string;
 }
 
-interface Track {
-    artist: string;
-    album: string;
-    title: string;
-    format: string;
-    track_num: number;
-    length: number;
-}
-
-interface ArchiveTrack {
+export interface ArchiveTrack {
     $?: {name: string, source: string};
     creator?: string;
     album?: string;
     title?: string;
-    track?: number;
-    length?: number | string;
+    track?: string;
+    length?: string;
     format?: string;
     original?: string;
+    url: string;
+}
+
+interface TrackFormat {
+    format: string;
+    filename: string;
 }
 
 export function echo<T>(fn: (arg: T) => any) {
@@ -78,12 +73,18 @@ function parse_metadata(metadata: string): Promise<RawMetadata[]> {
     then((res: any) => res.files.file);
 }
 
+const recognized_formats = {
+    "WAVE": "wav",
+    "Flac": "flac",
+    "24bit Flac": "flac",
+    "Apple Lossless Audio": "alac",
+    "Ogg Vorbis": "ogg",
+    "VBR MP3": "mp3",
+    "AIFF": "aiff"
+};
+
 function music_format_predicate(file) {
-    return [
-        "Flac",
-        "Ogg Vorbis",
-        "VBR MP3"
-    ].indexOf(file.format) !== -1;
+    return recognized_formats[file.format] !== undefined;
 }
 
 function timestamp_to_seconds(ts: string): number {
@@ -96,89 +97,108 @@ function timestamp_to_seconds(ts: string): number {
     return parseFloat(ts);
 }
 
-function extract_fields(file): Track {
-    const formats = {
-        "Flac": "flac",
-        "24bit Flac": "flac",
-        "Ogg Vorbis": "ogg",
-        "VBR MP3": "mp3"
-    };
-
+function to_itrack(track: ArchiveTrack, formats: TrackFormat[]): ITrack {
     return {
-        artist: file.creator || "",
-        album: file.album || "",
-        title: file.title || "",
-        track_num: parseInt(file.track || -1),
-        length: timestamp_to_seconds(file.length || -1),
-        format: formats[file.format]
+        artist: track.creator || "",
+        album: track.album || "",
+        title: track.title || "",
+        path: track.url,
+        track_num: parseInt(track.track || "-1"),
+        length: timestamp_to_seconds(track.length || "-1"),
+        formats: formats
     };
 }
 
-export function fetch_metadata(identifier: string): Promise<Track[]> {
-    const url = `https://archive.org/download/${identifier}/${identifier}_files.xml`;
+function validate_raw_metadata(file: RawMetadata) {
+    joi.assert(file, joi.object({
+        $: joi.object({
+            name: joi.string().required(),
+            source: joi.string().valid("original", "derivative", "metadata").required()
+        }).required(),
+        format: joi.array().items(joi.string()).length(1).required(),
+        original: joi.any().when(
+            joi.ref("$.source", {contextPrefix: "#"}),
+            {
+                is: "derivative",
+                then: joi.array().items(joi.string()).when(
+                    joi.ref("format.0"),
+                    {
+                        is: joi.string().valid("Checksums", "Flac FingerPrint"),
+                        then: joi.array().items(joi.string()).required(),
+                        otherwise: joi.array().items(joi.string()).length(1).required()
+                    }
+                )
+            }
+        )
+    }).unknown());
+}
 
-    return rp(url).
+export function fetch_metadata(identifier: string): Promise<ArchiveTrack[]> {
+    const base_url = `https://archive.org/download/${identifier}`;
+    const metadata_url = `${base_url}/${identifier}_files.xml`;
+    const url = `${base_url}}/${identifier}_files.xml`;
+
+    return rp(metadata_url).
     then(parse_metadata).
-    // Remove unwanted files / file formats
-    /*
-    then(files => _.filter(files, file => [
-        "Text",
-        "Columbia Peaks",
-        "PNG",
-        "Flac FingerPrint",
-        "Checksums",
-        "Essentia High GZ",
-        "Essentia Low GZ",
-        "Spectrogram"
-    ].indexOf(file.format[0]) === -1)).
-    then(files => _.filter(files, file => [
-        "metadata"
-    ].indexOf(file.$.source) === -1)).
-    */
     // Validate the schema of the incoming metadata, so we know our types are
     // accurate
-    then(echo<RawMetadata[]>(files => {
-        _.map(files, file => joi.assert(file, joi.object({
-            $: joi.object({
-                name: joi.string(),
-                source: joi.string().valid("original", "derivative", "metadata")
-            }).required(),
-            format: joi.array().items(joi.string()).length(1).required(),
-            original: joi.array().items(joi.string()).when(joi.ref("format.0"), {is: joi.string().valid("Checksums", "Flac FingerPrint"), then: joi.array().items(joi.string()), otherwise: joi.array().items(joi.string()).length(1)})
-        }).unknown()));
-    })).
+    then(echo<RawMetadata[]>(files =>
+        _.map(files, validate_raw_metadata)
+    )).
     // xml2js puts everything into arrays, even single values
     then((files: RawMetadata[]): ArchiveTrack[] =>
-        _.map(files, file => _.mapValues(file, (v, k) =>
+        _(files).
+        map(file => _.mapValues(file, (v, k) =>
             k === "$" ? v : v[0]
-        )
-    ));
+        )).
+        map((track: ArchiveTrack) => _.merge(track, {url: `${base_url}/${track.$.name}`})).
+        value()
+    );
 }
 
-function munge_tracks(files: ArchiveTrack[]) {
-    Promise.resolve(files).
-    then(files => files.filter(music_format_predicate)).
-    then(files => {
-        const originals = _.keyBy(
-            files.filter(f => f.$.source === "original"),
-            f => f["$"].name
-        );
+export function filter_invalid_formats(tracks: ArchiveTrack[]) {
+    return _.filter(tracks, music_format_predicate);
+}
 
-        const by_format = _(files).
-        map(file =>
-            file.$.source === "original" ?
-            _.set<ArchiveTrack>(file, "original", file.$.name) :
-            file
-        ).
-        groupBy(file => file.original).
-        mapValues((files: ArchiveTrack[]) =>
-            _.map(files, file =>
-                ({format: file.format, filename: file.$.name})
-            )
-        ).
+function find_all_versions(tracks: ArchiveTrack[], original: ArchiveTrack): ArchiveTrack[] {
+    const alt_formats = _(tracks).
+    filter(track => track.original === original.$.name).
+    value();
+
+    return [
+        original,
+        ...alt_formats
+    ];
+}
+
+export function munge_tracks(files: ArchiveTrack[]): ITrack[] {
+    const filtered = files.filter(music_format_predicate);
+    const originals = _.keyBy(
+        filtered.filter(f => f.$.source === "original"),
+        f => f["$"].name
+    );
+
+    // logger.debug("originals", originals);
+
+    const itracks = _(originals).
+        map(original => find_all_versions(files, original)).
+        map(versions => {
+            const with_metadata: ArchiveTrack =
+                _.mergeWith<ArchiveTrack>({}, ...versions, (a, b) => a || b);
+
+            const formats: TrackFormat[] = _.map(
+                versions,
+                version => ({
+                    format: recognized_formats[version.format],
+                    filename: version.url
+                })
+            );
+
+            const as_itrack = to_itrack(with_metadata, formats);
+
+            return as_itrack;
+        }).
         value();
 
-        logger.debug("by_format", by_format);
-        return _.values(_.mapValues(originals, extract_fields));
-    });
+    return itracks;
 }

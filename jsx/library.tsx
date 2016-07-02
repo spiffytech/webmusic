@@ -13,18 +13,22 @@ import {observer} from "mobx-react";
 
 mobx.useStrict(true);
 
+interface Collection {
+    tracks: mobx.IObservableArray<ITrack>;
+}
+
 interface ILibrary {
     filter: string;
-    tracks: mobx.IObservableArray<ITrack>;
+    collections: mobx.IObservableArray<Collection>;
 }
 
 export const library: ILibrary = observable({
     filter: "",
-    tracks: ([] as mobx.IObservableArray<ITrack>)
+    collections: ([{tracks: []}] as mobx.IObservableArray<Collection>)
 });
 
 export const set_library = action(function set_library(tracks) {
-    library.tracks.replace(tracks);
+    library.collections[0].tracks.replace(tracks);
 });
 
 export function reload_library(config) {
@@ -120,7 +124,7 @@ const filter_dispatch = _.debounce((filter_string, dispatch) =>
     250);
 
 export const Library = observer(function Library({library}: {library: ILibrary}) {
-    const tracks = library.tracks;
+    const tracks = _.flatMap(library.collections, collection => collection.tracks.toJS());
     const filter = library.filter;
     const filtered = fuzzy_filter(tracks, filter);
     const by_artist: [string, ITrack[]] = (_(filtered).
@@ -132,7 +136,7 @@ export const Library = observer(function Library({library}: {library: ILibrary})
 
     return <div>
         <input name="library_filter" onChange={
-            (e: any) => library.filter = e.target.value
+            action((e: any) => library.filter = e.target.value)
         } />
         {_.map(by_artist, ([artist, tracks]: [string, ITrack[]]) =>
             <LibraryArtist key={artist} artist={artist} tracks={tracks} />

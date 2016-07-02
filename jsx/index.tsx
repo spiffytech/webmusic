@@ -99,9 +99,17 @@ function AppView({error_msg, children}) {
 
             <Row>
                 <Col xs={12}>
-                    <Alert bsStyle="warning">
-                        {error_msg}
-                    </Alert>
+                    {
+                        (() => {
+                            if(error_msg) {
+                                return <Alert bsStyle="warning">
+                                    {error_msg}
+                                </Alert>;
+                            } else {
+                                return null;
+                            }
+                        })()
+                    }
                 </Col>
             </Row>
 

@@ -2,7 +2,8 @@ import * as _ from "lodash";
 import * as React from "react";
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
-import {Router, Route, IndexRoute, Link, browserHistory} from "react-router";
+import {Router, Route, IndexRoute, browserHistory} from "react-router";
+import {LinkContainer} from "react-router-bootstrap";
 import * as URI from "urijs";
 import {types as atypes} from "../actions";
 
@@ -79,9 +80,21 @@ function AppView({error_msg, children}) {
     return <div>
         <Grid fluid={true}>
             <Row>
-                <Col xs={3} md={1}><Link to="/">Home</Link></Col>
-                <Col xs={3} md={1}><Link to="/config">Configuratorizor</Link></Col>
-                <Col xs={3} md={1}><Link to="/library" className="visible-xs visible-sm">Library</Link></Col>
+                <Col xs={3} md={1}>
+                    <LinkContainer to="/">
+                        <Button>Home</Button>
+                    </LinkContainer>
+                </Col>
+                <Col xs={3} md={1}>
+                    <LinkContainer to="/config">
+                        <Button>Configuratorizor</Button>
+                    </LinkContainer>
+                </Col>
+                <Col xs={3} md={1}>
+                    <LinkContainer to="/library" className="visible-xs visible-sm">
+                        <Button>Library</Button>
+                    </LinkContainer>
+                </Col>
             </Row>
 
             <Row>

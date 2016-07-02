@@ -1,5 +1,4 @@
 export const types = {
-    UPDATE_LIBRARY: "update_library",
     PLAY_TRACK: "play_track",
     TRACK_ENDED: "track_ended",
     // TODO: handle
@@ -17,10 +16,6 @@ export const types = {
 // TODO: Figure out how to import Redux's IAction interface from the tsd here
 export interface IAction {
     type: string | number;
-}
-
-export interface IUpdateLibrary extends IAction {
-    data: ITrack[];
 }
 
 export interface IPlayTrack extends IAction {

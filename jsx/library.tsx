@@ -7,6 +7,25 @@ const latinize = require("latinize");
 const TreeView = require("react-treeview-lazy");
 import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
 import {types as atypes} from "../actions";
+import * as mobx from "mobx";
+import {observable, action} from "mobx";
+import {observer} from "mobx-react";
+
+mobx.useStrict(true);
+
+interface ILibrary {
+    filter: string;
+    tracks: mobx.IObservableArray<ITrack>;
+}
+
+export const library: ILibrary = observable({
+    filter: "",
+    tracks: ([] as mobx.IObservableArray<ITrack>)
+});
+
+export const set_library = action(function set_library(tracks) {
+    library.tracks.replace(tracks);
+});
 
 export function reload_library(config) {
     console.log("Reloading library");
@@ -17,9 +36,15 @@ export function reload_library(config) {
     const tracks_url = new URI("tracks.json").absoluteTo(config.music_host);
     return window.fetch(tracks_url.toString()).
     then(response => response.json()).
-    then(library => {
-        localStorage.setItem("library", JSON.stringify(library));
-        return library;
+    then(tracks => tracks.filter((track: ITrack) =>
+        Boolean(track.artist) &&
+        Boolean(track.album) &&
+        Boolean(track.title) &&
+        Boolean(track.path)
+    )).
+    then(tracks => {
+        localStorage.setItem("library", JSON.stringify(tracks));
+        set_library(tracks);
     });
 }
 
@@ -94,8 +119,10 @@ const filter_dispatch = _.debounce((filter_string, dispatch) =>
     dispatch({type: atypes.LIBRARY_FILTER, filter: filter_string}),
     250);
 
-function Library({library, filter, dispatch}) {
-    const filtered = fuzzy_filter(library, filter);
+export const Library = observer(function Library({library}: {library: ILibrary}) {
+    const tracks = library.tracks;
+    const filter = library.filter;
+    const filtered = fuzzy_filter(tracks, filter);
     const by_artist: [string, ITrack[]] = (_(filtered).
         groupBy<ITrack, string>("artist").
         toPairs<[string, ITrack[]]>().
@@ -104,17 +131,11 @@ function Library({library, filter, dispatch}) {
         value() as any);
 
     return <div>
-        <input onChange={
-            (e: any) => filter_dispatch(e.target.value, dispatch)
+        <input name="library_filter" onChange={
+            (e: any) => library.filter = e.target.value
         } />
         {_.map(by_artist, ([artist, tracks]: [string, ITrack[]]) =>
             <LibraryArtist key={artist} artist={artist} tracks={tracks} />
         )}
     </div>;
-}
-export const LibraryContainer = connect(
-    (state) => ({library: state.library, filter: state.library_filter}),
-    {
-        dispatch: action => action,
-    }
-)(Library);
+});

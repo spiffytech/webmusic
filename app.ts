@@ -9,7 +9,7 @@ import thunk from "redux-thunk";
 
 import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
-import {reload_library} from "./jsx/library";
+import {reload_library, library as library_store, set_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
@@ -39,19 +39,6 @@ const store = createStore(combineReducers({
     },
     action_logger: (state = null, action: actions.IAction) => {
         console.log("base", action);
-        return state;
-    },
-    library: (state: ITrack[] = [], action: actions.IAction): ITrack[] => {
-        if(is_action<actions.IUpdateLibrary>(action, atypes.UPDATE_LIBRARY)) {
-            const fn = (track:ITrack): boolean =>
-                Boolean(track.artist) &&
-                Boolean(track.album) &&
-                Boolean(track.title) &&
-                Boolean(track.path)
-            ;
-            return action.data.filter(fn);
-        }
-
         return state;
     },
     library_filter: (state = "", action: actions.IAction) => {
@@ -114,10 +101,7 @@ const store = createStore(combineReducers({
     }
 }), applyMiddleware(thunk));
 
-store.dispatch({
-    type: atypes.UPDATE_LIBRARY,
-    data: JSON.parse(localStorage.getItem("library")) || []
-});
+set_library(JSON.parse(localStorage.getItem("library")) || []);
 
 store.dispatch({
     type: atypes.UPDATE_CONFIG,
@@ -126,11 +110,10 @@ store.dispatch({
 
 console.log(store.getState().config);
 reload_library(store.getState().config).
-    then(library => store.dispatch({type: atypes.UPDATE_LIBRARY, data: library})).
-    catch(err => {
-        store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err});
-        throw err;
-    });
+catch(err => {
+    store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err});
+    throw err;
+});
 
 render(
     mkdom(store),

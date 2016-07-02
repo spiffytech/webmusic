@@ -2,14 +2,14 @@ import * as _ from "lodash";
 import * as React from "react";
 import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
-import { Router, Route, IndexRoute, Link, browserHistory } from "react-router";
+import {Router, Route, IndexRoute, Link, browserHistory} from "react-router";
 import * as URI from "urijs";
 import {types as atypes} from "../actions";
 
 import {Grid, Row, Col, Button, Glyphicon, Alert} from "react-bootstrap";
 
 
-import {LibraryContainer} from "./library";
+import {Library, library as library_store} from "./library";
 import {Playlist} from "./playlist";
 import {Config} from "./config";
 
@@ -109,7 +109,7 @@ function Jukebox() {
     return <Row>
         <Col sm={12} md={4}>
             <div className="hidden-xs hidden-sm">
-                <LibraryContainer key="library" />
+                <Library library={library_store}  key="library" />
             </div>
         </Col>
         <Col sm={12} md={8}>
@@ -124,7 +124,7 @@ export function mkdom(store) {
             <Route path="/" component={App}>
                 <IndexRoute component={Jukebox} />
                 <Route path="config" component={Config}></Route>
-                <Route path="library" component={LibraryContainer}></Route>
+                <Route path="library" component={function() {return <Library library={library_store} />;}}></Route>
             </Route>
         </Router>
     </Provider>;

@@ -20,11 +20,10 @@ function save(config, dispatch) {
     dispatch({type: atypes.UPDATE_CONFIG, config});
 
     return reload_library(config).
-        then(library => dispatch({type: atypes.UPDATE_LIBRARY, data: library})).
-        catch(err => {
-            dispatch({type: atypes.ERROR_MESSAGE, message: err.message});
-            throw err;
-        });
+    catch(err => {
+        dispatch({type: atypes.ERROR_MESSAGE, message: err.message});
+        throw err;
+    });
 }
 
 class ConfigView extends React.Component<IMyProps, {}> {

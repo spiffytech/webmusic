@@ -3,7 +3,7 @@ import * as React from "react";
 import {PropTypes} from "react";
 import {connect} from "react-redux";
 import {reduxForm as redux_form} from "redux-form";
-import {Button} from "react-bootstrap";
+import {Button, Glyphicon} from "react-bootstrap";
 import * as mobx from "mobx";
 import {observable, action} from "mobx";
 import {observer} from "mobx-react";
@@ -31,22 +31,58 @@ function handleChange(val: Object, key: string) {
     });
 }
 
+const add_music_host = action(function add_music_host(config: IConfig) {
+    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        const r = Math.random()*16|0, v = c === "x" ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+
+    config.music_hosts.push({
+        id: uuid,
+        friendly_name: "",
+        listing_url: "",
+        enabled: true,
+        default: false
+    });
+});
+
+const MusicHost = observer(function MusicHost(
+    {music_host, onChange, onDelete}:
+    {music_host: MusicHost, onChange: any, onDelete: any}
+) {
+    return <label>
+        Music host:
+        <input type="url"
+            name="music_host"
+            value={music_host.listing_url}
+            onChange={onChange(music_host, "listing_url")}
+        />
+        <Button onClick={onDelete.bind(null, music_host)}>
+            <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+        </Button>
+        <p>Must be valid, full URL.</p>
+    </label>;
+});
+
 function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch}) {
-    const music_host =
-        config.music_hosts.length > 0 ?
-        config.music_hosts[0].listing_url :
-        "";
+    const handleDelete = action((music_host) =>
+        (config.music_hosts as mobx.IObservableArray<MusicHost>).remove(music_host));
+
     return <div className="row">
         <form onSubmit={handleSubmit.bind(null, config, dispatch)}>
-            <label>
-                Music host:
-                <input type="url"
-                    name="music_host"
-                    value={music_host}
-                    onChange={handleChange(config.music_hosts[0], "listing_url")}
+            {config.music_hosts.map((music_host, i) =>
+                <MusicHost
+                    key={i}
+                    music_host={music_host}
+                    onChange={handleChange}
+                    onDelete={handleDelete}
                 />
-                <p>Must be valid, full URL.</p>
-            </label>
+            )}
+
+            <Button type="button" onClick={add_music_host.bind(null, config)}>
+                Add music host
+            </Button>
+
             <Button type="submit">
                 Save configuration
             </Button>

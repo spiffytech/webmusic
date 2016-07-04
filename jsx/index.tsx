@@ -18,7 +18,8 @@ function Player(
     {track, track_ended, music_host, dispatch}:
     {track: ITrack, track_ended: any, music_host: string, dispatch: any}
 ) {
-    const audio_source = track ? new URI(track.path).absoluteTo(music_host).toString() : null;
+    if(!track) return null;
+
     let header = undefined;
     if(track) {
         header = <p>{track.title} / {track.artist} - {track.album}</p>;
@@ -27,19 +28,23 @@ function Player(
     }
 
     function trans_url(type) {
-        const url = encodeURIComponent(audio_source);
+        const preferred_url = new URI(track.formats[0].url).absoluteTo(music_host).toString();
+        const url = encodeURIComponent(preferred_url);
         return `/transcode?output_format=${type}&url=${url}`;
     }
-    let sources = null;
-    if(audio_source) {
-        sources = [
-            <source key="default" src={audio_source} onError={e => console.error(e.nativeEvent)}/>,
-            <source key="ogg" src={trans_url("ogg")} type="audio/ogg; codec=vorbis" />,
-            <source key="mp3" src={trans_url("mp3")} type="audio/mpeg; codec=mp3" />,
-            // <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
-            <source key="wav" src={trans_url("wav")} type="audio/wav" />,
-        ];
-    }
+    const sources = [
+        ...track.formats.map(format =>
+            <source
+                key={format.format}
+                src={new URI(format.url).absoluteTo(music_host).toString()}
+                onError={e => console.error(e.nativeEvent)}
+            />
+        ),
+        <source key="trans-ogg" src={trans_url("ogg")} type="audio/ogg; codec=vorbis" />,
+        <source key="trans-mp3" src={trans_url("mp3")} type="audio/mpeg; codec=mp3" />,
+        // <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
+        <source key="trans-wav" src={trans_url("wav")} type="audio/wav" />,
+    ];
 
     const audio_key = track ? `${track.artist} - ${track.album} - ${track.title}` : null;
     return (

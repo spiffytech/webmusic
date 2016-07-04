@@ -36,11 +36,6 @@ export interface ArchiveTrack {
     url: string;
 }
 
-interface TrackFormat {
-    format: string;
-    filename: string;
-}
-
 export function echo<T>(fn: (arg: T) => any) {
     return function identity(val: T) {
         fn(val);
@@ -97,12 +92,11 @@ function timestamp_to_seconds(ts: string): number {
     return parseFloat(ts);
 }
 
-function to_itrack(track: ArchiveTrack, formats: TrackFormat[]): ITrack {
+function to_itrack(track: ArchiveTrack, formats: MusicFormat[]): ITrack {
     return {
         artist: track.creator || "",
         album: track.album || "",
         title: track.title || "",
-        path: track.url,
         track_num: parseInt(track.track || "-1"),
         length: timestamp_to_seconds(track.length || "-1"),
         formats: formats
@@ -186,11 +180,11 @@ export function munge_tracks(files: ArchiveTrack[]): ITrack[] {
             const with_metadata: ArchiveTrack =
                 _.mergeWith<ArchiveTrack>({}, ...versions, (a, b) => a || b);
 
-            const formats: TrackFormat[] = _.map(
+            const formats: MusicFormat[] = _.map(
                 versions,
                 version => ({
                     format: recognized_formats[version.format],
-                    filename: version.url
+                    url: version.url
                 })
             );
 

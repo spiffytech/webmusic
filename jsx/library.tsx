@@ -52,7 +52,7 @@ export function reload_library(music_hosts: MusicHost[]) {
             Boolean(track.artist) &&
             Boolean(track.album) &&
             Boolean(track.title) &&
-            Boolean(track.path)
+            track.formats.length > 0
         )).
         then(tracks => {
             // localStorage.setItem("library", JSON.stringify(tracks));

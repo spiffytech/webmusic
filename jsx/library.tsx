@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import * as React from "react";
 import {connect} from "react-redux";
 import * as URI from "urijs";
+import * as Ajv from "ajv";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
 const TreeView = require("react-treeview-lazy");
@@ -32,6 +33,42 @@ autorun(()  => console.log("collections changed", library.collections));
 
 (window as any).library = library;
 
+const track_schema = Ajv().compile({
+    properties: {
+        title: {
+            type: "string"
+        },
+        album: {
+            type: "string"
+        },
+        artist: {
+            type: "string"
+        },
+        formats: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    format: {
+                        type: "string"
+                    },
+                    url: {
+                        type: "string",
+                    }
+                }
+            },
+            required: ["format", "url"]
+        },
+        length: {
+            type: "number"
+        },
+        track_num: {
+            type: "number"
+        }
+    },
+    required: ["title", "album", "artist", "formats"]
+});
+
 export const set_collection = action(function set_library(id: string, tracks) {
     const collection = library.collections.get(id) || {tracks: ([] as ITrack[])};
     collection.tracks = tracks;
@@ -48,12 +85,10 @@ export function reload_library(music_hosts: MusicHost[]) {
     return Promise.all(hosts_enabled.map(host => {
         return window.fetch(host.listing_url).
         then(response => response.json()).
-        then(tracks => tracks.filter((track: ITrack) =>
-            Boolean(track.artist) &&
-            Boolean(track.album) &&
-            Boolean(track.title) &&
-            track.formats.length > 0
-        )).
+        then(tracks => tracks.filter((track: ITrack) => {
+            if(!track_schema(track)) console.log(JSON.stringify(track_schema.errors));
+            return track_schema(track);
+        })).
         then(tracks => {
             // localStorage.setItem("library", JSON.stringify(tracks));
             set_collection(host.id, tracks);

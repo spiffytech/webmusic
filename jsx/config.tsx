@@ -1,23 +1,22 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {PropTypes} from "react";
+import {connect} from "react-redux";
 import {reduxForm as redux_form} from "redux-form";
 import {Button} from "react-bootstrap";
-import {types as atypes} from "../actions";
+import * as mobx from "mobx";
+import {observable, action} from "mobx";
+import {observer} from "mobx-react";
 
+import {types as atypes} from "../actions";
 import {reload_library} from "./library";
 
-interface IMyProps {
-    fields: {music_host: string};
-    handleSubmit: any;
-    resetForm: any;
-    submitting: any;
-    dispatch: any;
-}
+mobx.useStrict(true);
 
-function save(config: IConfig, dispatch) {
-    localStorage.setItem("config", JSON.stringify(config));
-    dispatch({type: atypes.UPDATE_CONFIG, config});
+function handleSubmit(config: IConfig, dispatch, event) {
+    event.preventDefault();
+    localStorage.setItem("config", JSON.stringify(mobx.toJS(config)));
+    dispatch({type: atypes.UPDATE_CONFIG, config: mobx.toJS(config)});
 
     return reload_library(config.music_hosts).
     catch(err => {
@@ -26,37 +25,40 @@ function save(config: IConfig, dispatch) {
     });
 }
 
-class ConfigView extends React.Component<IMyProps, {}> {
-    render() {
-        const {
-            fields: {music_host},
-            handleSubmit,
-            resetForm,
-            submitting,
-            dispatch
-        } = this.props;
-
-        return <div className="row">
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Music host:
-                    <input type="url" {...music_host} />
-                    <p>Must be valid, full URL.</p>
-                </label>
-                <Button type="submit" disabled={submitting}>
-                    {submitting ? <i/> : <i/>} Save configuration
-                </Button>
-            </form>
-        </div>;
-    }
+function handleChange(val: Object, key: string) {
+    return action(function(event) {
+        val[key] = event.target.value;
+    });
 }
 
-export const Config = redux_form(
-    {
-        form: "config",
-        fields: ["music_host"],
-        onSubmit: save
-    },
-    state => ({initialValues: {music_host: state.config.music_hosts.length > 0 ? state.config.music_hosts[0].listing_url : ""}}),
-    {dispatch: _.identity}
-)(ConfigView);
+function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch}) {
+    const music_host =
+        config.music_hosts.length > 0 ?
+        config.music_hosts[0].listing_url :
+        "";
+    return <div className="row">
+        <form onSubmit={handleSubmit.bind(null, config, dispatch)}>
+            <label>
+                Music host:
+                <input type="url"
+                    name="music_host"
+                    value={music_host}
+                    onChange={handleChange(config.music_hosts[0], "listing_url")}
+                />
+                <p>Must be valid, full URL.</p>
+            </label>
+            <Button type="submit">
+                Save configuration
+            </Button>
+        </form>
+    </div>;
+}
+
+(ConfigForm as React.StatelessComponent<{config: IConfig}>).propTypes = {
+    config: React.PropTypes.object
+};
+
+export const Config = connect(
+    state => ({config: observable(state.config as IConfig)}),
+    {dispatch: action => action}
+)(observer(ConfigForm));

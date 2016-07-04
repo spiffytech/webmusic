@@ -68,7 +68,7 @@ function Player(
 const PlayerContainer = connect(
     (state) => ({
         track: state.playlist.current_track,
-        music_host: state.config.music_host
+        music_host: (state.config as IConfig).music_hosts[0].listing_url
     }),
     {
         dispatch: action => action,
@@ -145,7 +145,12 @@ export function mkdom(store) {
             <Route path="/" component={App}>
                 <IndexRoute component={Jukebox} />
                 <Route path="config" component={Config}></Route>
-                <Route path="library" component={function() {return <Library library={library_store} />;}}></Route>
+                <Route
+                    path="library"
+                    component={function()
+                    {return <Library library={library_store} />;}}
+                >
+                </Route>
             </Route>
         </Router>
     </Provider>;

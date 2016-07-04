@@ -32,12 +32,27 @@ function Player(
         const url = encodeURIComponent(preferred_url);
         return `/transcode?output_format=${type}&url=${url}`;
     }
+
+    /**
+     * Converts our canonical audio format string to an HTML5 audio mimetype
+     */
+    function mime_type(audio_type: string) {
+        return {
+            flac: "audio/flac",
+            ogg: "audio/ogg",
+            mp3: "audio/mpeg; codec=mp3",
+            mp4: "audio/mp4",
+            wav: "audio/wav"
+        }[audio_type] || null;
+    }
+
     const sources = [
         ...track.formats.map(format =>
             <source
                 key={format.format}
                 src={new URI(format.url).absoluteTo(music_host).toString()}
                 onError={e => console.error(e.nativeEvent)}
+                type={mime_type(format.format)}
             />
         ),
         <source key="trans-ogg" src={trans_url("ogg")} type="audio/ogg; codec=vorbis" />,

@@ -1,11 +1,15 @@
+interface MusicFormat {
+    format: string;
+    url: string;
+}
+
 interface ITrack {
     title: string;
     album: string;
     artist: string;
-    path: string;
+    formats: MusicFormat[];
     length?: number;
     track_num?: number;
-    formats?: any[];
 }
 
 interface IPlaylistStore {

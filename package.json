@@ -31,6 +31,7 @@
     "mocha": "^2.4.5",
     "mocha-silent-reporter": "^1.0.0",
     "react-router-bootstrap": "^0.23.0",
+    "redux-form": "^5.3.1",
     "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
     "ts-node": "^0.8.0",

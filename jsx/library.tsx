@@ -8,48 +8,57 @@ const TreeView = require("react-treeview-lazy");
 import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
 import {types as atypes} from "../actions";
 import * as mobx from "mobx";
-import {observable, action} from "mobx";
+import {observable, action, autorun, asMap as mobx_map} from "mobx";
 import {observer} from "mobx-react";
 
 mobx.useStrict(true);
 
 interface Collection {
-    tracks: mobx.IObservableArray<ITrack>;
+    tracks: ITrack[];
 }
 
 interface ILibrary {
     filter: string;
-    collections: mobx.IObservableArray<Collection>;
+    collections: mobx.ObservableMap<Collection>;
 }
 
 export const library: ILibrary = observable({
     filter: "",
-    collections: ([{tracks: []}] as mobx.IObservableArray<Collection>)
+    collections: mobx_map<Collection>()
 });
 
-export const set_library = action(function set_library(tracks) {
-    library.collections[0].tracks.replace(tracks);
+autorun(()  => console.log("lib filter", library.filter));
+autorun(()  => console.log("collections changed", library.collections));
+
+(window as any).library = library;
+
+export const set_collection = action(function set_library(id: string, tracks) {
+    const collection = library.collections.get(id) || {tracks: ([] as ITrack[])};
+    collection.tracks = tracks;
+    library.collections.set(id, collection);
 });
 
-export function reload_library(config) {
+export function reload_library(music_hosts: MusicHost[]) {
     console.log("Reloading library");
-    if(!config.music_host) {
-        return Promise.reject("No music host, cannot load library");
-    }
-
-    const tracks_url = new URI("tracks.json").absoluteTo(config.music_host);
-    return window.fetch(tracks_url.toString()).
-    then(response => response.json()).
-    then(tracks => tracks.filter((track: ITrack) =>
-        Boolean(track.artist) &&
-        Boolean(track.album) &&
-        Boolean(track.title) &&
-        Boolean(track.path)
-    )).
-    then(tracks => {
-        localStorage.setItem("library", JSON.stringify(tracks));
-        set_library(tracks);
-    });
+    // set_library(JSON.parse(localStorage.getItem("library")) || []);
+    const hosts_enabled = _.filter(music_hosts, host => host.enabled);
+    // TODO: handle when fetches fail (failing promises, RxJS?)
+    // or, disable the broken source and retry?
+    // or, swallow the error with .catch() and ignore the source?
+    return Promise.all(hosts_enabled.map(host => {
+        return window.fetch(host.listing_url).
+        then(response => response.json()).
+        then(tracks => tracks.filter((track: ITrack) =>
+            Boolean(track.artist) &&
+            Boolean(track.album) &&
+            Boolean(track.title) &&
+            Boolean(track.path)
+        )).
+        then(tracks => {
+            // localStorage.setItem("library", JSON.stringify(tracks));
+            set_collection(host.id, tracks);
+        });
+    }));
 }
 
 function ItemLabelView(
@@ -124,7 +133,12 @@ const filter_dispatch = _.debounce((filter_string, dispatch) =>
     250);
 
 export const Library = observer(function Library({library}: {library: ILibrary}) {
-    const tracks = _.flatMap(library.collections, collection => collection.tracks.toJS());
+    const collections = library.collections.values();
+    const tracks: ITrack[] = _(collections).
+    map(collection => (collection.tracks as mobx.IObservableArray<ITrack>).slice()).
+    flatten<ITrack>().
+    value();
+
     const filter = library.filter;
     const filtered = fuzzy_filter(tracks, filter);
     const by_artist: [string, ITrack[]] = (_(filtered).

@@ -13,6 +13,14 @@ interface IPlaylistStore {
     current_track: ITrack;
 }
 
+interface MusicHost {
+    id: string;
+    friendly_name: string;
+    listing_url: string;
+    enabled: boolean;
+    default: boolean;
+}
+
 interface IConfig {
-    music_host: string;
+    music_hosts: MusicHost[];
 }

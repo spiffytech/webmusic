@@ -1,62 +1,113 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {PropTypes} from "react";
+import {connect} from "react-redux";
 import {reduxForm as redux_form} from "redux-form";
-import {Button} from "react-bootstrap";
-import {types as atypes} from "../actions";
+import {
+    Button,
+    Glyphicon,
+    Form,
+    FormGroup,
+    InputGroup,
+    FormControl,
+    ControlLabel
+} from "react-bootstrap";
+import * as mobx from "mobx";
+import {observable, action} from "mobx";
+import {observer} from "mobx-react";
 
+import {types as atypes} from "../actions";
 import {reload_library} from "./library";
 
-interface IMyProps {
-    fields: IConfig;
-    handleSubmit: any;
-    resetForm: any;
-    submitting: any;
-    dispatch: any;
-}
+mobx.useStrict(true);
 
-function save(config, dispatch) {
-    localStorage.setItem("config", JSON.stringify(config));
-    dispatch({type: atypes.UPDATE_CONFIG, config});
+function handleSubmit(config: IConfig, dispatch, event) {
+    event.preventDefault();
+    localStorage.setItem("config", JSON.stringify(mobx.toJS(config)));
+    dispatch({type: atypes.UPDATE_CONFIG, config: mobx.toJS(config)});
 
-    return reload_library(config).
+    return reload_library(config.music_hosts).
     catch(err => {
         dispatch({type: atypes.ERROR_MESSAGE, message: err.message});
         throw err;
     });
 }
 
-class ConfigView extends React.Component<IMyProps, {}> {
-    render() {
-        const {
-            fields: {music_host},
-            handleSubmit,
-            resetForm,
-            submitting,
-            dispatch
-        } = this.props;
-
-        return <div className="row">
-            <form onSubmit={handleSubmit}>
-                <label>
-                    Music host:
-                    <input type="url" {...music_host} pattern=".*/$" />
-                    <p>Must be valid, full URL. Must have trailing slash.</p>
-                </label>
-                <Button type="submit" disabled={submitting}>
-                    {submitting ? <i/> : <i/>} Save configuration
-                </Button>
-            </form>
-        </div>;
-    }
+function handleChange(val: Object, key: string) {
+    return action(function(event) {
+        val[key] = event.target.value;
+    });
 }
 
-export const Config = redux_form(
-    {
-        form: "config",
-        fields: ["music_host"],
-        onSubmit: save
-    },
-    state => ({initialValues: state.config}),
-    {dispatch: _.identity}
-)(ConfigView);
+const add_music_host = action(function add_music_host(config: IConfig) {
+    const uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        const r = Math.random()*16|0, v = c === "x" ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+
+    config.music_hosts.push({
+        id: uuid,
+        friendly_name: "",
+        listing_url: "",
+        enabled: true,
+        default: false
+    });
+});
+
+const MusicHost = observer(function MusicHost(
+    {music_host, onChange, onDelete}:
+    {music_host: MusicHost, onChange: any, onDelete: any}
+) {
+    return <FormGroup>
+        <ControlLabel>Music host</ControlLabel>
+        <InputGroup>
+            <FormControl
+                type="url"
+                name="music_host"
+                value={music_host.listing_url}
+                onChange={onChange(music_host, "listing_url")}
+            />
+
+            <Button onClick={onDelete.bind(null, music_host)}>
+                <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+            </Button>
+
+            <FormControl.Static>Must be valid, full URL.</FormControl.Static>
+        </InputGroup>
+    </FormGroup>;
+});
+
+function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch}) {
+    const handleDelete = action((music_host) =>
+        (config.music_hosts as mobx.IObservableArray<MusicHost>).remove(music_host));
+
+    return <div className="row">
+        <Form vertical onSubmit={handleSubmit.bind(null, config, dispatch)}>
+            {config.music_hosts.map((music_host, i) =>
+                <MusicHost
+                    key={i}
+                    music_host={music_host}
+                    onChange={handleChange}
+                    onDelete={handleDelete}
+                />
+            )}
+
+            <Button type="button" onClick={add_music_host.bind(null, config)}>
+                Add music host
+            </Button>
+
+            <Button type="submit">
+                Save configuration
+            </Button>
+        </Form>
+    </div>;
+}
+
+(ConfigForm as React.StatelessComponent<{config: IConfig}>).propTypes = {
+    config: React.PropTypes.object
+};
+
+export const Config = connect(
+    state => ({config: observable(state.config as IConfig)}),
+    {dispatch: action => action}
+)(observer(ConfigForm));

@@ -9,7 +9,7 @@ import thunk from "redux-thunk";
 
 import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
-import {reload_library, library as library_store, set_library} from "./jsx/library";
+import {reload_library, library as library_store} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
@@ -27,7 +27,7 @@ const store = createStore(combineReducers({
 
         return null;
     },
-    config: (state: IConfig = {music_host: null}, action: actions.IAction): IConfig => {
+    config: (state: IConfig = {music_hosts: []}, action: actions.IAction): IConfig => {
         if(
             is_action<actions.IUpdateConfig>(action, atypes.UPDATE_CONFIG) &&
             action.config
@@ -101,7 +101,23 @@ const store = createStore(combineReducers({
     }
 }), applyMiddleware(thunk));
 
-set_library(JSON.parse(localStorage.getItem("library")) || []);
+let config = JSON.parse(localStorage.getItem("config")) || {};
+if(config && config.music_host !== undefined) {
+    console.log("Upgrading config...");
+    config.music_hosts = [config.music_host];
+    config = {
+        music_hosts: [
+            {
+                id: "d991d867-f560-450c-adb6-b3690a6928cb",
+                friendly_name: "My Music",
+                listing_url: `${config.music_host}/tracks.json`,
+                enabled: true,
+                default: false
+            }
+        ]
+    };
+    localStorage.setItem("config", JSON.stringify(config));
+}
 
 store.dispatch({
     type: atypes.UPDATE_CONFIG,
@@ -109,7 +125,7 @@ store.dispatch({
 });
 
 console.log(store.getState().config);
-reload_library(store.getState().config).
+reload_library(config.music_hosts).
 catch(err => {
     store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err});
     throw err;

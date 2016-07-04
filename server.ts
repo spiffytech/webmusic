@@ -102,6 +102,20 @@ export function serve() {
                 }
             });
 
+            server.ext("onPreResponse", function (request, reply) {
+                if(
+                    request.response.isBoom &&
+                    (request.response as any).output.statusCode === 404
+                ) {
+                    // Inspect the response here, perhaps see if it's a 404?
+                    return reply.redirect("/");
+                }
+
+                return reply.continue();
+            });
+
+
+
             server.initialize().
             then(() => server.start()).
             then(() => console.log("Server running at:", server.info.uri)).

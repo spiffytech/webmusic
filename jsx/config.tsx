@@ -3,7 +3,14 @@ import * as React from "react";
 import {PropTypes} from "react";
 import {connect} from "react-redux";
 import {reduxForm as redux_form} from "redux-form";
-import {Button, Glyphicon} from "react-bootstrap";
+import {
+    Button,
+    Glyphicon,
+    Form,
+    FormGroup,
+    FormControl,
+    ControlLabel
+} from "react-bootstrap";
 import * as mobx from "mobx";
 import {observable, action} from "mobx";
 import {observer} from "mobx-react";
@@ -50,9 +57,9 @@ const MusicHost = observer(function MusicHost(
     {music_host, onChange, onDelete}:
     {music_host: MusicHost, onChange: any, onDelete: any}
 ) {
-    return <label>
-        Music host:
-        <input type="url"
+    return <FormGroup>
+        <ControlLabel>Music host</ControlLabel>
+        <FormControl type="url"
             name="music_host"
             value={music_host.listing_url}
             onChange={onChange(music_host, "listing_url")}
@@ -61,7 +68,7 @@ const MusicHost = observer(function MusicHost(
             <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
         </Button>
         <p>Must be valid, full URL.</p>
-    </label>;
+    </FormGroup>;
 });
 
 function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch}) {
@@ -69,7 +76,7 @@ function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispat
         (config.music_hosts as mobx.IObservableArray<MusicHost>).remove(music_host));
 
     return <div className="row">
-        <form onSubmit={handleSubmit.bind(null, config, dispatch)}>
+        <Form vertical onSubmit={handleSubmit.bind(null, config, dispatch)}>
             {config.music_hosts.map((music_host, i) =>
                 <MusicHost
                     key={i}
@@ -86,7 +93,7 @@ function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispat
             <Button type="submit">
                 Save configuration
             </Button>
-        </form>
+        </Form>
     </div>;
 }
 

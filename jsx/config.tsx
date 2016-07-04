@@ -8,6 +8,7 @@ import {
     Glyphicon,
     Form,
     FormGroup,
+    InputGroup,
     FormControl,
     ControlLabel
 } from "react-bootstrap";
@@ -59,15 +60,20 @@ const MusicHost = observer(function MusicHost(
 ) {
     return <FormGroup>
         <ControlLabel>Music host</ControlLabel>
-        <FormControl type="url"
-            name="music_host"
-            value={music_host.listing_url}
-            onChange={onChange(music_host, "listing_url")}
-        />
-        <Button onClick={onDelete.bind(null, music_host)}>
-            <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
-        </Button>
-        <p>Must be valid, full URL.</p>
+        <InputGroup>
+            <FormControl
+                type="url"
+                name="music_host"
+                value={music_host.listing_url}
+                onChange={onChange(music_host, "listing_url")}
+            />
+
+            <Button onClick={onDelete.bind(null, music_host)}>
+                <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+            </Button>
+
+            <FormControl.Static>Must be valid, full URL.</FormControl.Static>
+        </InputGroup>
     </FormGroup>;
 });
 

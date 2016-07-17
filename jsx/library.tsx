@@ -1,12 +1,11 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {connect} from "react-redux";
-import * as URI from "urijs";
 import * as Ajv from "ajv";
 const fuzzy = require("fuzzy");
 const latinize = require("latinize");
 const TreeView = require("react-treeview-lazy");
-import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
+import {Glyphicon, Button} from "react-bootstrap";
 import {types as atypes} from "../actions";
 import * as mobx from "mobx";
 import {observable, action, autorun, asMap as mobx_map} from "mobx";
@@ -138,7 +137,7 @@ const LibraryTrackContainer = connect(
 function LibraryAlbum({album, tracks}) {
     const label = <ItemLabel label={album} tracks={tracks} />;
     return <TreeView key={album} lazy={true} nodeLabel={label} defaultCollapsed={true}>
-        {_.map(tracks, (track:ITrack, album_name) =>
+        {_.map(tracks, (track:ITrack) =>
             <LibraryTrackContainer key={`${album}.${track.title}`} track={track} />
         )}
     </TreeView>;
@@ -163,10 +162,6 @@ const fuzzy_filter = (library, filter) =>
         {extract: track => latinize(`${track.title} - ${track.artist} - ${track.album}`)}
     ).map(result => result.original);
 
-const filter_dispatch = _.debounce((filter_string, dispatch) =>
-    dispatch({type: atypes.LIBRARY_FILTER, filter: filter_string}),
-    250);
-
 export const Library = observer(function Library({library}: {library: ILibrary}) {
     const collections = library.collections.values();
     const tracks: ITrack[] = _(collections).
@@ -179,8 +174,8 @@ export const Library = observer(function Library({library}: {library: ILibrary})
     const by_artist: [string, ITrack[]] = (_(filtered).
         groupBy<ITrack, string>("artist").
         toPairs<[string, ITrack[]]>().
-        sortBy(([artist, _tracks]: [string, ITrack[]]) => artist.toLowerCase()).
-        sortBy(([_artist, tracks]) => tracks.length > 8 ? -1 : 1).
+        sortBy(([artist]: [string, ITrack[]]) => artist.toLowerCase()).
+        sortBy(([, tracks]) => tracks.length > 8 ? -1 : 1).
         value() as any);
 
     return <div>

@@ -1,6 +1,4 @@
-import * as _ from "lodash";
 import * as React from "react";
-import {PropTypes} from "react";
 import {Provider, connect} from "react-redux";
 import {Router, Route, IndexRoute, browserHistory} from "react-router";
 import {LinkContainer} from "react-router-bootstrap";

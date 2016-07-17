@@ -36,7 +36,7 @@ server.on("response", function (request) {
 server.route({
     method: "GET",
     path: "/transcode",
-    handler: async function (req, reply) {
+    handler: function (req, reply) {
         const _reply = _.once(reply);
 
         try {
@@ -66,7 +66,7 @@ server.route({
             console.log(url);
             console.log(output_format, codecs[output_format]);
 
-            const stream = await request(url);
+            const stream = request(url);
 
             const out = ffmpeg(stream).
                 on("stderr", console.error).

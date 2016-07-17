@@ -1,15 +1,12 @@
 import * as _ from "lodash";
-import * as React from "react";
 import {render} from "react-dom";
 import {createStore, combineReducers, applyMiddleware} from "redux";
-import {Provider} from "react-redux";
 import {reducer as form_reducer} from "redux-form";
-import { Router, Route, Link, browserHistory } from "react-router";
 import thunk from "redux-thunk";
 
 import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
-import {reload_library, library as library_store} from "./jsx/library";
+import {reload_library} from "./jsx/library";
 
 import {mkdom} from "./jsx/index.tsx";
 
@@ -19,7 +16,7 @@ require("./node_modules/react-treeview-lazy/react-treeview.css");
 
 const store = createStore(combineReducers({
     form: form_reducer,
-    error_msg: (state=null, action: actions.IAction): string => {
+    error_msg: (_state=null, action: actions.IAction): string => {
         // TODO: A way to dismiss the error
         if(is_action<actions.IErrorMessage>(action, atypes.ERROR_MESSAGE)) {
             return action.message || "Unknown error";

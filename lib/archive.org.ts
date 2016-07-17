@@ -1,5 +1,4 @@
 import * as _ from "lodash";
-import * as assert from "assert";
 import * as bunyan from "bunyan";
 import * as joi from "joi";
 import * as rp from "request-promise";
@@ -130,7 +129,6 @@ function validate_raw_metadata(file: RawMetadata) {
 export function fetch_metadata(identifier: string): Promise<ArchiveTrack[]> {
     const base_url = `https://archive.org/download/${identifier}`;
     const metadata_url = `${base_url}/${identifier}_files.xml`;
-    const url = `${base_url}}/${identifier}_files.xml`;
 
     return rp(metadata_url).
     then(parse_metadata).

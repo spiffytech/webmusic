@@ -1,8 +1,5 @@
-import * as _ from "lodash";
 import * as React from "react";
-import {PropTypes} from "react";
 import {connect} from "react-redux";
-import {reduxForm as redux_form} from "redux-form";
 import {
     Button,
     Glyphicon,

@@ -5,6 +5,8 @@
         "module": "commonjs",
         "sourceMap": true,
         "target": "es5",
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "outDir": "out"
     },
     "files": [

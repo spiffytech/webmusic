@@ -61,7 +61,7 @@ function Player(
 
     const audio_key = track ? `${track.artist} - ${track.album} - ${track.title}` : null;
     return (
-        <div>
+        <div id="player">
             {header}
             <audio
                 key={audio_key}
@@ -147,7 +147,7 @@ const App = connect(state => ({error_msg: state.error_msg}))(AppView);
 function Jukebox() {
     return <Row>
         <Col sm={12} md={4}>
-            <div className="hidden-xs hidden-sm">
+            <div id="library" className="hidden-xs hidden-sm">
                 <Library library={library_store}  key="library" />
             </div>
         </Col>

@@ -1,3 +1,14 @@
+#playlist .track:nth-child(odd) {
+    background-color: #7AB317;
+}
+#playlist .track:nth-child(even) {
+    background-color: #A0C55F;
+}
+
+#playlist .track {
+    border: 1px solid #0D6759;
+}
+
 #playlist .track {
     display: flex;
     flex-wrap: wrap;
@@ -5,6 +16,7 @@
 
 #playlist .track-title, #playlist .track-artist, #playlist .track-album {
     flex: 10em;
+    padding: 1em;
 }
 
 #playlist .current-track {

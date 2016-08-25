@@ -16,7 +16,7 @@ function TrackView(
             <div className="track-title" onClick={handleClick}>{track.title}</div>
             <div className="track-artist" onClick={handleClick}>{track.artist}</div>
             <div className="track-album" onClick={handleClick}>{track.album}</div>
-            <div>
+            <div className="track-delete-button">
                 <Button onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
                     <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
                 </Button>

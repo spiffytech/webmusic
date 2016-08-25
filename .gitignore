@@ -6,6 +6,7 @@ build/bundle.js*
 server.js
 build/*
 out/*
+archive_cache
 
 *.fossil
 .fake

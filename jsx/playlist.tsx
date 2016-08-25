@@ -1,25 +1,28 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {connect} from "react-redux";
-import {Grid, Row, Col, Glyphicon, Button} from "react-bootstrap";
+import {Glyphicon, Button} from "react-bootstrap";
 import {types as atypes} from "../actions";
+
+require("../styles/style.css");
 
 function TrackView(
     {track, is_current, dispatch}:
     {track: ITrack, is_current: boolean, dispatch: any}
 ) {
-    const style = is_current ? {fontWeight: "bold"} : {};
     const handleClick = () => dispatch({type: atypes.PLAY_TRACK, track: track});
-    return <Row style={style}>
-        <Col xs={12} sm={12} md={4} onClick={handleClick}>{track.title}</Col>
-        <Col xs={5} sm={5} md={3} onClick={handleClick}>{track.artist}</Col>
-        <Col xs={7} sm={6} md={4} onClick={handleClick}>{track.album}</Col>
-        <Col xs={7} sm={1} md={1}>
-            <Button onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
-                <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
-            </Button>
-        </Col>
-    </Row>;
+    return (
+        <div className={`track ${is_current ? "current-track" : ""}`}>
+            <div className="track-title" onClick={handleClick}>{track.title}</div>
+            <div className="track-artist" onClick={handleClick}>{track.artist}</div>
+            <div className="track-album" onClick={handleClick}>{track.album}</div>
+            <div>
+                <Button onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
+                    <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+                </Button>
+            </div>
+        </div>
+    );
 }
 
 export const Track = connect(
@@ -41,13 +44,15 @@ function PlaylistView(
             <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
             <span style={{marginLeft: "0.5em"}}>Clear</span>
         </Button>
-        <Grid fluid={true}>
-            {tracks.map((track, i) => <Track
-                key={i}
-                track={track}
-                is_current={_.isEqual(track, current_track)}
-            />)}
-        </Grid>
+        <div id="playlist">
+            {tracks.map((track, i) => (
+                <Track
+                    key={i}
+                    track={track}
+                    is_current={_.isEqual(track, current_track)}
+                />
+            ))}
+        </div>
     </div>;
 }
 

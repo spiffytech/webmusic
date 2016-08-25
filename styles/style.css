@@ -1,0 +1,12 @@
+#playlist .track {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#playlist .track-title, #playlist .track-artist, #playlist .track-album {
+    flex: 10em;
+}
+
+#playlist .current-track {
+    font-weight: bold;
+}

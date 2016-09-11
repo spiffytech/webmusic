@@ -99,14 +99,17 @@ function ItemLabelView(
     {label, tracks, on_text_click = null, dispatch}:
     {label: string, tracks: ITrack[], dispatch: any, on_text_click: any}
 ) {
-    return <span>
-        <span onClick={on_text_click}>{label}</span>
-        <Button
-            onClick={() => dispatch({type: atypes.ADD_TO_PLAYLIST, tracks: tracks})}
-        >
-            <Glyphicon glyph="glyphicon glyphicon-plus" />
-        </Button>
-    </span>;
+    return (
+        <div className="item-label">
+            <div className="item-title" onClick={on_text_click}>{label}</div>
+            <Button
+                className="item-add-button"
+                onClick={() => dispatch({type: atypes.ADD_TO_PLAYLIST, tracks: tracks})}
+            >
+                <Glyphicon glyph="glyphicon glyphicon-plus" />
+            </Button>
+        </div>
+    );
 }
 const ItemLabel = connect(
     null,
@@ -178,7 +181,7 @@ export const Library = observer(function Library({library}: {library: ILibrary})
         sortBy(([, tracks]) => tracks.length > 8 ? -1 : 1).
         value() as any);
 
-    return <div>
+    return <div id="library">
         <input name="library_filter" onChange={
             action((e: any) => library.filter = e.target.value)
         } />

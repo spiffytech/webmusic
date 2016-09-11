@@ -32,7 +32,7 @@ function handleSubmit(config: IConfig, dispatch, event) {
 
 function handleChange(val: Object, key: string) {
     return action(function(event) {
-        val[key] = event.target.value;
+        val[key] = (event as any).target.value;
     });
 }
 
@@ -75,7 +75,7 @@ const MusicHost = observer(function MusicHost(
 });
 
 function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch}) {
-    const handleDelete = action((music_host) =>
+    const handleDelete = action((music_host: MusicHost) =>
         (config.music_hosts as mobx.IObservableArray<MusicHost>).remove(music_host));
 
     return <div className="row">

@@ -8,7 +8,7 @@ import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
 import {reload_library} from "./jsx/library";
 
-import {mkdom} from "./jsx/index.tsx";
+import {mkdom} from "./jsx/index";
 
 require("./bootstrap-3.3.6/css/bootstrap.min.css");
 require("./bootstrap-3.3.6/css/bootstrap-theme.min.css");

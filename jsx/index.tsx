@@ -65,9 +65,9 @@ function Player(
             {header}
             <audio
                 key={audio_key}
-                controls="controls"
+                controls={true}
                 style={{width: "100%"}}
-                autoPlay="true"
+                autoPlay={true}
                 onEnded={track_ended}
                 onError={e => console.error(e.nativeEvent)}
             >

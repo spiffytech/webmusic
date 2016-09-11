@@ -12,7 +12,11 @@ RUN cp -a /tmp/node_modules/ /app
 
 COPY . /app
 WORKDIR /app
-RUN npm run prepublish
+
+RUN ./node_modules/.bin/typings install
+RUN NODE_ENV=production ./node_modules/.bin/webpack -p
+RUN ./node_modules/.bin/tsc
+
 RUN npm prune --production
 
 ENV NODE_ENV=production

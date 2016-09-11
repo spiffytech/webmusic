@@ -34,3 +34,14 @@
 #playlist .current-track {
     font-weight: bold;
 }
+
+.item-label {
+    display: inline-flex;
+    justify-content: space-between;
+}
+.item-label .item-title {
+    flex-basis: 70%;
+}
+.item-label .item-add-button {
+    flex-basis: 30%;
+}

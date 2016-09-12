@@ -12,14 +12,17 @@ function TrackView(
 ) {
     const handleClick = () => dispatch({type: atypes.PLAY_TRACK, track: track});
     return (
-        <div className={`track ${is_current ? "current-track" : ""}`}>
-            <div className="track-title" onClick={handleClick}>{track.title}</div>
-            <div className="track-artist" onClick={handleClick}>{track.artist}</div>
-            <div className="track-album" onClick={handleClick}>{track.album}</div>
+        <div className="track-container">
+            <div className={`track ${is_current ? "current-track" : ""}`}>
+                <div className="track-title" onClick={handleClick}>{track.title}</div>
+                <div className="track-artist" onClick={handleClick}>{track.artist}</div>
+                <div className="track-album" onClick={handleClick}>{track.album}</div>
+            </div>
+
             <div className="track-delete-button">
-                <Button onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
+                <a href="#" onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
                     <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
-                </Button>
+                </a>
             </div>
         </div>
     );

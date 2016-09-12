@@ -8,7 +8,7 @@
     background-color: #7AB317;
 }
 
-#library, #playlist .track {
+#library, #playlist .track-container {
     border: 0.3em solid #A0C55F;
 }
 
@@ -21,9 +21,25 @@
 }
 */
 
+.track-container {
+    display: flex;
+
+    /* Easy vertical/horizontal centering! */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.track-delete-button {
+    flex-basis: 0;
+    font-size: 250%;
+    margin-right: 0.25em;
+}
+
 #playlist .track {
     display: flex;
     flex-wrap: wrap;
+    flex: 1;
 }
 
 #playlist .track-title, #playlist .track-artist, #playlist .track-album {

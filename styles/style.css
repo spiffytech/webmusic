@@ -22,12 +22,19 @@
 */
 
 .track-container {
-    display: flex;
-
     /* Easy vertical/horizontal centering! */
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between
+}
+
+.track-artist-album {
+    display: flex;
+    align-items: center;
+    justify-content: space-between
+}
+.track-artist, .track-album {
+    /*flex: 1;*/
 }
 
 .track-delete-button {
@@ -40,10 +47,10 @@
     display: flex;
     flex-wrap: wrap;
     flex: 1;
+    justify-content: space-between;
 }
 
 #playlist .track-title, #playlist .track-artist, #playlist .track-album {
-    flex: 10em;
     padding: 1em;
 }
 

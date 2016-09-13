@@ -64,6 +64,11 @@ const store = createStore(combineReducers({
         ) {
             const tracks = state.playlist;
             state.current_track = find_next_track(tracks);
+
+            // Fix: Firefox (maybe others?) doesn't remove the Audio() object when the <audio> element goes away, if the Audio() object was still buffering for initial playback.
+            const audio = document.getElementsByTagName("audio");
+            if(audio.length) audio[0].pause();
+
             return _.clone(state);
         } else if(
             is_action<actions.IPrevTrack>(action, atypes.PREV_TRACK)

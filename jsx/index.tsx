@@ -69,7 +69,7 @@ function Player(
                 style={{width: "100%"}}
                 autoPlay={true}
                 onEnded={track_ended}
-                onError={e => console.error(e.nativeEvent)}
+                onError={track_ended}
             >
                 {sources}
             </audio>

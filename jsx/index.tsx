@@ -73,13 +73,15 @@ function Player(
             >
                 {sources}
             </audio>
-            <Button key="previous" onClick={() => dispatch({type: atypes.PREV_TRACK})}>
-                <Glyphicon glyph="glyphicon glyphicon-step-backward" />
-            </Button>
+            <div id="player-next-prev-btns">
+                <Button key="previous" onClick={() => dispatch({type: atypes.PREV_TRACK})}>
+                    <Glyphicon glyph="glyphicon glyphicon-step-backward" />
+                </Button>
 
-            <Button key="next" onClick={() => dispatch({type: atypes.NEXT_TRACK})}>
-                <Glyphicon glyph="glyphicon glyphicon-step-forward" />
-            </Button>
+                <Button key="next" onClick={() => dispatch({type: atypes.NEXT_TRACK})}>
+                    <Glyphicon glyph="glyphicon glyphicon-step-forward" />
+                </Button>
+            </div>
         </div>
     );
 }

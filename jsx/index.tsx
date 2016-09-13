@@ -97,22 +97,16 @@ const PlayerContainer = connect(
 function AppView({error_msg, children}) {
     return <div>
         <Grid fluid={true}>
-            <Row>
-                <Col xs={3} md={1}>
-                    <LinkContainer to="/">
-                        <Button>Home</Button>
-                    </LinkContainer>
-                </Col>
-                <Col xs={3} md={1}>
-                    <LinkContainer to="/config">
-                        <Button>Configuratorizor</Button>
-                    </LinkContainer>
-                </Col>
-                <Col xs={3} md={1}>
-                    <LinkContainer to="/library" className="visible-xs visible-sm">
-                        <Button>Library</Button>
-                    </LinkContainer>
-                </Col>
+            <Row id="nav-buttons">
+                <LinkContainer to="/">
+                    <Button>Home</Button>
+                </LinkContainer>
+                <LinkContainer to="/config">
+                    <Button>Configuratorizor</Button>
+                </LinkContainer>
+                <LinkContainer to="/library" className="visible-xs visible-sm">
+                    <Button>Library</Button>
+                </LinkContainer>
             </Row>
 
             <Row>

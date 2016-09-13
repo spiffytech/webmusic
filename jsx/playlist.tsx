@@ -38,15 +38,18 @@ function PlaylistView(
     {tracks: ITrack[], current_track: ITrack, dispatch: any}
 ) {
     return <div>
-        <Button onClick={() => dispatch({type: atypes.SHUFFLE_PLAYLIST})}>
-            <Glyphicon glyph="glyphicon glyphicon-random" />
-            <span style={{marginLeft: "0.5em"}}>Shuffle</span>
-        </Button>
+        <div id="playlist-buttons">
+            <Button onClick={() => dispatch({type: atypes.SHUFFLE_PLAYLIST})}>
+                <Glyphicon glyph="glyphicon glyphicon-random" />
+                <span style={{marginLeft: "0.5em"}}>Shuffle</span>
+            </Button>
 
-        <Button onClick={() => dispatch({type: atypes.CLEAR_PLAYLIST})}>
-            <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
-            <span style={{marginLeft: "0.5em"}}>Clear</span>
-        </Button>
+            <Button onClick={() => dispatch({type: atypes.CLEAR_PLAYLIST})}>
+                <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
+                <span style={{marginLeft: "0.5em"}}>Clear</span>
+            </Button>
+        </div>
+
         <div id="playlist">
             {tracks.map((track, i) => (
                 <Track

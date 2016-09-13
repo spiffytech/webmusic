@@ -4,6 +4,15 @@
     color: white;
 }
 
+#nav-buttons, #playlist-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+#playlist-buttons {
+    margin-top: 2em;
+}
+
 #player, #library {
     background-color: #7AB317;
 }

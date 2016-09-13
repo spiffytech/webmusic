@@ -68,6 +68,7 @@ function Player(
                 controls={true}
                 style={{width: "100%"}}
                 autoPlay={true}
+                preload={"none"}
                 onEnded={track_ended}
                 onError={(e: any) => {
                     if(e.target.error.code === e.target.error.MEDIA_ERR_NETWORK || e.target.error.code === e.target.error.MEDIA_ERR_NETWORK) {

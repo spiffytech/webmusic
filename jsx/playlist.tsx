@@ -12,11 +12,11 @@ function TrackView(
 ) {
     const handleClick = () => dispatch({type: atypes.PLAY_TRACK, track: track});
     return (
-        <div className={`track-container ${is_current ? "current-track" : ""}`}>
-            <div className="track-title" onClick={handleClick}>{track.title}</div>
+        <div onClick={handleClick} className={`track-container ${is_current ? "current-track" : ""}`}>
+            <div className="track-title">{track.title}</div>
             <div className="track-artist-album">
-                <div className="track-artist" onClick={handleClick}>{track.artist}</div>
-                <div className="track-album" onClick={handleClick}>{track.album}</div>
+                <div className="track-artist">{track.artist}</div>
+                <div className="track-album">{track.album}</div>
             </div>
 
             <div className="track-delete-button">

@@ -116,6 +116,12 @@ if(config && config.music_host !== undefined) {
     localStorage.setItem("config", JSON.stringify(config));
 }
 
+if(!config) {
+    const default_config = {music_hosts: []};
+    config = default_config;
+    localStorage.setItem("config", JSON.stringify(default_config));
+}
+
 store.dispatch({
     type: atypes.UPDATE_CONFIG,
     config: JSON.parse(localStorage.getItem("config"))

@@ -86,7 +86,7 @@ function Player(
 const PlayerContainer = connect(
     (state) => ({
         track: state.playlist.current_track,
-        music_host: (state.config as IConfig).music_hosts[0].listing_url
+        music_host: (state.config as IConfig).music_hosts.length && (state.config as IConfig).music_hosts[0].listing_url || null
     }),
     {
         dispatch: action => action,

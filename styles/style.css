@@ -4,6 +4,10 @@
     color: white;
 }
 
+#react-target input {
+    color: black;
+}
+
 #nav-buttons, #playlist-buttons {
     display: flex;
     justify-content: space-between;

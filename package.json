@@ -75,6 +75,8 @@
     "rx": "^4.1.0",
     "stream-transcoder": "0.0.5",
     "throat": "^3.0.0",
+    "ts-loader": "^0.9.5",
+    "ts-node": "^1.6.0",
     "urijs": "^1.18.1",
     "xml2js": "^0.4.16"
   }

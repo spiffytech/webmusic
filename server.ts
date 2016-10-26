@@ -1,6 +1,7 @@
 import * as assert from "assert";
-import * as _ from "lodash";
+import * as crypto from "crypto";
 import * as path from "path";
+import {fs} from "mz";
 
 import * as Hapi from "hapi";
 const Inert = require("inert");
@@ -37,50 +38,62 @@ server.route({
     method: "GET",
     path: "/transcode",
     handler: function (req, reply) {
-        const _reply = _.once(reply);
+        const codecs = {
+            mp3: "libmp3lame",
+            ogg: "vorbis",
+            wav: "pcm_s16le"
+        };
+        /*
+        const mime_types = {
+            mp3: "audio/mpeg",
+            ogg: "audio/vorbis",
+            wav: "audio/wav"
+        };
+        */
+
+        const url:string = req.query["url"];
+        const output_format = req.query["output_format"];
+        const container_format = output_format;
 
         try {
-            const url:string = req.query["url"];
-            const output_format = req.query["output_format"];
-
-            const container_format = output_format;
-
-            const codecs = {
-                mp3: "libmp3lame",
-                ogg: "vorbis",
-                wav: "pcm_s16le"
-            };
-            const mime_types = {
-                mp3: "audio/mpeg",
-                ogg: "audio/vorbis",
-                wav: "audio/wav"
-            };
-
             assert(url);
             assert(output_format);
             assert(
                 codecs[output_format] !== undefined,
                 `Invalid output format: ${output_format}`
             );
+        } catch(ex) {
+            console.error(ex);
+            reply(ex.message).code(500);
+        }
 
-            console.log(url);
-            console.log(output_format, codecs[output_format]);
+        const url_hash = crypto.createHash("sha256").update(url).digest("hex");
+        const out_dir = "transcoded_tracks";
+        const out_filename = `${url_hash}.${output_format}`;
+        const full_out_path = `${out_dir}/${out_filename}`;
 
-            const stream = request(url);
+        try {
+            fs.exists(full_out_path).
+            then(exists => {
+                if(exists) {
+                    return reply.redirect(`/transcoded/${out_filename}`);
+                }
 
-            const out = ffmpeg(stream).
-                on("stderr", console.error).
-                on("error", console.error).
-                on("error", err => _reply(err.message).code(500)).
-                audioCodec(codecs[output_format]).
-                format(container_format).
-                stream();
+                const stream = request(url);
 
-            _reply(out).type(mime_types[output_format]);
+                ffmpeg(stream).
+                    // on("stderr", console.error).
+                    on("error", console.error).
+                    on("error", err => reply(err.message).code(500)).
+                    on("end", () => reply.redirect(`/transcoded/${out_filename}`)).
+                    audioCodec(codecs[output_format]).
+                    format(container_format).
+                    save(full_out_path);
+            });
         } catch(ex) {
             console.error(ex);
             // TODO: Correctly report 404 etc.
-            _reply(ex.message).code(500);
+            reply(ex.message).code(500);
             console.log("Errored out");
         }
     }
@@ -89,6 +102,19 @@ server.route({
 export function serve() {
     server.register(Inert, () => {
         const cb = () => {
+            // Static files (transcoded tracks)
+            server.route({
+                method: "GET",
+                path: "/transcoded/{param*}",
+                handler: {
+                    directory: {
+                        path: path.join(process.env.PWD, "transcoded_tracks"),
+                        redirectToSlash: false,
+                        index: false
+                    }
+                }
+            });
+
             // Static files (WebPack / SPA)
             server.route({
                 method: "GET",

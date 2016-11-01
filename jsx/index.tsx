@@ -13,8 +13,8 @@ import {Playlist} from "./playlist";
 import {Config} from "./config";
 
 function Player(
-    {track, track_ended, music_host, dispatch}:
-    {track: ITrack, track_ended: any, music_host: string, dispatch: any}
+    {track, next_track, track_ended, music_host, dispatch}:
+    {track: ITrack, next_track: ITrack, track_ended: any, music_host: string, dispatch: any}
 ) {
     if(!track) return null;
 
@@ -25,7 +25,7 @@ function Player(
         header = "";
     }
 
-    function trans_url(type) {
+    function trans_url(type: string, track: ITrack) {
         const preferred_url = new URI(track.formats[0].url).absoluteTo(music_host).toString();
         const url = encodeURIComponent(preferred_url);
         return `/transcode?output_format=${type}&url=${url}`;
@@ -44,31 +44,38 @@ function Player(
         }[audio_type] || null;
     }
 
-    const sources = [
-        ...track.formats.map(format =>
-            <source
-                key={format.format}
-                src={new URI(format.url).absoluteTo(music_host).toString()}
-                onError={e => console.error(e.nativeEvent)}
-                type={mime_type(format.format)}
-            />
-        ),
-        <source key="trans-ogg" src={trans_url("ogg")} type="audio/ogg; codec=vorbis" />,
-        <source key="trans-mp3" src={trans_url("mp3")} type="audio/mpeg; codec=mp3" />,
-        // <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
-        <source key="trans-wav" src={trans_url("wav")} type="audio/wav" />,
-    ];
+    function key_for_track(track: ITrack) {
+        return `${track.artist} - ${track.album} - ${track.title}`;
+    }
 
-    const audio_key = track ? `${track.artist} - ${track.album} - ${track.title}` : null;
+    function mksources(track: ITrack) {
+        const track_key = key_for_track(track);
+
+        return [
+            ...track.formats.map(format =>
+                <source
+                    key={format.format + track_key}
+                    src={new URI(format.url).absoluteTo(music_host).toString()}
+                    onError={e => console.error(e.nativeEvent)}
+                    type={mime_type(format.format)}
+                />
+            ),
+            <source key={`trans-ogg-${track_key}`} src={trans_url("ogg", track)} type="audio/ogg; codec=vorbis" />,
+            <source key={`trans-mp3-${track_key}`} src={trans_url("mp3", track)} type="audio/mpeg; codec=mp3" />,
+            // <source key="mp4" src={trans_url("mp4")} type="audio/mp4" />,
+            <source key={`trans-wav-${track_key}`} src={trans_url("wav", track)} type="audio/wav" />,
+        ];
+    }
+
     return (
         <div id="player">
             {header}
             <audio
-                key={audio_key}
+                key={key_for_track(track)}
                 controls={true}
                 style={{width: "100%"}}
                 autoPlay={true}
-                preload={"none"}
+                preload={"auto"}
                 onEnded={track_ended}
                 onError={(e: any) => {
                     if(e.target.error.code === e.target.error.MEDIA_ERR_NETWORK || e.target.error.code === e.target.error.MEDIA_ERR_NETWORK) {
@@ -76,8 +83,24 @@ function Player(
                     }
                 }}
             >
-                {sources}
+                {mksources(track)}
             </audio>
+            {next_track ? <audio
+                key={key_for_track(next_track)}
+                controls={false}
+                style={{width: "100%"}}
+                autoPlay={false}
+                preload={"auto"}
+                onEnded={track_ended}
+                onError={(e: any) => {
+                    if(e.target.error.code === e.target.error.MEDIA_ERR_NETWORK || e.target.error.code === e.target.error.MEDIA_ERR_NETWORK) {
+                        track_ended();
+                    }
+                }}
+            >
+                {mksources(next_track)}
+            </audio>
+            : null}
             <div id="player-next-prev-btns">
                 <Button key="previous" onClick={() => dispatch({type: atypes.PREV_TRACK})}>
                     <Glyphicon glyph="glyphicon glyphicon-step-backward" />
@@ -93,6 +116,7 @@ function Player(
 const PlayerContainer = connect(
     (state) => ({
         track: state.playlist.current_track,
+        next_track: state.playlist.next_track,
         music_host: (state.config as IConfig).music_hosts.length && (state.config as IConfig).music_hosts[0].listing_url || null
     }),
     {

@@ -15,6 +15,7 @@ interface ITrack {
 interface IPlaylistStore {
     playlist: ITrack[];
     current_track: ITrack;
+    next_track: ITrack;
 }
 
 interface MusicHost {

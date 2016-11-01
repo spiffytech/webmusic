@@ -45,7 +45,7 @@ const store = createStore(combineReducers({
 
         return state;
     },
-    playlist: (state: IPlaylistStore = {playlist: [], current_track: null}, action: actions.IAction): IPlaylistStore => {
+    playlist: (state: IPlaylistStore = {playlist: [], current_track: null, next_track: null}, action: actions.IAction): IPlaylistStore => {
         function find_next_track(tracks: ITrack[]): ITrack {
             const i = tracks.indexOf(state.current_track);
             if(i === -1) throw new Error("Error finding track in library");
@@ -57,6 +57,7 @@ const store = createStore(combineReducers({
         if(is_action<actions.IPlayTrack>(action, atypes.PLAY_TRACK)) {
             console.log("Setting current track", action.track);
             state.current_track = action.track;
+            state.next_track = find_next_track(state.playlist);
             return _.clone(state);
         } else if(
             is_action<actions.ITrackEnded>(action, atypes.TRACK_ENDED) ||

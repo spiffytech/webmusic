@@ -78,6 +78,7 @@
 
 #playlist .current-track {
     font-weight: bold;
+    background-color: #a0c55f;
 }
 
 .item-label {

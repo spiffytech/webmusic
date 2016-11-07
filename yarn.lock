@@ -2601,15 +2601,15 @@ mkdirp@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.3.0.tgz#1bbf5ab1ba827af23575143490426455f481fe1e"
 
-mobx-react@^3.4.0:
+mobx:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/mobx/-/mobx-2.6.1.tgz#7bea19a87e0802c27b0fb6fbeec98fab01efa953"
+
+mobx-react:
   version "3.5.8"
   resolved "https://registry.yarnpkg.com/mobx-react/-/mobx-react-3.5.8.tgz#90b5a3c14079875726fa45f2684ee9b73c03b404"
   dependencies:
     hoist-non-react-statics "^1.2.0"
-
-mobx@^2.3.3:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/mobx/-/mobx-2.6.0.tgz#0ae83a20488b92d10d4ca326e18fe78a5ab7cb36"
 
 mocha-silent-reporter@^1.0.0:
   version "1.0.0"

@@ -4,6 +4,7 @@ import {Router, Route, IndexRoute, browserHistory} from "react-router";
 import {LinkContainer} from "react-router-bootstrap";
 import * as URI from "urijs";
 import {types as atypes} from "../actions";
+import {observer} from "mobx-react";
 
 import {Grid, Row, Col, Button, Glyphicon, Alert} from "react-bootstrap";
 
@@ -11,19 +12,24 @@ import {Grid, Row, Col, Button, Glyphicon, Alert} from "react-bootstrap";
 import {Library, library as library_store} from "./library";
 import {Playlist} from "./playlist";
 import {Config} from "./config";
+import {PlayerManager} from "../PlayerManager";
 
-function Player(
-    {track, next_track, track_ended, music_host, dispatch}:
-    {track: ITrack, next_track: ITrack, track_ended: any, music_host: string, dispatch: any}
-) {
+function PlayerHeader({track}: {track: ITrack | null}) {
     if(!track) return null;
+    return <p>{track.title} / {track.artist} - {track.album}</p>;
+}
 
-    let header = undefined;
-    if(track) {
-        header = <p>{track.title} / {track.artist} - {track.album}</p>;
-    } else {
-        header = "";
-    }
+const Player = observer<{
+    player_mgr: PlayerManager;
+    track_ended: any;
+    music_host: string;
+    dispatch: any;
+}>(function Player({player_mgr, track_ended, music_host, dispatch}) {
+    const track = player_mgr.current_track.get();
+    const next_track = player_mgr.next_track.get();
+
+    if(!track) console.log("null track");
+    if(!track) return null;
 
     function trans_url(type: string, track: ITrack) {
         const preferred_url = new URI(track.formats[0].url).absoluteTo(music_host).toString();
@@ -69,7 +75,7 @@ function Player(
 
     return (
         <div id="player">
-            {header}
+            <PlayerHeader track={track} />
             <audio
                 key={key_for_track(track)}
                 controls={true}
@@ -112,12 +118,11 @@ function Player(
             </div>
         </div>
     );
-}
+});
 const PlayerContainer = connect(
-    (state) => ({
-        track: state.playlist.current_track,
-        next_track: state.playlist.next_track,
-        music_host: (state.config as IConfig).music_hosts.length && (state.config as IConfig).music_hosts[0].listing_url || null
+    (state, ownProps: {player_mgr: PlayerManager}) => ({
+        music_host: (state.config as IConfig).music_hosts.length && (state.config as IConfig).music_hosts[0].listing_url || null,
+        player_mgr: ownProps.player_mgr
     }),
     {
         dispatch: action => action,
@@ -125,7 +130,7 @@ const PlayerContainer = connect(
     }
 )(Player);
 
-function AppView({error_msg, children}) {
+function AppView({error_msg, player_mgr, children}) {
     return <div>
         <Grid fluid={true}>
             <Row id="nav-buttons">
@@ -158,7 +163,7 @@ function AppView({error_msg, children}) {
 
             <Row>
                 <Col xs={12}>
-                    <PlayerContainer />
+                    <PlayerContainer player_mgr={player_mgr} />
                 </Col>
             </Row>
 
@@ -167,7 +172,9 @@ function AppView({error_msg, children}) {
     </div>;
 }
 
-const App = connect(state => ({error_msg: state.error_msg}))(AppView);
+const App = connect((state, ownProps: {player_mgr: PlayerManager}) =>
+    ({error_msg: state.error_msg, player_mgr: ownProps.player_mgr})
+)(AppView);
 
 function Jukebox() {
     return <Row>
@@ -182,10 +189,14 @@ function Jukebox() {
     </Row>;
 }
 
-export function mkdom(store) {
+export function mkdom(store, player_mgr: PlayerManager) {
+    function AppWithMgr({children}) {
+        return <App player_mgr={player_mgr}>{children}</App>;
+    }
+
     return <Provider store = {store}>
         <Router history={browserHistory}>
-            <Route path="/" component={App}>
+            <Route path="/" component={AppWithMgr}>
                 <IndexRoute component={Jukebox} />
                 <Route path="config" component={Config}></Route>
                 <Route

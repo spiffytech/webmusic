@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/spiffytech/webmusic#readme",
   "devDependencies": {
+    "@types/shortid": "^0.0.28",
     "ajv": "^4.1.5",
     "chunk-manifest-webpack-plugin": "^0.1.0",
     "css-loader": "^0.23.1",
@@ -35,6 +36,7 @@
     "mocha-silent-reporter": "^1.0.0",
     "react-router-bootstrap": "^0.23.0",
     "redux-form": "^5.3.1",
+    "shortid": "^2.2.6",
     "style-loader": "^0.13.1",
     "ts-loader": "^0.8.2",
     "ts-node": "^0.8.0",

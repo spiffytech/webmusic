@@ -91,6 +91,10 @@ export function reload_library(music_hosts: MusicHost[]) {
         then(tracks => {
             // localStorage.setItem("library", JSON.stringify(tracks));
             set_collection(host.id, tracks);
+        }).
+        catch(ex => {
+            console.error(ex);
+            throw ex;
         });
     }));
 }

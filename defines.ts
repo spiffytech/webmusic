@@ -4,6 +4,7 @@ interface MusicFormat {
 }
 
 interface ITrack {
+    id: string;
     title: string;
     album: string;
     artist: string;

@@ -3,6 +3,7 @@ import {render} from "react-dom";
 import {createStore, combineReducers, applyMiddleware} from "redux";
 import {reducer as form_reducer} from "redux-form";
 import thunk from "redux-thunk";
+import * as shortid from "shortid";
 
 import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
@@ -81,7 +82,7 @@ const store = createStore(combineReducers({
         } else if (
             is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)
         ) {
-            state.playlist = [...state.playlist, ...action.tracks];
+            state.playlist = [...state.playlist, ...action.tracks.map(track => _.merge(track, {id: shortid.generate()}))];
             return _.clone(state);
         } else if (
             is_action<actions.IClearPlaylist>(action, atypes.CLEAR_PLAYLIST)

@@ -10,28 +10,10 @@
         "noUnusedParameters": true,
         "outDir": "out"
     },
-    "files": [
-        "actions.ts",
-        "PlayerManager.ts",
-        "app.ts",
-        "defines.ts",
-        "rx.all.d.ts",
-        "server.ts",
-        "typings/index.d.ts",
-        "jsx/config.tsx",
-        "jsx/index.tsx",
-        "jsx/library.tsx",
-        "jsx/playlist.tsx",
-        "lib/archive.org.ts",
-        "scripts/archive.org.ts"
-    ],
-    "filesGlob": [
-        "*.ts",
-        "typings/index.d.ts",
-        "app.ts",
-        "jsx/*ts*",
-        "lib/*ts*",
-        "scripts/*ts*"
+    "exclude": [
+        "node_modules",
+        "fsharp",
+        "transcoded_tracks"
     ],
     "atom": {
         "rewriteTsconfig": true

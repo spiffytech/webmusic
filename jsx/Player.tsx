@@ -1,33 +1,20 @@
 import * as React from "react";
 import * as URI from "urijs";
-import * as _ from "lodash";
-import {autorun, computed, observable} from "mobx";
+import {IComputedValue} from "mobx";
 import {observer} from "mobx-react";
 import {Button, Glyphicon} from "react-bootstrap";
 import {connect} from "react-redux";
 
 import {types as atypes} from "../actions";
+import {PlaylistManager} from "./playlist";
 
 export class PlayerManager {
-    public playlist = observable<ITrack>([]);
-    public current_track_id = observable<string | null>();
-    public current_track = computed(() =>
-        this.playlist.find(track => track.id === this.current_track_id.get())
-    );
-    public next_track = computed(() => {
-        const curr_track_index = _.findIndex(
-            this.playlist.slice(),
-            track => track.id === this.current_track_id.get()
-        );
+    public current_track: IComputedValue<ITrack>;
+    public next_track: IComputedValue<ITrack>;
 
-        return this.playlist.length < curr_track_index + 1 ?
-            this.playlist[curr_track_index + 1] :
-            null;
-    });
-
-    constructor() {
-        autorun(() => console.log(this.current_track_id.get()));
-        autorun(() => console.log(this.current_track.get()));
+    constructor(playlist_mgr: PlaylistManager) {
+        this.current_track = playlist_mgr.current_track;
+        this.next_track = playlist_mgr.next_track;
     }
 }
 

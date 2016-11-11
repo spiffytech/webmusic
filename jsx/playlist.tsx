@@ -3,40 +3,57 @@ import * as React from "react";
 import {connect} from "react-redux";
 import {Glyphicon, Button} from "react-bootstrap";
 import {types as atypes} from "../actions";
+import {observable, computed, autorun} from "mobx";
+import {observer} from "mobx-react";
+
+import {Track} from "./Track";
 
 require("../styles/style.css");
 
-function TrackView(
-    {track, is_current, dispatch}:
-    {track: ITrack, is_current: boolean, dispatch: any}
-) {
-    const handleClick = () => dispatch({type: atypes.PLAY_TRACK, track: track});
-    return (
-        <div onClick={handleClick} className={`track-container ${is_current ? "current-track" : ""}`}>
-            <div className="track-title">{track.title}</div>
-            <div className="track-artist-album">
-                <div className="track-artist">{track.artist}</div>
-                <div className="track-album">{track.album}</div>
-            </div>
+export class PlaylistManager {
+    public playlist = observable<ITrack>([]);
+    public current_track_id = observable<string | null>();
 
-            <div className="track-delete-button">
-                <a href="#" onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
-                    <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
-                </a>
-            </div>
-        </div>
+    public current_track = computed(() =>
+        this.playlist.find(track => track.id === this.current_track_id.get())
     );
+
+    public previous_track = computed(() => {
+        const curr_track_index = _.findIndex(
+            this.playlist.slice(),
+            track => track.id === this.current_track_id.get()
+        );
+
+        return curr_track_index > 0 ?
+            this.playlist[curr_track_index - 1] :
+            null;
+    });
+
+    public next_track = computed(() => {
+        const curr_track_index = _.findIndex(
+            this.playlist.slice(),
+            track => track.id === this.current_track_id.get()
+        );
+
+        return this.playlist.length < curr_track_index + 1 ?
+            this.playlist[curr_track_index + 1] :
+            null;
+    });
+
+    constructor() {
+        autorun(() => console.log(this.current_track_id.get()));
+        autorun(() => console.log(this.current_track.get()));
+    }
 }
 
-export const Track = connect(
-    null,
-    {dispatch: _.identity}
-)(TrackView) as (React.ComponentClass<{track: ITrack, is_current: boolean}>);
-
-function PlaylistView(
-    {tracks, current_track, dispatch}:
-    {tracks: ITrack[], current_track: ITrack, dispatch: any}
+const PlaylistView = observer<
+    {playlist_mgr: PlaylistManager, dispatch: any}
+>(function PlaylistView(
+    {playlist_mgr, dispatch}
 ) {
+    const tracks = playlist_mgr.playlist;
+    const current_track_id = playlist_mgr.current_track_id.get();
+
     return <div>
         <div id="playlist-buttons">
             <Button onClick={() => dispatch({type: atypes.SHUFFLE_PLAYLIST})}>
@@ -55,18 +72,17 @@ function PlaylistView(
                 <Track
                     key={i}
                     track={track}
-                    is_current={_.isEqual(track, current_track)}
+                    is_current={track.id === current_track_id}
                 />
             ))}
         </div>
     </div>;
-}
+});
 
 export const Playlist =
     connect(
-        state => ({
-            tracks: state.playlist.playlist,
-            current_track: state.playlist.current_track
+        (_state, ownProps: {playlist_mgr: PlaylistManager}) => ({
+            playlist_mgr: ownProps.playlist_mgr
         }),
         {dispatch: _.identity}
     )(PlaylistView);

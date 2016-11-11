@@ -5,10 +5,9 @@ import {LinkContainer} from "react-router-bootstrap";
 
 import {Grid, Row, Col, Button, Alert} from "react-bootstrap";
 
-
 import {Library, library as library_store} from "./library";
-import {Playlist} from "./playlist";
 import {Config} from "./config";
+import {Playlist, PlaylistManager} from "./playlist";
 import {Player, PlayerManager} from "./Player";
 
 function AppView({error_msg, player_mgr, children}) {
@@ -57,7 +56,7 @@ const App = connect((state, ownProps: {player_mgr: PlayerManager}) =>
     ({error_msg: state.error_msg, player_mgr: ownProps.player_mgr})
 )(AppView);
 
-function Jukebox() {
+function Jukebox({playlist_mgr}: {playlist_mgr: PlaylistManager}) {
     return <Row>
         <Col sm={12} md={4}>
             <div id="library" className="hidden-xs hidden-sm">
@@ -65,12 +64,16 @@ function Jukebox() {
             </div>
         </Col>
         <Col sm={12} md={8}>
-            <Playlist key="playlist" />
+            <Playlist key="playlist" playlist_mgr={playlist_mgr} />
         </Col>
     </Row>;
 }
 
-export function mkdom(store, player_mgr: PlayerManager) {
+export function mkdom(store, playlist_mgr: PlaylistManager, player_mgr: PlayerManager) {
+    function JukeboxWrapped({children}) {
+        return <Jukebox playlist_mgr={playlist_mgr}>{children}</Jukebox>;
+    }
+
     function AppWithMgr({children}) {
         return <App player_mgr={player_mgr}>{children}</App>;
     }
@@ -78,7 +81,7 @@ export function mkdom(store, player_mgr: PlayerManager) {
     return <Provider store = {store}>
         <Router history={browserHistory}>
             <Route path="/" component={AppWithMgr}>
-                <IndexRoute component={Jukebox} />
+                <IndexRoute component={JukeboxWrapped} />
                 <Route path="config" component={Config}></Route>
                 <Route
                     path="library"

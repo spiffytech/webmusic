@@ -9,6 +9,7 @@ import {action} from "mobx";
 import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
 import {reload_library} from "./jsx/library";
+import {PlaylistManager} from "./jsx/playlist";
 import {PlayerManager} from "./jsx/Player";
 
 import {mkdom} from "./jsx/index";
@@ -17,7 +18,8 @@ require("./bootstrap-3.3.6/css/bootstrap.min.css");
 require("./bootstrap-3.3.6/css/bootstrap-theme.min.css");
 require("./node_modules/react-treeview-lazy/react-treeview.css");
 
-const player_mgr = new PlayerManager();
+const playlist_mgr = new PlaylistManager();
+const player_mgr = new PlayerManager(playlist_mgr);
 
 const store = createStore(combineReducers({
     form: form_reducer,
@@ -63,7 +65,7 @@ const store = createStore(combineReducers({
             console.log("Setting current track", action.track);
             state.current_track = action.track;
             state.next_track = find_next_track(state.playlist);
-            player_mgr.current_track_id.set(state.current_track.id);
+            playlist_mgr.current_track_id.set(state.current_track.id);
             return _.clone(state);
         } else if (
             is_action<actions.ITrackEnded>(action, atypes.TRACK_ENDED) ||
@@ -73,7 +75,7 @@ const store = createStore(combineReducers({
             state.current_track = find_next_track(tracks);
             state.next_track = find_next_track(state.playlist);
 
-            player_mgr.current_track_id.set(state.current_track.id);
+            playlist_mgr.current_track_id.set(state.current_track.id);
 
             // Fix: Firefox (maybe others?) doesn't remove the Audio() object when the <audio> element goes away, if the Audio() object was still buffering for initial playback.
             const audio = document.getElementsByTagName("audio");
@@ -85,13 +87,13 @@ const store = createStore(combineReducers({
         ) {
             const tracks = <ITrack[]>_.reverse(_.clone(state.playlist));
             state.current_track = find_next_track(tracks);
-            player_mgr.current_track_id.set(state.current_track.id);
+            playlist_mgr.current_track_id.set(state.current_track.id);
             return _.clone(state);
         } else if (
             is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)
         ) {
             state.playlist = [...state.playlist, ...action.tracks.map(track => _.merge(track, {id: shortid.generate()}))];
-            player_mgr.playlist.replace(state.playlist);
+            playlist_mgr.playlist.replace(state.playlist);
             return _.clone(state);
         } else if (
             is_action<actions.IClearPlaylist>(action, atypes.CLEAR_PLAYLIST)
@@ -102,6 +104,7 @@ const store = createStore(combineReducers({
             is_action<actions.IShufflePlaylist>(action, atypes.SHUFFLE_PLAYLIST)
         ) {
             state.playlist = _.shuffle(state.playlist);
+            playlist_mgr.playlist.replace(state.playlist);
             return _.clone(state);
         } else if (
             is_action<actions.IRemoveFromPlaylist>(action, atypes.REMOVE_FROM_PLAYLIST)
@@ -152,6 +155,6 @@ catch(err => {
 });
 
 render(
-    mkdom(store, player_mgr),
+    mkdom(store, playlist_mgr, player_mgr),
     document.getElementById("react-target")
 );

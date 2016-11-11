@@ -9,7 +9,7 @@ import {action} from "mobx";
 import * as actions from "./actions";
 import {is_action, types as atypes} from "./actions";
 import {reload_library} from "./jsx/library";
-import {PlayerManager} from "./PlayerManager";
+import {PlayerManager} from "./jsx/Player";
 
 import {mkdom} from "./jsx/index";
 

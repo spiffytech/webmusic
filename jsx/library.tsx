@@ -7,11 +7,10 @@ const latinize = require("latinize");
 const TreeView = require("react-treeview-lazy");
 import {Glyphicon, Button} from "react-bootstrap";
 import {types as atypes} from "../actions";
-import * as mobx from "mobx";
-import {observable, action, autorun, asMap as mobx_map} from "mobx";
+import {action, asMap, autorun, observable, useStrict, IObservableArray, ObservableMap} from "mobx";
 import {observer} from "mobx-react";
 
-mobx.useStrict(true);
+useStrict(true);
 
 interface Collection {
     tracks: ITrack[];
@@ -19,12 +18,12 @@ interface Collection {
 
 interface ILibrary {
     filter: string;
-    collections: mobx.ObservableMap<Collection>;
+    collections: ObservableMap<Collection>;
 }
 
 export const library: ILibrary = observable({
     filter: "",
-    collections: mobx_map<Collection>()
+    collections: asMap<Collection>()
 });
 
 autorun(()  => console.log("lib filter", library.filter));
@@ -172,7 +171,7 @@ const fuzzy_filter = (library, filter) =>
 export const Library = observer(function Library({library}: {library: ILibrary}) {
     const collections = library.collections.values();
     const tracks: ITrack[] = _(collections).
-    map(collection => (collection.tracks as mobx.IObservableArray<ITrack>).slice()).
+    map(collection => (collection.tracks as IObservableArray<ITrack>).slice()).
     flatten<ITrack>().
     value();
 

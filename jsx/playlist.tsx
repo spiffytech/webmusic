@@ -35,7 +35,7 @@ export class PlaylistManager {
             track => track.id === this.current_track_id.get()
         );
 
-        return this.playlist.length < curr_track_index + 1 ?
+        return this.playlist.length > curr_track_index + 1 ?
             this.playlist[curr_track_index + 1] :
             null;
     });

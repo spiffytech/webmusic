@@ -8,9 +8,17 @@
     color: black;
 }
 
+#playlist {
+    color: white;
+}
+
 #nav-buttons, #playlist-buttons {
     display: flex;
     justify-content: space-between;
+}
+
+#playlist {
+    width: 100%;
 }
 
 #playlist-buttons {
@@ -43,33 +51,9 @@
 }
 */
 
-.track-container {
-    /* Easy vertical/horizontal centering! */
-    display: flex;
-    align-items: center;
-    justify-content: space-between
-}
-
-.track-artist-album {
-    display: flex;
-    align-items: center;
-    justify-content: space-between
-}
-.track-artist, .track-album {
-    /*flex: 1;*/
-}
-
 .track-delete-button {
-    flex-basis: 0;
     font-size: 250%;
     margin-right: 0.25em;
-}
-
-#playlist .track {
-    display: flex;
-    flex-wrap: wrap;
-    flex: 1;
-    justify-content: space-between;
 }
 
 #playlist .track-title, #playlist .track-artist, #playlist .track-album {

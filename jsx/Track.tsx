@@ -11,18 +11,16 @@ export const Track = observer<{
 }>(function TrackView({track, is_current, onPlay: handlePlay, onRemove: handleRemove}) {
     const handleClick = action(() => handlePlay(track.id));
     return (
-        <div className={`track-container ${is_current ? "current-track" : ""}`}>
-            <div onClick={handleClick} className="track-title">{track.title}</div>
-            <div onClick={handleClick} className="track-artist-album">
-                <div className="track-artist">{track.artist}</div>
-                <div className="track-album">{track.album}</div>
-            </div>
+        <tr className={`track-container ${is_current ? "current-track" : ""}`}>
+            <td onClick={handleClick} className="track-title">{track.title}</td>
+            <td onClick={handleClick} className="track-artist">{track.artist}</td>
+            <td onClick={handleClick} className="track-album">{track.album}</td>
 
-            <div className="track-delete-button">
+            <td className="track-delete-button">
                 <a href="#" onClick={() => handleRemove(track.id)}>
                     <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
                 </a>
-            </div>
-        </div>
+            </td>
+        </tr>
     );
 });

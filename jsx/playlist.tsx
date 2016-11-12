@@ -89,7 +89,7 @@ export const Playlist = observer<
             </Button>
         </div>
 
-        <div id="playlist">
+        <table id="playlist">
             {tracks.map((track, i) => (
                 <Track
                     key={i}
@@ -99,6 +99,6 @@ export const Playlist = observer<
                     onRemove={() => playlist_mgr.remove_track(track.id)}
                 />
             ))}
-        </div>
+        </table>
     </div>;
 });

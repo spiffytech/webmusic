@@ -53,23 +53,11 @@ const store = createStore(combineReducers({
         return state;
     },
     playlist: action((state: IPlaylistStore = {}, action: actions.IAction): IPlaylistStore => {
-        if (is_action<actions.IPlayTrack>(action, atypes.PLAY_TRACK)) {
-            console.log("Setting current track", action.track);
-            playlist_mgr.current_track_id.set(action.track.id);
-            return _.clone(state);
-        } else if (
-            is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)
-        ) {
+        if (is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)) {
             playlist_mgr.playlist.replace([
                 ...playlist_mgr.playlist.slice(),
                 ...action.tracks.map(track => _.merge(track, {id: shortid.generate()}))
             ]);
-            return _.clone(state);
-        } else if (
-            is_action<actions.IRemoveFromPlaylist>(action, atypes.REMOVE_FROM_PLAYLIST)
-        ) {
-            const t_ = action.track;
-            playlist_mgr.playlist.replace(playlist_mgr.playlist.filter(t => t !== t_));
             return _.clone(state);
         }
 

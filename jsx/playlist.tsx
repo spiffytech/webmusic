@@ -48,6 +48,11 @@ export class PlaylistManager {
         this.playlist.clear();
     }
 
+    @action
+    public remove_track(track_id: string) {
+        this.playlist.replace(this.playlist.filter(track => track.id !== track_id));
+    }
+
     constructor() {
         // TODO: This should be near the player, not inside the playlist
         intercept(this.current_track_id, change => {
@@ -90,6 +95,8 @@ export const Playlist = observer<
                     key={i}
                     track={track}
                     is_current={track.id === current_track_id}
+                    onPlay={() => playlist_mgr.current_track_id.set(track.id)}
+                    onRemove={() => playlist_mgr.remove_track(track.id)}
                 />
             ))}
         </div>

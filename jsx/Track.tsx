@@ -1,15 +1,15 @@
 import * as React from "react";
-import * as _ from "lodash";
-import {connect} from "react-redux";
 import {Glyphicon} from "react-bootstrap";
+import {action} from "mobx";
+import {observer} from "mobx-react";
 
-import {types as atypes} from "../actions";
-
-function TrackView(
-    {track, is_current, dispatch}:
-    {track: ITrack, is_current: boolean, dispatch: any}
-) {
-    const handleClick = () => dispatch({type: atypes.PLAY_TRACK, track: track});
+export const Track = observer<{
+    track: ITrack,
+    is_current: boolean,
+    onPlay: (track_id: string) => void,
+    onRemove: (track_id: string) => void
+}>(function TrackView({track, is_current, onPlay: handlePlay, onRemove: handleRemove}) {
+    const handleClick = action(() => handlePlay(track.id));
     return (
         <div className={`track-container ${is_current ? "current-track" : ""}`}>
             <div onClick={handleClick} className="track-title">{track.title}</div>
@@ -19,15 +19,10 @@ function TrackView(
             </div>
 
             <div className="track-delete-button">
-                <a href="#" onClick={() => dispatch({type: atypes.REMOVE_FROM_PLAYLIST, track})}>
+                <a href="#" onClick={() => handleRemove(track.id)}>
                     <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
                 </a>
             </div>
         </div>
     );
-}
-
-export const Track = connect(
-    null,
-    {dispatch: _.identity}
-)(TrackView) as (React.ComponentClass<{track: ITrack, is_current: boolean}>);
+});

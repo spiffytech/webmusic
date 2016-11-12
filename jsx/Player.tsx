@@ -5,7 +5,6 @@ import {observer} from "mobx-react";
 import {Button, Glyphicon} from "react-bootstrap";
 import {connect} from "react-redux";
 
-import {types as atypes} from "../actions";
 import {PlaylistManager} from "./playlist";
 
 export class PlayerManager {
@@ -35,11 +34,11 @@ function PlayerHeader({track}: {track: ITrack | null}) {
 
 const PlayerRaw = observer<{
     player_mgr: PlayerManager;
-    track_ended: any;
     music_host: string;
-}>(function Player({player_mgr, track_ended, music_host}) {
+}>(function Player({player_mgr, music_host}) {
     const track = player_mgr.current_track.get();
     const next_track = player_mgr.next_track.get();
+    const track_ended = player_mgr.go_next_track.bind(player_mgr);
 
     if(!track) console.log("null track");
     if(!track) return null;
@@ -136,9 +135,5 @@ export const Player = connect(
     (state, ownProps: {player_mgr: PlayerManager}) => ({
         music_host: (state.config as IConfig).music_hosts.length && (state.config as IConfig).music_hosts[0].listing_url || null,
         player_mgr: ownProps.player_mgr
-    }),
-    {
-        dispatch: action => action,
-        track_ended: () => ({type: atypes.TRACK_ENDED})
-    }
+    })
 )(PlayerRaw);

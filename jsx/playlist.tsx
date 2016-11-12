@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
 import {Glyphicon, Button} from "react-bootstrap";
-import {action, observable, computed, autorun} from "mobx";
+import {action, autorun, computed, observable, intercept} from "mobx";
 import {observer} from "mobx-react";
 
 import {Track} from "./Track";
@@ -49,6 +49,14 @@ export class PlaylistManager {
     }
 
     constructor() {
+        // TODO: This should be near the player, not inside the playlist
+        intercept(this.current_track_id, change => {
+            const audio = document.getElementsByTagName("audio");
+            if (audio.length) audio[0].pause();
+
+            return change;
+        });
+
         autorun(() => console.log("current id", this.current_track_id.get()));
         autorun(() => console.log("current", this.current_track.get()));
         autorun(() => console.log("next", this.next_track.get()));

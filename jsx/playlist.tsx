@@ -1,9 +1,7 @@
 import * as _ from "lodash";
 import * as React from "react";
-import {connect} from "react-redux";
 import {Glyphicon, Button} from "react-bootstrap";
-import {types as atypes} from "../actions";
-import {observable, computed, autorun} from "mobx";
+import {action, observable, computed, autorun} from "mobx";
 import {observer} from "mobx-react";
 
 import {Track} from "./Track";
@@ -40,28 +38,39 @@ export class PlaylistManager {
             null;
     });
 
+    @action
+    public shuffle() {
+        this.playlist.replace(_.shuffle(this.playlist.slice()));
+    }
+
+    @action
+    public clear() {
+        this.playlist.clear();
+    }
+
     constructor() {
-        autorun(() => console.log(this.current_track_id.get()));
-        autorun(() => console.log(this.current_track.get()));
+        autorun(() => console.log("current id", this.current_track_id.get()));
+        autorun(() => console.log("current", this.current_track.get()));
+        autorun(() => console.log("next", this.next_track.get()));
     }
 }
 
-const PlaylistView = observer<
-    {playlist_mgr: PlaylistManager, dispatch: any}
+export const Playlist = observer<
+    {playlist_mgr: PlaylistManager}
 >(function PlaylistView(
-    {playlist_mgr, dispatch}
+    {playlist_mgr}
 ) {
     const tracks = playlist_mgr.playlist;
     const current_track_id = playlist_mgr.current_track_id.get();
 
     return <div>
         <div id="playlist-buttons">
-            <Button onClick={() => dispatch({type: atypes.SHUFFLE_PLAYLIST})}>
+            <Button onClick={() => playlist_mgr.shuffle()}>
                 <Glyphicon glyph="glyphicon glyphicon-random" />
                 <span style={{marginLeft: "0.5em"}}>Shuffle</span>
             </Button>
 
-            <Button onClick={() => dispatch({type: atypes.CLEAR_PLAYLIST})}>
+            <Button onClick={() => playlist_mgr.clear()}>
                 <Glyphicon glyph="glyphicon glyphicon-remove-sign" />
                 <span style={{marginLeft: "0.5em"}}>Clear</span>
             </Button>
@@ -78,11 +87,3 @@ const PlaylistView = observer<
         </div>
     </div>;
 });
-
-export const Playlist =
-    connect(
-        (_state, ownProps: {playlist_mgr: PlaylistManager}) => ({
-            playlist_mgr: ownProps.playlist_mgr
-        }),
-        {dispatch: _.identity}
-    )(PlaylistView);

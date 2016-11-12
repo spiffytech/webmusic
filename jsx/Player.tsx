@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as URI from "urijs";
-import {IComputedValue} from "mobx";
+import {action, IComputedValue} from "mobx";
 import {observer} from "mobx-react";
 import {Button, Glyphicon} from "react-bootstrap";
 import {connect} from "react-redux";
@@ -12,7 +12,17 @@ export class PlayerManager {
     public current_track: IComputedValue<ITrack>;
     public next_track: IComputedValue<ITrack>;
 
-    constructor(playlist_mgr: PlaylistManager) {
+    @action
+    public go_previous_track() {
+        this.playlist_mgr.current_track_id.set(this.playlist_mgr.previous_track.get().id);
+    }
+
+    @action
+    public go_next_track() {
+        this.playlist_mgr.current_track_id.set(this.playlist_mgr.next_track.get().id);
+    }
+
+    constructor(public playlist_mgr: PlaylistManager) {
         this.current_track = playlist_mgr.current_track;
         this.next_track = playlist_mgr.next_track;
     }
@@ -27,8 +37,7 @@ const PlayerRaw = observer<{
     player_mgr: PlayerManager;
     track_ended: any;
     music_host: string;
-    dispatch: any;
-}>(function Player({player_mgr, track_ended, music_host, dispatch}) {
+}>(function Player({player_mgr, track_ended, music_host}) {
     const track = player_mgr.current_track.get();
     const next_track = player_mgr.next_track.get();
 
@@ -112,11 +121,11 @@ const PlayerRaw = observer<{
             </audio>
             : null}
             <div id="player-next-prev-btns">
-                <Button key="previous" onClick={() => dispatch({type: atypes.PREV_TRACK})}>
+                <Button key="previous" onClick={() => player_mgr.go_previous_track()}>
                     <Glyphicon glyph="glyphicon glyphicon-step-backward" />
                 </Button>
 
-                <Button key="next" onClick={() => dispatch({type: atypes.NEXT_TRACK})}>
+                <Button key="next" onClick={() => player_mgr.go_next_track()}>
                     <Glyphicon glyph="glyphicon glyphicon-step-forward" />
                 </Button>
             </div>

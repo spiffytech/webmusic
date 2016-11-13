@@ -45,13 +45,6 @@ const store = createStore(combineReducers({
         console.log("base", action);
         return state;
     },
-    library_filter: (state = "", action: actions.IAction) => {
-        if (is_action<actions.ILibraryFilter>(action, atypes.LIBRARY_FILTER)) {
-            return action.filter;
-        }
-
-        return state;
-    },
     playlist: action((state: IPlaylistStore = {}, action: actions.IAction): IPlaylistStore => {
         if (is_action<actions.IAddToPlaylist>(action, atypes.ADD_TO_PLAYLIST)) {
             playlist_mgr.playlist.replace([

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev-server": "node_modules/.bin/ts-node server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_ENV=test ./node_modules/.bin/tap -R ${REPORTER:-classic} 'out/**/*.test.js'",
     "prepublish": "typings install && NODE_ENV=production webpack -p && tsc"
   },
   "repository": {
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/spiffytech/webmusic#readme",
   "devDependencies": {
+    "@types/latinize": "^0.2.15",
     "@types/shortid": "^0.0.28",
     "ajv": "^4.1.5",
     "chunk-manifest-webpack-plugin": "^0.1.0",
@@ -38,6 +39,7 @@
     "redux-form": "^5.3.1",
     "shortid": "^2.2.6",
     "style-loader": "^0.13.1",
+    "tap": "^8.0.0",
     "ts-loader": "^0.8.2",
     "ts-node": "^0.8.0",
     "tslint": "^3.13.0",

@@ -3,6 +3,7 @@ import * as bunyan from "bunyan";
 import * as joi from "joi";
 import * as rp from "request-promise";
 import {parseString as xml2str} from "xml2js";
+import * as shortid from "shortid";
 
 export const logger = bunyan.createLogger({name: "archive logger", level: "debug"});
 
@@ -93,6 +94,7 @@ function timestamp_to_seconds(ts: string): number {
 
 function to_itrack(track: ArchiveTrack, formats: MusicFormat[]): ITrack {
     return {
+        id: shortid.generate(),  // there's probably a real ID on these objects
         artist: track.creator || "",
         album: track.album || "",
         title: track.title || "",

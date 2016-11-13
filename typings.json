@@ -2,11 +2,11 @@
   "dependencies": {
     "lodash": "registry:npm/lodash#4.0.0+20160416211519",
     "request": "registry:npm/request#2.69.0+20160428223725",
-    "throat": "registry:npm/throat#2.0.0+20160404004338"
+    "throat": "registry:npm/throat#2.0.0+20160404004338",
+    "tap": "github:spiffytech/node-tap/tap.d.ts#typings"
   },
   "globalDependencies": {
     "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
-    "es6-promise": "registry:dt/es6-promise#0.0.0+20160614011821",
     "hapi": "registry:dt/hapi#13.0.0+20160602125023",
     "joi": "registry:dt/joi#9.0.0+20160626220651",
     "mz": "registry:dt/mz#0.0.0+20160811111312",

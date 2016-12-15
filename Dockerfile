@@ -17,7 +17,5 @@ RUN ./node_modules/.bin/typings install
 RUN NODE_ENV=production ./node_modules/.bin/webpack -p
 RUN ./node_modules/.bin/tsc
 
-RUN npm prune --production
-
 ENV NODE_ENV=production
 CMD ["sh", "-c", "node out/server.js"]

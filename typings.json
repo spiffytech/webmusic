@@ -1,29 +1,8 @@
 {
   "dependencies": {
-    "lodash": "registry:npm/lodash#4.0.0+20160416211519",
     "request": "registry:npm/request#2.69.0+20160428223725",
-    "throat": "registry:npm/throat#2.0.0+20160404004338",
-    "tap": "github:spiffytech/node-tap/tap.d.ts#typings"
+    "tap": "github:spiffytech/node-tap/tap.d.ts#typings",
+    "throat": "registry:npm/throat#2.0.0+20160404004338"
   },
-  "globalDependencies": {
-    "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
-    "hapi": "registry:dt/hapi#13.0.0+20160602125023",
-    "joi": "registry:dt/joi#9.0.0+20160626220651",
-    "mz": "registry:dt/mz#0.0.0+20160811111312",
-    "node": "registry:dt/node#6.0.0+20160602155235",
-    "react": "registry:dt/react#0.14.0+20160526134601",
-    "react-bootstrap": "registry:dt/react-bootstrap#0.0.0+20160627163812",
-    "react-dom": "registry:dt/react-dom#0.14.0+20160412154040",
-    "react-redux": "registry:dt/react-redux#4.4.0+20160501125835",
-    "react-router": "registry:dt/react-router#2.0.0+20160501155536",
-    "react-router-bootstrap": "registry:dt/react-router-bootstrap#0.0.0+20160316155526",
-    "react-router/history": "registry:dt/react-router/history#2.0.0+20160602154905",
-    "redux": "registry:dt/redux#3.3.1+20160326112656",
-    "redux-form": "registry:dt/redux-form#4.0.3+20160201090541",
-    "redux-thunk": "registry:dt/redux-thunk#2.0.1+20160317120654",
-    "request-promise": "registry:dt/request-promise#0.4.2+20160316155526",
-    "urijs": "registry:dt/urijs#1.15.1+20160526132152",
-    "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20160524142046",
-    "xml2js": "registry:dt/xml2js#0.0.0+20160317120654"
-  }
+  "globalDependencies": {}
 }

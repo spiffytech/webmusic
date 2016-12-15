@@ -87,7 +87,7 @@ store.dispatch({
     config: JSON.parse(localStorage.getItem("config"))
 });
 
-console.log(store.getState().config);
+console.log((store.getState() as any).config);
 reload_library(config.music_hosts).
 catch(err => {
     store.dispatch({type: atypes.ERROR_MESSAGE, message: err.message || err});

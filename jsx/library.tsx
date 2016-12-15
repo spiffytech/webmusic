@@ -81,8 +81,8 @@ export function reload_library(music_hosts: MusicHost[]) {
     // or, disable the broken source and retry?
     // or, swallow the error with .catch() and ignore the source?
     return Promise.all(hosts_enabled.map(host => {
-        return window.fetch(host.listing_url).
-        then(response => response.json()).
+        return fetch(host.listing_url).
+        then(response => response.json() as Promise<ITrack[]>).
         then(tracks => tracks.filter((track: ITrack) => {
             if(!track_schema(track)) console.log(JSON.stringify(track_schema.errors));
             return track_schema(track);

@@ -12,6 +12,7 @@ import {
 import * as mobx from "mobx";
 import {observable, action} from "mobx";
 import {observer} from "mobx-react";
+import * as Redux from "redux";
 
 import {types as atypes} from "../actions";
 import {reload_library} from "./library";
@@ -74,12 +75,12 @@ const MusicHost = observer(function MusicHost(
     </FormGroup>;
 });
 
-function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch}) {
+function ConfigForm({config, dispatch}: {config: IConfig, dispatch: Redux.Dispatch<any>}) {
     const handleDelete = action((music_host: MusicHost) =>
         (config.music_hosts as mobx.IObservableArray<MusicHost>).remove(music_host));
 
     return <div className="row">
-        <Form vertical onSubmit={handleSubmit.bind(null, config, dispatch)}>
+        <Form onSubmit={handleSubmit.bind(null, config, dispatch)}>
             {config.music_hosts.map((music_host, i) =>
                 <MusicHost
                     key={i}

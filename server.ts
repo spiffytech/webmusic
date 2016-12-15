@@ -125,8 +125,14 @@ export function serve() {
                         redirectToSlash: true,
                         index: true
                     }
+                },
+                config: {
+                    cache: {
+                        expiresIn: 30 * 1000,
+                        privacy: "public"
+                    }
                 }
-            });
+            } as any);
 
             server.ext("onPreResponse", function (request, reply) {
                 if(

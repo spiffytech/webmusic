@@ -1,4 +1,5 @@
 // import * as React from "react";
+import * as _ from "lodash";
 import * as latinize from "latinize";
 // import {Glyphicon, Button} from "react-bootstrap";
 import {
@@ -8,39 +9,39 @@ import {
 } from "mobx";
 // import {observer} from "mobx-react";
 
-type Breadcrumb = [(track: ITrack) => string, string | null];
+type View = (track: ITrack) => string;
 
 export class LibraryManager {
     public filter = observable<string | null>(null);
 
     public tracks = observable<ITrack>([]);
 
-    public available_views = observable([
-        (track: ITrack) => track.title,
+    public available_views: View[] = [
+        (track: ITrack) => track.artist,
         (track: ITrack) => track.album,
-        (track: ITrack) => track.artist
-    ]);
+        (track: ITrack) => track.title
+    ];
 
-    public breadcrumbs = observable<Breadcrumb>([[this.available_views.pop(), null]]);
+    public breadcrumbs = observable<string>([]);
 
     @action
     public select(selected: string) {
-        this.breadcrumbs[this.breadcrumbs.length - 1][1] = selected;
-        this.breadcrumbs.push([this.available_views.pop(), null]);
+        this.breadcrumbs.push(selected);
     }
 
     @action
     public go_back() {
-        if (this.breadcrumbs.length === 1) return;
-
-        const current_view = this.breadcrumbs.pop();
-        this.available_views.push(current_view[0]);
+        this.breadcrumbs.pop();
     }
 
-    public can_select = computed(() => this.available_views.length > 0);
+    public can_select = computed(() => this.available_views.length === this.breadcrumbs.length);
 
     public visible_tracks = computed(() => {
-        const selected = this.breadcrumbs.filter(breadcrumb => breadcrumb[1] !== null);
+        const selected: [View, string][] = (_.zip<any>(
+            this.available_views,
+            this.breadcrumbs.slice()
+        ) as [View, string][]).
+        filter(([, breadcrumb]) => breadcrumb !== null);
 
         return this.tracks.filter(track =>
             selected.every(([getter, match_str]) => getter(track) === match_str)
@@ -48,7 +49,13 @@ export class LibraryManager {
     });
 
     public selector_options = computed(() => {
-        const [getter] = this.breadcrumbs.find(breadcrumb => breadcrumb[1] === null);
-        return Array.from(new Set(this.visible_tracks.get().map(getter))).map(latinize);
+        const [getter] = (_.zip<any>(
+            this.available_views,
+            this.breadcrumbs
+        ) as [View, string][]).
+        find(([, breadcrumb]) => breadcrumb === null);
+
+        const options = new Set(this.visible_tracks.get().map(getter));
+        return Array.from(options).map(latinize);
     });
 }

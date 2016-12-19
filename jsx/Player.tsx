@@ -104,7 +104,14 @@ const PlayerRaw = observer<{
                 {mksources(track)}
             </audio>
             {next_track ? <audio
-                key={key_for_track(next_track)}
+                key={
+                    /* If we use the same key for a track in both 'active' and
+                    'next' states, React doesn't rerender the <audio> element. It'll
+                    just add the 'autoplay' attribute, but Chrome won't start
+                    playing when that attribute is added. We need a whole new
+                    <audio> element." */
+                    key_for_track(next_track) + ".pre"
+                }
                 controls={false}
                 style={{width: "100%"}}
                 autoPlay={false}

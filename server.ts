@@ -4,6 +4,7 @@ import * as path from "path";
 import {fs} from "mz";
 
 import * as Hapi from "hapi";
+const CookieAuth = require("hapi-auth-cookie");
 const Inert = require("inert");
 const WebpackPlugin = require("hapi-webpack-plugin");
 
@@ -99,73 +100,100 @@ server.route({
     }
 });
 
+function validate_user(_request, session, callback) {
+    callback(null, true, session);
+}
+
 export function serve() {
-    server.register(Inert, () => {
-        const cb = () => {
-            // Static files (transcoded tracks)
-            server.route({
-                method: "GET",
-                path: "/transcoded/{param*}",
-                handler: {
-                    directory: {
-                        path: path.join(process.env.PWD, "transcoded_tracks"),
-                        redirectToSlash: false,
-                        index: false
-                    }
+    const plugins = [Inert, CookieAuth];
+    if(process.env.NODE_ENV === "development") {
+        plugins.push({
+            register: WebpackPlugin,
+            options: "./webpack.config.js"
+        });
+    }
+
+    server.register(plugins).
+    then(() => {
+        server.auth.strategy("session", "cookie", "optional", {
+            cookie: "webmusic_session",
+            password: "cAHwTEIiI2T5AfcF8HgyxjnPvebe9nVG1aY6OPh2lAcZ6N3EmUd53ROoHfRSRUz",
+            redirectTo: false,
+            isSecure: false,
+            isHttpOnly: false,
+            clearInvalid: true,
+            ttl: 1000 * 86400 * 365,
+            keepAlive: true,
+            validateFunc: validate_user
+        });
+
+        server.route({
+            method: "GET",
+            path: "/login",
+            config: {
+                handler: (request, reply) => {
+                    // Setting an object to the session counts as logging the
+                    // user in as far as hapi-auth-cookie is concerned. Must be
+                    // an object. Setting this creates the session cookie.
+                    (request as any).cookieAuth.set({name: "guest@example.com"});
+                    return reply(request.auth.credentials);
                 }
-            });
+            }
+        });
 
-            // Static files (WebPack / SPA)
-            server.route({
-                method: "GET",
-                path: "/{param*}",
-                handler: {
-                    directory: {
-                        path: path.join(process.env.PWD, "build"),
-                        redirectToSlash: true,
-                        index: true
-                    }
-                },
-                config: {
-                    cache: {
-                        expiresIn: 30 * 1000,
-                        privacy: "public"
-                    }
+        // Static files (transcoded tracks)
+        server.route({
+            method: "GET",
+            path: "/transcoded/{param*}",
+            handler: {
+                directory: {
+                    path: path.join(process.env.PWD, "transcoded_tracks"),
+                    redirectToSlash: false,
+                    index: false
                 }
-            } as any);
+            }
+        });
 
-            server.ext("onPreResponse", function (request, reply) {
-                if(
-                    request.response.isBoom &&
-                    (request.response as any).output.statusCode === 404
-                ) {
-                    // Inspect the response here, perhaps see if it's a 404?
-                    return reply.redirect("/");
+        // Static files (WebPack / SPA)
+        server.route({
+            method: "GET",
+            path: "/{param*}",
+            handler: {
+                directory: {
+                    path: path.join(process.env.PWD, "build"),
+                    redirectToSlash: true,
+                    index: true
                 }
+            },
+            config: {
+                cache: {
+                    expiresIn: 30 * 1000,
+                    privacy: "public"
+                }
+            }
+        } as any);
 
-                return reply.continue();
-            });
+        server.ext("onPreResponse", function (request, reply) {
+            if(
+                request.response.isBoom &&
+                (request.response as any).output.statusCode === 404
+            ) {
+                // Inspect the response here, perhaps see if it's a 404?
+                return reply.redirect("/");
+            }
 
+            return reply.continue();
+        });
 
+        server.on("internalError", function (_request, err) {
+            console.log(err.data.stack);
+        });
 
-            server.initialize().
-            then(() => server.start()).
-            then(() => console.log("Server running at:", server.info.uri)).
-            catch(err => { console.error(err); throw err; });
-        };
-
-        if(process.env.NODE_ENV === "development") {
-            server.register(
-                {
-                    register: WebpackPlugin,
-                    options: "./webpack.config.js"
-                },
-                cb
-            );
-        } else {
-            cb();
-        }
-    });
+        return server.initialize().
+        then(() => server.start()).
+        then(() => console.log("Server running at:", server.info.uri));
+    }).
+    catch(err => { console.error(err); throw err; });
 }
 
 serve();

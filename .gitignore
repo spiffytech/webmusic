@@ -8,6 +8,7 @@ build/*
 out/*
 archive_cache
 transcoded_tracks
+.vscode
 
 *.fossil
 .fake

@@ -105,6 +105,8 @@
     "throat": "^3.0.0",
     "ts-loader": "^0.9.5",
     "ts-node": "^1.6.0",
+    "tweetnacl": "^0.14.5",
+    "tweetnacl-auth": "^0.3.1",
     "urijs": "^1.18.1",
     "xml2js": "^0.4.16"
   }

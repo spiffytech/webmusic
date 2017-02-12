@@ -1,3 +1,4 @@
+env
 typings
 node_modules
 build/tsc.js*

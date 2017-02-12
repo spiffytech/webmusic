@@ -16,7 +16,7 @@ import {mkdom} from "./jsx/index";
 
 require("./bootstrap-3.3.6/css/bootstrap.min.css");
 require("./bootstrap-3.3.6/css/bootstrap-theme.min.css");
-require("./node_modules/react-treeview-lazy/react-treeview.css");
+require("../node_modules/react-treeview-lazy/react-treeview.css");
 
 const playlist_mgr = new PlaylistManager();
 const player_mgr = new PlayerManager(playlist_mgr);

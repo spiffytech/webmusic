@@ -4,7 +4,6 @@ node_modules
 build/tsc.js*
 build/bundle.js*
 *screenshot*png
-server.js
 build/*
 out/*
 archive_cache

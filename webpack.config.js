@@ -5,7 +5,7 @@ var ChunkManifestPlugin = require("chunk-manifest-webpack-plugin");
 var HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = {  
-  entry: './app.ts',
+  entry: './client/app.ts',
   output: {
     path: path.join(__dirname, 'build'),
     filename: '[name].[chunkhash].js',
@@ -33,7 +33,7 @@ module.exports = {
       manifestVariable: "webpackManifest"
     }),
     new webpack.optimize.OccurenceOrderPlugin(),
-    new HtmlWebpackPlugin({title: "WebMusic", template: "index.ejs"}),
+    new HtmlWebpackPlugin({title: "WebMusic", template: "client/index.ejs"}),
     new webpack.ProvidePlugin({
         $: 'jquery',
         jQuery: 'jquery',

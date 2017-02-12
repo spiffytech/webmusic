@@ -3,10 +3,9 @@
   "version": "0.0.0-alpha.7",
   "description": "",
   "bin": {
-    "webmusic": "out/launch.js"
   },
   "scripts": {
-    "dev-server": "node_modules/.bin/ts-node server.ts",
+    "dev-server": "node_modules/.bin/ts-node server/server.ts",
     "test": "NODE_ENV=test ./node_modules/.bin/tap -R ${REPORTER:-classic} 'out/**/*.test.js'",
     "prepublish": "typings install && NODE_ENV=production webpack -p && tsc"
   },

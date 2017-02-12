@@ -11,6 +11,8 @@ const WebpackPlugin = require("hapi-webpack-plugin");
 const ffmpeg = require("fluent-ffmpeg");
 import * as request from "request";
 
+import {sendLoginEmail, verifyToken } from './login';
+
 const server = new Hapi.Server({
     connections: {
         routes: {
@@ -132,11 +134,20 @@ export function serve() {
             path: "/login",
             config: {
                 handler: (request, reply) => {
-                    // Setting an object to the session counts as logging the
-                    // user in as far as hapi-auth-cookie is concerned. Must be
-                    // an object. Setting this creates the session cookie.
-                    (request as any).cookieAuth.set({name: "guest@example.com"});
-                    return reply(request.auth.credentials);
+                    if (request.query.token) {
+                        const isValid = verifyToken(request.query.token);
+                        if (isValid === false) {
+                            return reply("Your login link is no longer valid. Please log in again.");
+                        }
+                        // Setting an object to the session counts as logging the
+                        // user in as far as hapi-auth-cookie is concerned. Must be
+                        // an object. Setting this creates the session cookie.
+                        (request as any).cookieAuth.set({name: isValid});
+                        return reply(request.auth.credentials).redirect("/");
+                    }
+
+                    return sendLoginEmail(request.query.email).
+                    then(() => reply("Check your email for a login link"));
                 }
             }
         });

@@ -17,8 +17,17 @@ fetch("/username", {credentials: "include"}).
 then(r => r.text()).
 then(action((u: string) => username.set(u)));
 
+const loginField = observable<string>("");
+function doLogin() {
+    const email = loginField.get();
+    const emailSafe = encodeURIComponent(email);
+    return fetch(`/login?email=${emailSafe}`, {credentials: "include"});
+}
+
 const UsernameView = observer(function UsernameView() {
-    return <p>{username.get()}</p>;
+    return <p>{username.get()} | <input onChange={event => {
+        action(() => loginField.set((event.target as any).value))();
+    }} placeholder="email"/> <input type="submit" onClick={() => doLogin()} /></p>;
 });
 
 function AppView({error_msg, player_mgr, children}) {

@@ -1,7 +1,14 @@
+import * as assert from "assert";
 import * as nodemailer from "nodemailer";
 const nacl = require("tweetnacl");
 nacl.auth = require("tweetnacl-auth");
 import * as url from "url";
+
+assert(process.env.MAILGUN_USER, "no mailgun user suppiled");
+assert(process.env.MAILGUN_PASS, "no mailgun password suppiled");
+assert(process.env.HMAC_KEY, "no HMAC key suppiled");
+assert(process.env.DOMAIN, "no domain suppiled");
+assert(process.env.EMAIL_FROM, "no email-from suppiled");
 
 const MAILER_OPTIONS = {
     service: "Mailgun",

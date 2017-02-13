@@ -146,6 +146,7 @@ export function serve() {
                         return reply(request.auth.credentials).redirect("/");
                     }
 
+                    assert(request.query.email, "No user email supplied");
                     return sendLoginEmail(request.query.email).
                     then(() => reply("Check your email for a login link"));
                 }

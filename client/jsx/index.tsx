@@ -2,6 +2,8 @@ import * as React from "react";
 import {Provider, connect} from "react-redux";
 import {Router, Route, IndexRoute, browserHistory} from "react-router";
 import {LinkContainer} from "react-router-bootstrap";
+import {action, observable} from "mobx";
+import {observer} from "mobx-react";
 
 import {Grid, Row, Col, Button, Alert} from "react-bootstrap";
 
@@ -10,8 +12,18 @@ import {Config} from "./config";
 import {Playlist, PlaylistManager} from "./playlist";
 import {Player, PlayerManager} from "./Player";
 
+const username = observable<string>("");
+fetch("/username", {credentials: "include"}).
+then(r => r.text()).
+then(action((u: string) => username.set(u)));
+
+const UsernameView = observer(function UsernameView() {
+    return <p>{username.get()}</p>;
+});
+
 function AppView({error_msg, player_mgr, children}) {
     return <div>
+        <UsernameView />
         <Grid fluid={true}>
             <Row id="nav-buttons">
                 <LinkContainer to="/">

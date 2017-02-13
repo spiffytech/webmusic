@@ -152,6 +152,12 @@ export function serve() {
             }
         });
 
+        server.route({
+            method: "GET",
+            path: "/username",
+            handler: (request, reply) => reply(request.auth.credentials.name)
+        });
+
         // Static files (transcoded tracks)
         server.route({
             method: "GET",

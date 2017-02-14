@@ -1,5 +1,15 @@
 version: '2'
 services:
+  webmusic:
+    image: spiffytech/webmusic,
+    container_name: webmusic,
+    restart: always,
+    ports:
+      - "8089:8080"
+    environment:
+      - VIRTUAL_HOST=webmusic.spiffy.tech
+    volumes:
+      - ./env:/env
   postgres:
     image: postgres:9.6
     container_name: postgres

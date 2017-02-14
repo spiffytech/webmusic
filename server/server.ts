@@ -103,6 +103,7 @@ server.route({
 });
 
 function validate_user(_request, session, callback) {
+    console.log("Validating user");
     callback(null, true, session);
 }
 
@@ -156,7 +157,10 @@ export function serve() {
         server.route({
             method: "GET",
             path: "/username",
-            handler: (request, reply) => reply(request.auth.credentials.name)
+            handler: (request, reply) => {
+                if (!request.auth.credentials) (request as any).cookieAuth.set({name: "guest@example.com"});
+                return reply(request.auth.credentials.name);
+            }
         });
 
         // Static files (transcoded tracks)

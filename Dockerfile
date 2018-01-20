@@ -18,4 +18,4 @@ RUN NODE_ENV=production ./node_modules/.bin/webpack -p
 RUN ./node_modules/.bin/tsc
 
 ENV NODE_ENV=production
-CMD ["sh", "-c", "/env node out/server/server.js"]
+CMD ["sh", "-c", "node out/server/server.js"]

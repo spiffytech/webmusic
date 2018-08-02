@@ -1,21 +1,38 @@
 {
-    "compileOnSave": false,
-    "compilerOptions": {
-        "jsx": "react",
-        "module": "commonjs",
-        "sourceMap": true,
-        "experimentalDecorators": true,
-        "target": "es6",
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
-        "outDir": "out"
-    },
-    "exclude": [
-        "node_modules",
-        "fsharp",
-        "transcoded_tracks"
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "baseUrl": ".",
+    "types": [
+      "node",
+      "jest"
     ],
-    "atom": {
-        "rewriteTsconfig": true
-    }
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
+    "lib": [
+      "es2015",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "request": "registry:npm/request#2.69.0+20160428223725",
-    "tap": "github:spiffytech/node-tap/tap.d.ts#typings",
-    "throat": "registry:npm/throat#2.0.0+20160404004338"
-  },
-  "globalDependencies": {}
-}

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2017",
     "module": "commonjs",
     "strict": true,
     "jsx": "preserve",
@@ -19,7 +19,7 @@
       ]
     },
     "lib": [
-      "es2015",
+      "es2017",
       "dom",
       "dom.iterable",
       "scripthost"

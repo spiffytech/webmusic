@@ -1,6 +1,7 @@
 #!/bin/env python
 
 from csv import DictReader
+from datetime import timedelta
 import json
 import os
 from pprint import pprint
@@ -27,7 +28,9 @@ for row in reader:
     row.pop("path", None)
 
     row["track_num"] = int(row["track_num"])
-    row["length"] = float(row["length"])
+    [minutes, seconds] = row["length"].split(":")
+    td = timedelta(minutes=float(minutes), seconds=float(seconds))
+    row["length"] = td.total_seconds()
 
     d.append(row)
 json.dump(d, open("/tmp/tracks.json", "w"), indent=4)

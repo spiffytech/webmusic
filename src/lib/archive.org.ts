@@ -1,11 +1,11 @@
 import axios from 'axios';
 import {readJson} from 'fs-extra';
 import * as _ from 'lodash/fp';
+import * as natural from 'natural';
 import pLimit from 'p-limit';
 import PouchDB from 'pouchdb';
 import * as PouchDBUpsert from 'pouchdb-upsert';
 import {parseString as xml2str} from 'xml2js';
-
 /* tslint:disable-next-line:no-var-requires */
 PouchDB.plugin(require('pouchdb-find'));
 /* tslint:disable-next-line:no-var-requires */
@@ -13,24 +13,22 @@ PouchDB.plugin(PouchDBUpsert);
 
 const limitMetadata = pLimit(50);
 
+declare var emit: any;
+
 function urlForAlbumMetadata(identifier: string) {
-  return `https://${archiveBaseUrl()}/${identifier}/${identifier}_meta.xml`;
+  return `${archiveBaseUrl()}/${identifier}/${identifier}_meta.xml`;
 }
 
 function urlForAlbumFiles(identifier: string) {
-  return `https://${archiveBaseUrl()}/${identifier}/${identifier}_files.xml`;
+  return `${archiveBaseUrl()}/${identifier}/${identifier}_files.xml`;
 }
 
 function urlForTrack(identifier: string, trackName: string) {
-  return `https://${archiveBaseUrl()}/${identifier}/${trackName}`;
+  return `${archiveBaseUrl()}/${identifier}/${trackName}`;
 }
 
 function archiveBaseUrl() {
   return `https://archive.org/download`;
-}
-
-function pathForTrack(identifier: string, file: string) {
-  return `${archiveBaseUrl()}/${identifier}/${file}`;
 }
 
 function fetchMetadata(url: string) {
@@ -73,6 +71,14 @@ async function storeAlbums(db: PouchDB.Database, albums: any[]) {
 async function listPendingAlbums(db: PouchDB.Database): Promise<any[]> {
   const albumsPendingFetch = await db.find({
     selector: {type: 'album', fetched: false},
+    limit: 10000000,
+  });
+  return albumsPendingFetch.docs;
+}
+
+async function listAllAlbums(db: PouchDB.Database): Promise<any[]> {
+  const albumsPendingFetch = await db.find({
+    selector: {type: 'album'},
     limit: 1000000,
   });
   return albumsPendingFetch.docs;
@@ -91,6 +97,7 @@ async function fetchAlbumMetadata(identifier: string) {
   const url = urlForAlbumMetadata(identifier);
   const metadataXml = await fetchMetadata(url);
   const metadata = await decodeAlbumXml(metadataXml.data);
+  console.log(metadata.metadata);
   return {
     date: (metadata.metadata.date || metadata.metadata.addeddate)[0],
     artist: metadata.metadata.creator[0],
@@ -149,14 +156,22 @@ async function listAlbumFiles(identifier: string) {
 }
 
 function formatTrack(metadata: any, v: any[]) {
+  const tokenizer = new natural.WordPunctTokenizer();
+  const {artist, album} = metadata;
+  const {title} = v[0];
   return {
     date: metadata.date,
-    artist: metadata.artist,
-    album: metadata.album,
-    title: v[0].title,
+    artist,
+    album,
+    title,
     trackNumber: v[0].trackNumber,
     baseUrl: `${archiveBaseUrl()}/${metadata.identifier[0]}`,
     formats: _.fromPairs(v.map((file) => [file.format, file.$.name])),
+    keywords: _.flatten([
+      tokenizer.tokenize(artist).map(natural.PorterStemmer.stem),
+      tokenizer.tokenize(album).map(natural.PorterStemmer.stem),
+      tokenizer.tokenize(title).map(natural.PorterStemmer.stem),
+    ]),
     length: v[0].length[0],
     _id: encodeURIComponent(`track-${metadata.artist}-${metadata.album}-${v[0].trackNumber}-${v[0].title}`),
     type: 'track',
@@ -176,6 +191,38 @@ export default async function main(albumsDB: PouchDB.Database, tracksDB: PouchDB
       ddoc: 'fetched-albums',
     },
   });
+
+  await albumsDB.createIndex({
+    index: {
+      fields: ['type'],
+      ddoc: 'type-index',
+    },
+  });
+
+  await tracksDB.upsert(
+    '_design/tracks',
+    (designDoc: any) => ({
+      _rev: designDoc._rev,
+      _id: '_design/tracks',
+      views: {
+        albums: {
+          /* tslint:disable-next-line:only-arrow-functions */
+          map: function(doc: any) {
+            emit([doc.artist, doc.album], null);
+          }.toString(),
+          reduce: '_count',
+        },
+        artists: {
+          /* tslint:disable-next-line:only-arrow-functions */
+          map: function(doc: any) {
+            emit(doc.artist, null);
+          }.toString(),
+          reduce: '_count',
+        },
+      },
+    }),
+  );
+
   console.log('Created albums index');
 
   const albumsPendingFetch = await listPendingAlbums(albumsDB);
@@ -214,8 +261,14 @@ export async function fixUrls(albumsDB: PouchDB.Database, tracksDB: PouchDB.Data
     },
   });
   */
+  /*
+  const all = await listAllAlbums(albumsDB);
+  await albumsDB.bulkDocs(all.map((album) => ({...album, fetched: false})));
+  */
+
   let fixed = 0;
   const pending = await listPendingAlbums(albumsDB);
+  const tokenizer = new natural.WordPunctTokenizer();
   await Promise.all(pending.map(
     (album) => limitMetadata(async () => {
       const albumName = album.title;
@@ -223,17 +276,24 @@ export async function fixUrls(albumsDB: PouchDB.Database, tracksDB: PouchDB.Data
       const tracksBroken = await tracksDB.find({selector: {album: albumName, artist}, limit: 10000});
       if (tracksBroken.docs.length === 0) {
         console.error(`No tracks found for artist ${artist}, album ${albumName}`);
+        await albumsDB.put({...album, fetched: true});
         return;
       }
       const tracksFixed = tracksBroken.docs.map((track: any) => ({
         ...track,
-        baseUrl: `${archiveBaseUrl()}/${album.identifier}`,
+        keywords: _.flatten([
+          tokenizer.tokenize(track.artist).map(natural.PorterStemmer.stem),
+          tokenizer.tokenize(track.album).map(natural.PorterStemmer.stem),
+          tokenizer.tokenize(track.title).map(natural.PorterStemmer.stem),
+        ]),
       }));
 
-      await tracksDB.bulkDocs(tracksFixed);
-      await albumsDB.upsert(album._id, (doc: any) => ({...doc, fetched: true, _rev: doc._rev}));
-      fixed += tracksFixed.length;
-      console.log('Fixed', tracksFixed.length, '/', fixed);
+      await Promise.all([
+        tracksDB.bulkDocs(tracksFixed),
+        albumsDB.put({...album, fetched: true}),
+      ]);
+      fixed += 1;
+      console.log('Fixed', fixed, '/', pending.length);
     }),
   ));
 }

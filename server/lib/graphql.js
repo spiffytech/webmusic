@@ -18,7 +18,7 @@ function query(client, query) {
 
 module.exports.mkClient = function mkClient(url, options, ws=undefined) {
     const client = new SubscriptionClient(url, options, ws);
-    client.on('error', error => { throw error})
+    client.on('error', console.error);
     return {
         client,
         subscribe: subscribe.bind(null, client),
